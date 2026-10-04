@@ -3,29 +3,27 @@
 import React, { useState } from 'react';
 import { useApp } from '@/lib/store';
 import { Task, TaskPriority } from '@/types';
+import { WELLNESS_TASK_PRESETS } from '@/lib/sampleData';
 import { 
   Plus, 
   Coffee, 
   Clock, 
   Check, 
   ArrowUpRight, 
-  Filter,
-  Sparkles,
-  BookOpen,
-  Music,
-  Footprints,
-  Gamepad2,
-  Armchair
+  Heart,
+  Droplets
 } from 'lucide-react';
 import { sounds } from '@/lib/sounds';
 
 export default function PlanPage() {
   const { tasks, addTask, completeTask, setCurrentTask, openModal } = useApp();
-  const [priorityFilter, setPriorityFilter] = useState<'all' | 'must' | 'should' | 'could' | 'rest'>('all');
+  const [priorityFilter, setPriorityFilter] = useState<'all' | 'must' | 'should' | 'could' | 'rest' | 'wellness'>('all');
+  const [showWellnessPresets, setShowWellnessPresets] = useState(false);
 
   const filteredTasks = tasks.filter(t => {
     if (priorityFilter === 'all') return true;
     if (priorityFilter === 'rest') return t.category === 'rest';
+    if (priorityFilter === 'wellness') return t.category === 'wellness';
     return t.priority === priorityFilter;
   });
 
@@ -56,11 +54,37 @@ export default function PlanPage() {
     });
   };
 
-  const getPriorityBadge = (p: TaskPriority, isRest: boolean) => {
+  const handleAddWellnessPreset = (preset: typeof WELLNESS_TASK_PRESETS[0]) => {
+    addTask({
+      title: preset.title,
+      category: preset.category,
+      icon: preset.icon,
+      timeCategory: 'today',
+      durationMinutes: preset.durationMinutes,
+      priority: preset.priority,
+      minimum: preset.minimum,
+      normal: preset.normal,
+      extra: (preset as any).extra,
+      steps: [
+        { id: `ws1`, title: preset.minimum, completed: false, isMinimum: true },
+        { id: `ws2`, title: preset.normal, completed: false },
+      ],
+      companyPreference: 'no_preference',
+    });
+  };
+
+  const getPriorityBadge = (p: TaskPriority, isRest: boolean, isWellness: boolean) => {
     if (isRest) {
       return (
         <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300">
           Rest
+        </span>
+      );
+    }
+    if (isWellness) {
+      return (
+        <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-md bg-brand-100 dark:bg-brand-950/60 text-brand-800 dark:text-brand-300">
+          Care
         </span>
       );
     }
@@ -87,26 +111,63 @@ export default function PlanPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto pb-24 md:pb-12 space-y-7 animate-fade-in">
-      {/* Plan Header */}
-      <div className="flex items-start justify-between">
+    <div className="mx-auto max-w-2xl animate-fade-in space-y-5 sm:space-y-6">
+      <div className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-ink-primary dark:text-slate-100">
+          <h1 className="text-2xl font-bold tracking-tight text-ink-primary dark:text-slate-100 sm:text-3xl">
             Visual Plan
           </h1>
-          <p className="text-xs sm:text-sm text-ink-muted dark:text-slate-400 mt-1">
+          <p className="mt-1 text-xs text-ink-muted dark:text-slate-400 sm:text-sm">
             A flexible sequence of your day. No contracts, zero guilt.
           </p>
         </div>
 
         <button
           onClick={() => openModal('create_task')}
-          className="flex items-center gap-1.5 py-2 px-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs sm:text-sm shadow-sm transition-all"
+          className="hidden items-center gap-1.5 rounded-xl bg-brand-600 px-3 py-2 text-xs font-medium text-white shadow-sm transition-all hover:bg-brand-700 active:scale-95 sm:flex"
         >
           <Plus className="w-4 h-4" />
-          <span>Add Activity</span>
+          <span>Add</span>
         </button>
       </div>
+
+      {/* Self-Care Presets */}
+      <section className="p-5 rounded-3xl bg-brand-50/40 dark:bg-brand-950/20 border border-brand-200/60 dark:border-brand-900/40 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Heart className="w-4 h-4 text-brand-600 dark:text-brand-400" />
+            <h2 className="text-xs font-bold uppercase tracking-wider text-brand-900 dark:text-brand-200">
+              Add Self-Care Task
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowWellnessPresets(!showWellnessPresets)}
+            className="text-[11px] text-brand-700 dark:text-brand-300 font-semibold hover:underline"
+          >
+            {showWellnessPresets ? 'Hide' : 'Show all'}
+          </button>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {(showWellnessPresets ? WELLNESS_TASK_PRESETS : WELLNESS_TASK_PRESETS.slice(0, 6)).map((preset, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => handleAddWellnessPreset(preset)}
+              className="flex items-center gap-2 p-2.5 rounded-xl bg-surface dark:bg-surface-dark border border-brand-200/50 dark:border-brand-900/40 hover:border-brand-400 dark:hover:border-brand-700 text-left transition-all active:scale-[0.98]"
+            >
+              <span className="text-lg select-none">{preset.icon}</span>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-semibold text-ink-primary dark:text-slate-100 truncate">
+                  {preset.title}
+                </p>
+                <p className="text-[10px] text-ink-muted capitalize">{preset.priority}</p>
+              </div>
+            </button>
+          ))}
+        </div>
+      </section>
 
       {/* Rest Presets Carousel/Bar */}
       <section className="p-5 rounded-3xl bg-amber-50/40 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/40 space-y-3">
@@ -145,10 +206,11 @@ export default function PlanPage() {
       {/* Filter Tabs */}
       <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-800/70 rounded-2xl overflow-x-auto">
         {[
-          { id: 'all', label: 'All Activities' },
+          { id: 'all', label: 'All' },
           { id: 'must', label: 'Must' },
           { id: 'should', label: 'Should' },
           { id: 'could', label: 'Could' },
+          { id: 'wellness', label: 'Care 💧' },
           { id: 'rest', label: 'Rest ☕' },
         ].map((tab) => (
           <button
@@ -168,8 +230,14 @@ export default function PlanPage() {
 
       {/* Activities Timeline */}
       <section aria-label="Activities sequence" className="space-y-3">
+        {filteredTasks.length === 0 && (
+          <div className="text-center py-10 text-ink-muted dark:text-slate-400">
+            <p className="text-sm">No tasks in this category yet.</p>
+          </div>
+        )}
         {filteredTasks.map((task) => {
           const isRest = task.category === 'rest';
+          const isWellness = task.category === 'wellness';
 
           return (
             <div
@@ -181,12 +249,12 @@ export default function PlanPage() {
               }`}
             >
               <span className="text-2xl select-none pt-0.5" role="img" aria-hidden="true">
-                {task.icon || (isRest ? '☕' : '📋')}
+                {task.icon || (isRest ? '☕' : isWellness ? '✨' : '📋')}
               </span>
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  {getPriorityBadge(task.priority, isRest)}
+                  {getPriorityBadge(task.priority, isRest, isWellness)}
                   {task.timeCategory === 'now' && (
                     <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-md bg-brand-600 text-white">
                       Current Task
@@ -213,6 +281,12 @@ export default function PlanPage() {
                   <span className="font-medium text-ink-secondary dark:text-slate-300">Minimum: </span>
                   {task.minimum}
                 </p>
+
+                {task.extra && (
+                  <p className="text-xs text-ink-subtle mt-0.5">
+                    <span className="font-medium">Extra: </span>{task.extra}
+                  </p>
+                )}
               </div>
 
               {/* Action buttons */}

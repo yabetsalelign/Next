@@ -2,30 +2,80 @@
 
 import React, { useState } from 'react';
 import { useApp } from '@/lib/store';
+import { BodyState, HydrationLevel } from '@/types';
 import { X, HeartHandshake, Check } from 'lucide-react';
+
+const BODY_STATES: { id: BodyState; label: string }[] = [
+  { id: 'comfortable', label: '🙂 Comfortable' },
+  { id: 'tired', label: '😴 Tired' },
+  { id: 'stressed', label: '😣 Stressed' },
+  { id: 'dehydrated', label: '💧 Dehydrated' },
+  { id: 'heavy', label: '😶 Heavy / Flat' },
+  { id: 'energized', label: '✨ Energized' },
+];
+
+const HYDRATION_LEVELS: { id: HydrationLevel; label: string }[] = [
+  { id: 'low', label: '🔴 Low' },
+  { id: 'okay', label: '🟡 Okay' },
+  { id: 'good', label: '🟢 Good' },
+];
+
+const BODY_STATE_TIPS: Partial<Record<BodyState, string>> = {
+  tired: 'Start small. Even the minimum counts.',
+  stressed: 'Pick one Must. Set a 5-minute timer. That\'s enough.',
+  dehydrated: 'Drink some water before anything else.',
+  heavy: 'Be gentle with yourself. Rest is valid.',
+  comfortable: 'Nice. Use that ease — even a small task counts.',
+  energized: 'You have energy. Use it gently, not all at once.',
+};
 
 export function BodyEnvCheckModal() {
   const { closeModal } = useApp();
   const [energy, setEnergy] = useState<number>(3);
-  const [bodyState, setBodyState] = useState<string>('okay');
+  const [bodyState, setBodyState] = useState<BodyState>('comfortable');
+  const [hydration, setHydration] = useState<HydrationLevel>('okay');
   const [environment, setEnvironment] = useState<string>('alone');
   const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
+    // Store check-in in localStorage directly (keeps store lean)
+    try {
+      const entry = {
+        date: new Date().toISOString().split('T')[0],
+        energy,
+        bodyState,
+        hydration,
+        environment,
+        completedAt: new Date().toISOString(),
+      };
+      const existing = JSON.parse(localStorage.getItem('next_checkins_v1') || '[]');
+      localStorage.setItem('next_checkins_v1', JSON.stringify([entry, ...existing].slice(0, 30)));
+    } catch {}
     setSaved(true);
     setTimeout(() => {
       closeModal();
     }, 600);
   };
 
+  const tip = BODY_STATE_TIPS[bodyState];
+
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/70 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end justify-center pb-[env(safe-area-inset-bottom,0px)] sm:items-center sm:p-4 bg-slate-900/40 dark:bg-slate-950/70"
       role="dialog"
       aria-modal="true"
       aria-labelledby="checkin-modal-title"
+      onClick={closeModal}
     >
-      <div className="relative w-full max-w-md bg-surface dark:bg-surface-dark border border-slate-200/90 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden animate-fade-in">
+      <div
+        className="modal-sheet relative w-full sm:max-w-md bg-surface dark:bg-surface-dark border-t sm:border border-slate-200/90 dark:border-slate-800 sm:rounded-3xl rounded-t-3xl shadow-2xl overflow-y-auto animate-slide-up flex flex-col"
+        style={{ maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 0.5rem)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Drag handle (mobile) */}
+        <div className="sm:hidden flex justify-center pt-3 pb-1">
+          <div className="w-10 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
+        </div>
         
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-3 border-b border-slate-100 dark:border-slate-800">
@@ -45,13 +95,13 @@ export function BodyEnvCheckModal() {
         </div>
 
         {/* Body */}
-        <div className="p-6 sm:p-7 space-y-6">
+        <div className="p-6 sm:p-7 space-y-5 max-h-[80vh] overflow-y-auto">
           <div>
             <h3 id="checkin-modal-title" className="text-xl font-bold tracking-tight text-ink-primary dark:text-slate-100">
               How are you right now?
             </h3>
             <p className="text-xs sm:text-sm text-ink-muted dark:text-slate-400 mt-1">
-              Checking in helps calibrate your pace. Feel free to skip anytime.
+              Just noticing, not judging. Skip anytime.
             </p>
           </div>
 
@@ -85,12 +135,7 @@ export function BodyEnvCheckModal() {
               Body
             </span>
             <div className="grid grid-cols-2 gap-2">
-              {[
-                { id: 'okay', label: '🙂 Okay' },
-                { id: 'tense', label: '😐 Tense' },
-                { id: 'overwhelmed', label: '😣 Overwhelmed' },
-                { id: 'uncomfortable', label: '🤢 Physically bad' },
-              ].map((item) => (
+              {BODY_STATES.map((item) => (
                 <button
                   key={item.id}
                   type="button"
@@ -98,13 +143,46 @@ export function BodyEnvCheckModal() {
                   className={`p-3 rounded-xl text-xs sm:text-sm font-medium border text-left transition-all ${
                     bodyState === item.id
                       ? 'bg-brand-50/80 dark:bg-brand-950/50 border-brand-300 dark:border-brand-700 text-brand-900 dark:text-brand-200 font-semibold'
-                      : 'border-slate-200/80 dark:border-slate-800 text-ink-secondary dark:text-slate-300 hover:bg-slate-50'
+                      : 'border-slate-200/80 dark:border-slate-800 text-ink-secondary dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60'
                   }`}
                 >
                   {item.label}
                 </button>
               ))}
             </div>
+            {tip && (
+              <p className="text-xs text-brand-700 dark:text-brand-300 bg-brand-50/60 dark:bg-brand-950/30 border border-brand-100/60 dark:border-brand-900/40 rounded-xl px-3 py-2 leading-relaxed">
+                {tip}
+              </p>
+            )}
+          </div>
+
+          {/* Hydration */}
+          <div className="space-y-2.5">
+            <span className="text-xs font-semibold uppercase tracking-wider text-ink-secondary dark:text-slate-300">
+              Hydration
+            </span>
+            <div className="grid grid-cols-3 gap-2">
+              {HYDRATION_LEVELS.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setHydration(item.id)}
+                  className={`p-3 rounded-xl text-xs font-medium border text-center transition-all ${
+                    hydration === item.id
+                      ? 'bg-brand-50/80 dark:bg-brand-950/50 border-brand-300 dark:border-brand-700 text-brand-900 dark:text-brand-200 font-semibold'
+                      : 'border-slate-200/80 dark:border-slate-800 text-ink-secondary dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+            {hydration === 'low' && (
+              <p className="text-xs text-amber-700 dark:text-amber-300 bg-amber-50/60 dark:bg-amber-950/30 border border-amber-100/60 dark:border-amber-900/40 rounded-xl px-3 py-2">
+                💧 Drink some water before anything else.
+              </p>
+            )}
           </div>
 
           {/* Environment */}
@@ -126,7 +204,7 @@ export function BodyEnvCheckModal() {
                   className={`p-3 rounded-xl text-xs sm:text-sm font-medium border text-left transition-all ${
                     environment === item.id
                       ? 'bg-brand-50/80 dark:bg-brand-950/50 border-brand-300 dark:border-brand-700 text-brand-900 dark:text-brand-200 font-semibold'
-                      : 'border-slate-200/80 dark:border-slate-800 text-ink-secondary dark:text-slate-300 hover:bg-slate-50'
+                      : 'border-slate-200/80 dark:border-slate-800 text-ink-secondary dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60'
                   }`}
                 >
                   {item.label}

@@ -8,6 +8,8 @@ import { TaskBreakdownModal } from './TaskBreakdownModal';
 import { BodyEnvCheckModal } from './BodyEnvCheckModal';
 import { TaskCreatorModal } from './TaskCreatorModal';
 import { RoutineRunnerModal } from './RoutineRunnerModal';
+import { FreshStartModal } from './FreshStartModal';
+import { JournalModal } from './JournalModal';
 
 export function ModalRoot() {
   const { activeModal } = useApp();
@@ -27,6 +29,10 @@ export function ModalRoot() {
       return <TaskCreatorModal />;
     case 'routine_runner':
       return <RoutineRunnerModal />;
+    case 'fresh_start':
+      return <FreshStartModal />;
+    case 'journal':
+      return <JournalModal />;
     default:
       return null;
   }

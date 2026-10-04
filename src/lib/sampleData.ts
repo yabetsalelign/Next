@@ -1,4 +1,4 @@
-import { Task, Routine, ReturnDay, HelpfulInsight, UserSettings } from '../types';
+import { Task, Routine, ReturnDay, HelpfulInsight, UserSettings, Reset, WellnessJournalEntry } from '../types';
 
 export const INITIAL_TASKS: Task[] = [
   {
@@ -56,7 +56,7 @@ export const INITIAL_TASKS: Task[] = [
     priority: 'must',
     minimum: 'Grab a piece of fruit or toast',
     normal: 'Sit down with a warm meal',
-    extra: 'Drink a full tall glass of water',
+    extra: 'Drink a full tall glass of water with it',
     steps: [
       { id: 'l1', title: 'Walk to the kitchen', completed: false },
       { id: 'l2', title: 'Get food onto a plate', completed: false },
@@ -97,6 +97,7 @@ export const INITIAL_TASKS: Task[] = [
     priority: 'must',
     minimum: '2-minute warm rinse',
     normal: 'Full warm shower',
+    extra: 'Take time to wash hair if needed',
     steps: [
       { id: 'sh1', title: 'Turn water on warm', completed: true },
       { id: 'sh2', title: 'Step in for rinse', completed: true },
@@ -129,6 +130,28 @@ export const INITIAL_TASKS: Task[] = [
   },
 ];
 
+export const WELLNESS_TASK_PRESETS = [
+  // Must
+  { title: 'Brush teeth', icon: '🪥', priority: 'must' as const, minimum: 'Rinse with water', normal: 'Full brush — 2 minutes', category: 'wellness' as const, durationMinutes: 3 },
+  { title: 'Wash face', icon: '🧼', priority: 'must' as const, minimum: 'Splash cold water on face', normal: 'Gentle cleanse and rinse', category: 'wellness' as const, durationMinutes: 4 },
+  { title: 'Take medication', icon: '💊', priority: 'must' as const, minimum: 'Take with any amount of water', normal: 'Take with full glass of water', category: 'wellness' as const, durationMinutes: 2 },
+  { title: 'Drink water', icon: '💧', priority: 'must' as const, minimum: 'Three sips right now', normal: 'Drink a full glass', extra: 'Keep a bottle nearby all day', category: 'wellness' as const, durationMinutes: 2 },
+  { title: 'Eat something', icon: '🍳', priority: 'must' as const, minimum: 'Grab a piece of fruit or crackers', normal: 'Eat a proper meal', category: 'wellness' as const, durationMinutes: 15 },
+  { title: 'Shower', icon: '🚿', priority: 'must' as const, minimum: '2-minute warm rinse', normal: 'Full warm shower', extra: 'Wash hair if needed', category: 'wellness' as const, durationMinutes: 15 },
+  // Should
+  { title: 'Moisturize', icon: '🧴', priority: 'should' as const, minimum: 'Face only — 30 seconds', normal: 'Face and hands', extra: 'Full body after shower', category: 'wellness' as const, durationMinutes: 3 },
+  { title: 'Move for 5 minutes', icon: '🚶', priority: 'should' as const, minimum: 'Stand up and walk to another room', normal: '5-minute gentle walk or stretch', extra: '20–30 minute walk', category: 'wellness' as const, durationMinutes: 5 },
+  { title: 'Stretch', icon: '🧘', priority: 'should' as const, minimum: 'Roll shoulders and neck — 1 minute', normal: '5-minute full body stretch', category: 'wellness' as const, durationMinutes: 5 },
+  { title: 'Lip care', icon: '🫦', priority: 'should' as const, minimum: 'Apply lip balm', normal: 'Apply lip balm and stay hydrated', category: 'wellness' as const, durationMinutes: 1 },
+  { title: 'Change pillowcase', icon: '🛏️', priority: 'should' as const, minimum: 'At minimum, flip it', normal: 'Change to a fresh pillowcase', category: 'wellness' as const, durationMinutes: 3 },
+  // Could
+  { title: 'Hair care', icon: '💇', priority: 'could' as const, minimum: 'Comb or brush through', normal: 'Wash, condition, and style', category: 'wellness' as const, durationMinutes: 15 },
+  { title: 'Nail care', icon: '💅', priority: 'could' as const, minimum: 'File one rough nail', normal: 'Clean and trim nails', category: 'wellness' as const, durationMinutes: 10 },
+  { title: 'Skin care routine', icon: '✨', priority: 'could' as const, minimum: 'Moisturize and SPF', normal: 'Gentle cleanse, moisturize, SPF', category: 'wellness' as const, durationMinutes: 8 },
+  { title: 'Longer walk', icon: '🏃', priority: 'could' as const, minimum: '10 minutes outside', normal: '20–30 minute walk', extra: '45+ minute walk', category: 'wellness' as const, durationMinutes: 30 },
+  { title: 'Journal', icon: '📓', priority: 'could' as const, minimum: 'Write one sentence', normal: '5-minute reflection', category: 'wellness' as const, durationMinutes: 5 },
+];
+
 export const INITIAL_ROUTINES: Routine[] = [
   {
     id: 'routine-morning',
@@ -149,7 +172,7 @@ export const INITIAL_ROUTINES: Routine[] = [
     id: 'routine-evening',
     title: 'Evening Wind-Down',
     icon: '🌙',
-    description: 'Soft boundary between the day’s effort and resting',
+    description: 'Soft boundary between the day\'s effort and resting',
     enabled: true,
     timeOfDay: 'evening',
     steps: [
@@ -173,7 +196,125 @@ export const INITIAL_ROUTINES: Routine[] = [
       { id: 'r3', title: 'Close eyes for 5 slow breaths', durationMinutes: 2, completed: false },
       { id: 'r4', title: 'Choose just 1 tiny action next', durationMinutes: 1, completed: false },
     ],
-  }
+  },
+  // --- Wellness Routines ---
+  {
+    id: 'routine-morning-care',
+    title: 'Morning Care',
+    icon: '☀️',
+    description: 'Simple self-care to start the day feeling a little more like yourself',
+    enabled: true,
+    timeOfDay: 'morning',
+    category: 'wellness',
+    steps: [
+      { id: 'mc1', title: 'Brush teeth', durationMinutes: 2, completed: false },
+      { id: 'mc2', title: 'Wash or rinse face', durationMinutes: 3, completed: false },
+      { id: 'mc3', title: 'Moisturize', durationMinutes: 2, completed: false },
+      { id: 'mc4', title: 'Lip balm', durationMinutes: 1, completed: false },
+      { id: 'mc5', title: 'Drink a glass of water', durationMinutes: 2, completed: false },
+      { id: 'mc6', title: 'SPF if going outside', durationMinutes: 1, completed: false },
+      { id: 'mc7', title: 'Get dressed', durationMinutes: 5, completed: false },
+      { id: 'mc8', title: '5-minute room reset (optional)', durationMinutes: 5, completed: false },
+    ],
+  },
+  {
+    id: 'routine-night-care',
+    title: 'Night Care',
+    icon: '🌙',
+    description: 'End the day feeling clean and ready to actually rest',
+    enabled: true,
+    timeOfDay: 'evening',
+    category: 'wellness',
+    steps: [
+      { id: 'nc1', title: 'Brush teeth', durationMinutes: 2, completed: false },
+      { id: 'nc2', title: 'Wash face gently', durationMinutes: 3, completed: false },
+      { id: 'nc3', title: 'Moisturize', durationMinutes: 2, completed: false },
+      { id: 'nc4', title: 'Lip balm or petroleum jelly', durationMinutes: 1, completed: false },
+      { id: 'nc5', title: 'Shower (if not done yet)', durationMinutes: 12, completed: false },
+      { id: 'nc6', title: 'Prepare clothes for tomorrow', durationMinutes: 3, completed: false },
+      { id: 'nc7', title: '5-minute journal (optional)', durationMinutes: 5, completed: false },
+    ],
+  },
+  {
+    id: 'routine-five-min-reset',
+    title: '5-Minute Reset',
+    icon: '💧',
+    description: 'For very low-energy days. No pressure — this counts.',
+    enabled: true,
+    timeOfDay: 'anytime',
+    category: 'wellness',
+    steps: [
+      { id: 'fr1', title: 'Drink water', durationMinutes: 1, completed: false },
+      { id: 'fr2', title: 'Brush teeth', durationMinutes: 2, completed: false },
+      { id: 'fr3', title: 'Wash or splash face', durationMinutes: 2, completed: false },
+      { id: 'fr4', title: 'Change into clean clothes', durationMinutes: 3, completed: false },
+      { id: 'fr5', title: 'Put away 3 things', durationMinutes: 2, completed: false },
+    ],
+  },
+  {
+    id: 'routine-event-prep',
+    title: 'Event / Meeting Prep',
+    icon: '🎯',
+    description: 'Feel ready before something that matters. No scrambling.',
+    enabled: true,
+    timeOfDay: 'anytime',
+    category: 'wellness',
+    steps: [
+      { id: 'ep1', title: 'Choose outfit and check it\'s clean', durationMinutes: 5, completed: false },
+      { id: 'ep2', title: 'Hair and grooming', durationMinutes: 10, completed: false },
+      { id: 'ep3', title: 'Shower if not already done', durationMinutes: 12, completed: false },
+      { id: 'ep4', title: 'Skincare and lip balm', durationMinutes: 5, completed: false },
+      { id: 'ep5', title: 'Brush teeth + deodorant', durationMinutes: 3, completed: false },
+      { id: 'ep6', title: 'Check outfit in mirror', durationMinutes: 1, completed: false },
+      { id: 'ep7', title: 'Charge phone and pack bag', durationMinutes: 5, completed: false },
+      { id: 'ep8', title: 'Check transportation and time', durationMinutes: 3, completed: false },
+      { id: 'ep9', title: 'Drink water before leaving', durationMinutes: 1, completed: false },
+    ],
+  },
+];
+
+// The 7-Day Fresh Start Template
+export const FRESH_START_TEMPLATE = {
+  id: 'tpl-fresh-start',
+  name: '7-Day Fresh Start',
+  goal: 'Look and feel cleaner, healthier, more rested, and comfortable. Not a weight-loss challenge. Just a week of basic care for yourself.',
+  totalDays: 7,
+  dailyMinimumTasks: [
+    { title: 'Drink water', isOptional: false },
+    { title: 'Eat normally', isOptional: false },
+    { title: 'Brush teeth', isOptional: false },
+    { title: 'Wash face', isOptional: false },
+    { title: 'Moisturize', isOptional: false },
+    { title: 'Lip care', isOptional: false },
+    { title: 'Basic hygiene (deodorant)', isOptional: false },
+    { title: '5–20 minutes of movement', isOptional: false },
+    { title: 'Sleep routine (consistent bedtime)', isOptional: false },
+  ],
+  dailyOptionalTasks: [
+    { title: 'Longer walk or workout', isOptional: true },
+    { title: 'Hair care', isOptional: true },
+    { title: 'Grooming (nails, facial hair)', isOptional: true },
+    { title: 'Change pillowcase', isOptional: true },
+    { title: '5-minute room reset', isOptional: true },
+    { title: 'Journal', isOptional: true },
+    { title: 'Outfit preparation for tomorrow', isOptional: true },
+  ],
+};
+
+export const JOURNAL_PROMPTS_DAILY = [
+  'How does my body feel today?',
+  'What did I actually accomplish?',
+  'What felt easier today?',
+  'What was difficult?',
+  'What do I need tomorrow?',
+];
+
+export const JOURNAL_PROMPTS_RESET = [
+  'What changed today?',
+  'Do I feel different from yesterday?',
+  'What am I worried about?',
+  'Is there anything I can actually do about it?',
+  'What is one thing I did for myself today?',
 ];
 
 export const INITIAL_RETURNS: ReturnDay[] = [
@@ -194,10 +335,15 @@ export const INITIAL_HELPFUL_INSIGHTS: HelpfulInsight[] = [
   { id: 'h5', label: 'Breaking task into 1 tiny step', icon: '🧩', count: 7 },
 ];
 
+export const INITIAL_RESETS: Reset[] = [];
+
+export const INITIAL_JOURNAL_ENTRIES: WellnessJournalEntry[] = [];
+
 export const DEFAULT_SETTINGS: UserSettings = {
   theme: 'light',
   defaultTimerMinutes: 2,
   soundEnabled: true,
   reducedMotion: false,
   hapticFeedback: true,
+  wellnessEnabled: true,
 };

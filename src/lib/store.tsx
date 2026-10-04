@@ -9,14 +9,21 @@ import {
   UserSettings,
   StuckLog,
   TaskStep,
-  StuckReason
+  StuckReason,
+  Reset,
+  ResetDay,
+  ResetDayTask,
+  WellnessJournalEntry,
 } from '../types';
 import {
   INITIAL_TASKS,
   INITIAL_ROUTINES,
   INITIAL_RETURNS,
   INITIAL_HELPFUL_INSIGHTS,
-  DEFAULT_SETTINGS
+  DEFAULT_SETTINGS,
+  INITIAL_RESETS,
+  INITIAL_JOURNAL_ENTRIES,
+  FRESH_START_TEMPLATE,
 } from './sampleData';
 
 type ModalType = 
@@ -25,7 +32,9 @@ type ModalType =
   | 'breakdown' 
   | 'create_task' 
   | 'routine_runner' 
-  | 'body_check' 
+  | 'body_check'
+  | 'fresh_start'
+  | 'journal'
   | null;
 
 interface AppContextType {
@@ -35,6 +44,8 @@ interface AppContextType {
   helpfulInsights: HelpfulInsight[];
   settings: UserSettings;
   stuckLogs: StuckLog[];
+  resets: Reset[];
+  journalEntries: WellnessJournalEntry[];
   hydrated: boolean;
   activeModal: ModalType;
   activeTaskId: string | null;
@@ -42,6 +53,7 @@ interface AppContextType {
   notPlanningToday: boolean;
   currentTask: Task | null;
   upNextTasks: Task[];
+  activeReset: Reset | null;
   
   // Actions
   openModal: (modal: ModalType, taskId?: string, routineId?: string) => void;
@@ -62,6 +74,12 @@ interface AppContextType {
   setNotPlanningToday: (val: boolean) => void;
   resetToDemoData: () => void;
   recordHelpfulFactor: (factorId: string) => void;
+  // Reset actions
+  activateFreshStart: () => Reset;
+  archiveReset: (resetId: string) => void;
+  completeResetDayTask: (resetId: string, dayIndex: number, taskId: string) => void;
+  // Journal actions
+  addJournalEntry: (entry: Omit<WellnessJournalEntry, 'id'>) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -74,6 +92,8 @@ const STORAGE_KEYS = {
   SETTINGS: 'next_settings_v1',
   STUCK_LOGS: 'next_stuck_logs_v1',
   NOT_PLANNING: 'next_not_planning_v1',
+  RESETS: 'next_resets_v1',
+  JOURNAL: 'next_journal_v1',
 };
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
@@ -85,6 +105,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [stuckLogs, setStuckLogs] = useState<StuckLog[]>([]);
   const [notPlanningToday, setNotPlanningTodayState] = useState<boolean>(false);
   const [hydrated, setHydrated] = useState<boolean>(false);
+  const [resets, setResets] = useState<Reset[]>(INITIAL_RESETS);
+  const [journalEntries, setJournalEntries] = useState<WellnessJournalEntry[]>(INITIAL_JOURNAL_ENTRIES);
 
   const [activeModal, setActiveModal] = useState<ModalType>(null);
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
@@ -113,6 +135,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
       const storedNotPlanning = localStorage.getItem(STORAGE_KEYS.NOT_PLANNING);
       if (storedNotPlanning) setNotPlanningTodayState(JSON.parse(storedNotPlanning));
+
+      const storedResets = localStorage.getItem(STORAGE_KEYS.RESETS);
+      if (storedResets) setResets(JSON.parse(storedResets));
+
+      const storedJournal = localStorage.getItem(STORAGE_KEYS.JOURNAL);
+      if (storedJournal) setJournalEntries(JSON.parse(storedJournal));
     } catch (e) {
       console.error('Failed to load data from localStorage:', e);
     } finally {
@@ -131,10 +159,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
       localStorage.setItem(STORAGE_KEYS.STUCK_LOGS, JSON.stringify(stuckLogs));
       localStorage.setItem(STORAGE_KEYS.NOT_PLANNING, JSON.stringify(notPlanningToday));
+      localStorage.setItem(STORAGE_KEYS.RESETS, JSON.stringify(resets));
+      localStorage.setItem(STORAGE_KEYS.JOURNAL, JSON.stringify(journalEntries));
     } catch (e) {
       console.error('Failed to save to localStorage:', e);
     }
-  }, [tasks, routines, returns, helpfulInsights, settings, stuckLogs, notPlanningToday, hydrated]);
+  }, [tasks, routines, returns, helpfulInsights, settings, stuckLogs, notPlanningToday, hydrated, resets, journalEntries]);
 
   // Handle dark mode class on document
   useEffect(() => {
@@ -159,6 +189,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const upNext = uncompleted.filter(t => t.id !== nowTask?.id).slice(0, 4);
     return { currentTask: nowTask, upNextTasks: upNext };
   }, [tasks]);
+
+  // Derived: Active reset (non-archived)
+  const activeReset = useMemo(() => {
+    if (!settings.activeResetId) return null;
+    return resets.find(r => r.id === settings.activeResetId && !r.archived) || null;
+  }, [resets, settings.activeResetId]);
 
   const openModal = (modal: ModalType, taskId?: string, routineId?: string) => {
     setActiveModal(modal);
@@ -334,9 +370,88 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setSettings(DEFAULT_SETTINGS);
     setStuckLogs([]);
     setNotPlanningTodayState(false);
+    setResets(INITIAL_RESETS);
+    setJournalEntries(INITIAL_JOURNAL_ENTRIES);
     try {
       localStorage.clear();
     } catch {}
+  };
+
+  // --- Reset actions ---
+  const activateFreshStart = (): Reset => {
+    const today = new Date();
+    const startDate = today.toISOString().split('T')[0];
+    const endDate = new Date(today.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+    const days: ResetDay[] = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(today.getTime() + i * 24 * 60 * 60 * 1000);
+      const dateStr = d.toISOString().split('T')[0];
+      const tasks: ResetDayTask[] = [
+        ...FRESH_START_TEMPLATE.dailyMinimumTasks.map((t, j) => ({
+          id: `fst-${i}-min-${j}`,
+          title: t.title,
+          isOptional: false,
+          completed: false,
+        })),
+        ...FRESH_START_TEMPLATE.dailyOptionalTasks.map((t, j) => ({
+          id: `fst-${i}-opt-${j}`,
+          title: t.title,
+          isOptional: true,
+          completed: false,
+        })),
+      ];
+      return { day: i + 1, date: dateStr, tasks };
+    });
+
+    const reset: Reset = {
+      id: `reset-${Date.now()}`,
+      name: FRESH_START_TEMPLATE.name,
+      goal: FRESH_START_TEMPLATE.goal,
+      startDate,
+      endDate,
+      totalDays: 7,
+      days,
+      archived: false,
+      templateId: FRESH_START_TEMPLATE.id,
+    };
+
+    setResets(prev => [reset, ...prev]);
+    setSettings(prev => ({ ...prev, activeResetId: reset.id }));
+    return reset;
+  };
+
+  const archiveReset = (resetId: string) => {
+    setResets(prev => prev.map(r => r.id === resetId ? { ...r, archived: true } : r));
+    if (settings.activeResetId === resetId) {
+      setSettings(prev => ({ ...prev, activeResetId: undefined }));
+    }
+  };
+
+  const completeResetDayTask = (resetId: string, dayIndex: number, taskId: string) => {
+    setResets(prev =>
+      prev.map(r => {
+        if (r.id !== resetId) return r;
+        return {
+          ...r,
+          days: r.days.map((day, idx) => {
+            if (idx !== dayIndex) return day;
+            return {
+              ...day,
+              tasks: day.tasks.map(t => t.id === taskId ? { ...t, completed: !t.completed } : t),
+            };
+          }),
+        };
+      })
+    );
+  };
+
+  // --- Journal actions ---
+  const addJournalEntry = (entry: Omit<WellnessJournalEntry, 'id'>) => {
+    const newEntry: WellnessJournalEntry = {
+      ...entry,
+      id: `journal-${Date.now()}`,
+    };
+    setJournalEntries(prev => [newEntry, ...prev]);
   };
 
   return (
@@ -348,6 +463,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         helpfulInsights,
         settings,
         stuckLogs,
+        resets,
+        journalEntries,
         hydrated,
         activeModal,
         activeTaskId,
@@ -355,6 +472,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         notPlanningToday,
         currentTask,
         upNextTasks,
+        activeReset,
         openModal,
         closeModal,
         setCurrentTask,
@@ -373,6 +491,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setNotPlanningToday,
         resetToDemoData,
         recordHelpfulFactor,
+        activateFreshStart,
+        archiveReset,
+        completeResetDayTask,
+        addJournalEntry,
       }}
     >
       {children}

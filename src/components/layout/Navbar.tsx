@@ -78,12 +78,18 @@ export function Navbar() {
         </div>
       </aside>
 
-      {/* Mobile Bottom Navigation */}
+      {/* Mobile Bottom Navigation
+          - Fixed to bottom, sits above Android gesture area via pb-safe
+          - Height: ~56px nav bar + safe-area-inset-bottom
+          - Active state: colored icon + label + subtle pill background
+          - Touch targets: min 52px height per item for comfortable tap
+      */}
       <nav 
         aria-label="Mobile Navigation"
-        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface/95 dark:bg-surface-dark/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 px-3 py-2 pb-safe shadow-sheet"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200/60 bg-surface/95 dark:border-slate-800/80 dark:bg-surface-dark/95 backdrop-blur-xl shadow-[0_-10px_24px_rgba(15,23,42,0.08)]"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       >
-        <div className="flex items-center justify-around max-w-lg mx-auto">
+        <div className="flex items-stretch justify-around px-1 pb-1.5 pt-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -91,16 +97,26 @@ export function Navbar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 px-2 rounded-xl transition-all ${
+                aria-current={isActive ? 'page' : undefined}
+                className={`relative flex flex-col items-center justify-center gap-0.5 flex-1 rounded-2xl py-2 min-h-[56px] transition-all ${
                   isActive
-                    ? 'text-brand-600 dark:text-brand-400 font-semibold'
-                    : 'text-ink-muted dark:text-slate-400 hover:text-ink-primary dark:hover:text-slate-200'
+                    ? 'text-brand-600 dark:text-brand-400'
+                    : 'text-ink-muted dark:text-slate-400'
                 }`}
               >
-                <div className={`p-1 rounded-lg transition-transform ${isActive ? 'scale-110' : ''}`}>
-                  <Icon className="w-5 h-5" />
-                </div>
-                <span className="text-[11px] leading-tight tracking-tight mt-0.5">
+                {isActive && (
+                  <span
+                    className="absolute inset-x-2 top-1 h-8 rounded-full bg-brand-50 dark:bg-brand-950/70"
+                    aria-hidden="true"
+                  />
+                )}
+                <span className="relative z-10">
+                  <Icon
+                    className={`w-[22px] h-[22px] transition-transform ${isActive ? 'scale-[1.08]' : ''}`}
+                    strokeWidth={isActive ? 2.25 : 1.75}
+                  />
+                </span>
+                <span className={`relative z-10 text-[11px] leading-none font-medium tracking-tight ${isActive ? 'font-semibold' : ''}`}>
                   {item.label}
                 </span>
               </Link>
@@ -108,6 +124,16 @@ export function Navbar() {
           })}
         </div>
       </nav>
+      {pathname === '/' && (
+        <button
+          type="button"
+          onClick={() => openModal('create_task')}
+          aria-label="Add new task"
+          className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-brand-600 text-white shadow-lg shadow-brand-600/30 active:scale-95 sm:hidden"
+        >
+          <Plus className="h-6 w-6" />
+        </button>
+      )}
     </>
   );
 }

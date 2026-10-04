@@ -6,14 +6,13 @@ import { StuckReason } from '@/types';
 import { 
   X, 
   ArrowLeft, 
-  Sparkles, 
   Wind, 
-  EyeOff, 
-  VolumeX, 
-  HelpCircle, 
-  Coffee,
-  CheckCircle2,
-  Smile
+  Droplets,
+  Apple,
+  Move,
+  Sparkles,
+  Layout,
+  Brain
 } from 'lucide-react';
 
 interface FrictionOption {
@@ -24,18 +23,51 @@ interface FrictionOption {
 }
 
 const FRICTIONS: FrictionOption[] = [
-  { key: 'cant_start', icon: '🧱', title: 'Can’t start', subtitle: 'The barrier to begin feels too high' },
+  { key: 'cant_start', icon: '🧱', title: "Can't start", subtitle: 'The barrier to begin feels too high' },
   { key: 'too_much', icon: '😵', title: 'Too much / Overwhelmed', subtitle: 'Too many thoughts or high pressure' },
   { key: 'body_feels_bad', icon: '🤢', title: 'Body feels bad or tense', subtitle: 'Fatigue, thirst, restlessness, or discomfort' },
-  { key: 'watched', icon: '👀', title: 'Don’t want to be watched', subtitle: 'Perceived scrutiny or need for privacy' },
+  { key: 'watched', icon: '👀', title: "Don't want to be watched", subtitle: 'Perceived scrutiny or need for privacy' },
   { key: 'environment_too_much', icon: '🔊', title: 'Environment is too much', subtitle: 'Noise, clutter, bright glare, or commotion' },
-  { key: 'dont_know_what_next', icon: '❓', title: 'Don’t know what to do next', subtitle: 'Unclear next step or missing information' },
+  { key: 'dont_know_what_next', icon: '❓', title: "Don't know what to do next", subtitle: 'Unclear next step or missing information' },
 ];
+
+// Wellness-aware stuck categories
+type WellnessArea = 'body' | 'environment' | 'brain';
+
+interface WellnessAction {
+  label: string;
+  description: string;
+  icon: string;
+}
+
+const WELLNESS_ACTIONS: Record<WellnessArea, WellnessAction[]> = {
+  body: [
+    { label: 'Drink water', description: 'Even just three sips right now', icon: '💧' },
+    { label: 'Eat something', description: 'A cracker, fruit — anything counts', icon: '🍎' },
+    { label: 'Shower or wash face', description: 'Warm water can shift your state', icon: '🚿' },
+    { label: 'Brush teeth', description: 'Small but grounding', icon: '🪥' },
+    { label: 'Move for 5 minutes', description: 'Even just standing and walking room to room', icon: '🚶' },
+  ],
+  environment: [
+    { label: 'Clear your desk', description: "Put away 3 things only — that's enough", icon: '🧹' },
+    { label: 'Change clothes', description: 'Even into other comfortable clothes', icon: '👕' },
+    { label: 'Open a window', description: 'Fresh air and light can help', icon: '🪟' },
+    { label: 'Put away 3 things', description: 'Low-stakes, but it makes a difference', icon: '📦' },
+  ],
+  brain: [
+    { label: 'Write one sentence', description: "Just one. What's the actual next thing?", icon: '✏️' },
+    { label: 'Pick one Must', description: 'Ignore everything else, just one', icon: '🎯' },
+    { label: 'Set a 5-minute timer', description: 'Start something. Stop when it ends.', icon: '⏱️' },
+  ],
+};
 
 export function ImStuckModal() {
   const { activeTaskId, tasks, closeModal, logStuckEvent, openModal } = useApp();
   const [selectedReason, setSelectedReason] = useState<StuckReason | null>(null);
   const [breathCount, setBreathCount] = useState(0);
+  const [wellnessMode, setWellnessMode] = useState(false);
+  const [wellnessArea, setWellnessArea] = useState<WellnessArea | null>(null);
+  const [pickedAction, setPickedAction] = useState<WellnessAction | null>(null);
 
   const task = tasks.find(t => t.id === activeTaskId) || null;
   const taskTitle = task?.title || 'this task';
@@ -54,22 +86,62 @@ export function ImStuckModal() {
     }
   };
 
+  const handleBodyFeelingStuck = () => {
+    setWellnessMode(true);
+  };
+
+  // Pick a random action from the selected area
+  const handlePickAreaAction = (area: WellnessArea) => {
+    setWellnessArea(area);
+    const actions = WELLNESS_ACTIONS[area];
+    const random = actions[Math.floor(Math.random() * actions.length)];
+    setPickedAction(random);
+  };
+
+  const handleWellnessActionDone = () => {
+    if (selectedReason) {
+      logStuckEvent(selectedReason, `Wellness: ${pickedAction?.label}`, task?.id);
+    }
+    closeModal();
+  };
+
+  // If body feels bad → wellness mode
+  const shouldShowWellnessMode = selectedReason === 'body_feels_bad' && wellnessMode;
+
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/70 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end justify-center pb-[env(safe-area-inset-bottom,0px)] sm:items-center sm:p-4 bg-slate-900/40 dark:bg-slate-950/70"
       role="dialog"
       aria-modal="true"
       aria-labelledby="stuck-modal-title"
+      onClick={closeModal}
     >
-      <div className="relative w-full max-w-lg bg-surface dark:bg-surface-dark border border-slate-200/90 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden animate-fade-in">
+      <div
+        className="modal-sheet relative w-full sm:max-w-lg bg-surface dark:bg-surface-dark border-t sm:border border-slate-200/90 dark:border-slate-800 sm:rounded-3xl rounded-t-3xl shadow-2xl overflow-y-auto animate-slide-up flex flex-col"
+        style={{ maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 0.5rem)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Drag handle (mobile) */}
+        <div className="sm:hidden flex justify-center pt-3 pb-1">
+          <div className="w-10 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
+        </div>
         
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-3 border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-2">
-            {selectedReason && (
+            {(selectedReason || wellnessArea) && (
               <button
                 type="button"
-                onClick={() => setSelectedReason(null)}
+                onClick={() => {
+                  if (wellnessArea) {
+                    setWellnessArea(null);
+                    setPickedAction(null);
+                  } else if (wellnessMode) {
+                    setWellnessMode(false);
+                  } else {
+                    setSelectedReason(null);
+                  }
+                }}
                 className="mr-1 p-1 rounded-lg text-ink-muted hover:text-ink-primary hover:bg-slate-100 dark:hover:bg-slate-800"
                 aria-label="Back to options"
               >
@@ -91,10 +163,82 @@ export function ImStuckModal() {
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 sm:p-7">
+        <div className="p-6 sm:p-7 max-h-[70vh] overflow-y-auto">
           
-          {/* SCREEN 1: Choose Friction Category */}
-          {!selectedReason ? (
+          {/* WELLNESS SPECIFIC ACTION (picked) */}
+          {pickedAction ? (
+            <div className="space-y-5 animate-fade-in">
+              <div className="space-y-1">
+                <p className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-slate-400">Start here</p>
+                <h3 className="text-xl font-bold text-ink-primary dark:text-slate-100">
+                  {pickedAction.icon} {pickedAction.label}
+                </h3>
+                <p className="text-sm text-ink-muted dark:text-slate-400">{pickedAction.description}</p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-brand-50/70 dark:bg-brand-950/40 border border-brand-200/70 dark:border-brand-800/60">
+                <p className="text-base font-semibold text-brand-900 dark:text-brand-200">
+                  Do this one thing. Then come back.
+                </p>
+                <p className="text-xs text-brand-700/70 dark:text-brand-300/70 mt-1">
+                  You don&apos;t need to do anything else right now.
+                </p>
+              </div>
+
+              <div className="space-y-2.5">
+                <button
+                  type="button"
+                  onClick={handleWellnessActionDone}
+                  className="w-full py-3.5 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-medium text-sm transition-all"
+                >
+                  I DID IT — COMING BACK
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setPickedAction(null); setWellnessArea(null); }}
+                  className="w-full py-3 px-4 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-ink-secondary dark:text-slate-200 font-medium text-sm transition-all"
+                >
+                  Pick something else
+                </button>
+              </div>
+            </div>
+
+          ) : shouldShowWellnessMode && !wellnessArea ? (
+            /* WELLNESS MODE: Pick area */
+            <div className="space-y-4 animate-fade-in">
+              <div>
+                <h3 id="stuck-modal-title" className="text-xl sm:text-2xl font-bold tracking-tight text-ink-primary dark:text-slate-100">
+                  What do you need right now?
+                </h3>
+                <p className="text-xs sm:text-sm text-ink-muted dark:text-slate-400 mt-1">
+                  One small thing. We&apos;ll suggest something specific.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 gap-3">
+                {[
+                  { area: 'body' as WellnessArea, icon: Droplets, label: 'Body', desc: 'Water, food, movement, hygiene', color: 'text-brand-600 dark:text-brand-400', bg: 'bg-brand-50/70 dark:bg-brand-950/40 border-brand-200/70 dark:border-brand-800' },
+                  { area: 'environment' as WellnessArea, icon: Layout, label: 'Environment', desc: 'Space, clutter, air, clothes', color: 'text-amber-700 dark:text-amber-400', bg: 'bg-amber-50/60 dark:bg-amber-950/30 border-amber-200/60 dark:border-amber-900' },
+                  { area: 'brain' as WellnessArea, icon: Brain, label: 'Brain', desc: 'One sentence, one task, one timer', color: 'text-emerald-700 dark:text-emerald-400', bg: 'bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-200/60 dark:border-emerald-900' },
+                ].map(({ area, icon: Icon, label, desc, color, bg }) => (
+                  <button
+                    key={area}
+                    type="button"
+                    onClick={() => handlePickAreaAction(area)}
+                    className={`flex items-center gap-3.5 p-4 rounded-2xl border ${bg} text-left transition-all active:scale-[0.99]`}
+                  >
+                    <Icon className={`w-5 h-5 ${color} shrink-0`} />
+                    <div>
+                      <h4 className="text-sm font-semibold text-ink-primary dark:text-slate-100">{label}</h4>
+                      <p className="text-xs text-ink-muted dark:text-slate-400">{desc}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+          ) : !selectedReason ? (
+            /* SCREEN 1: Choose Friction Category */
             <div className="space-y-4">
               <div>
                 <h3 id="stuck-modal-title" className="text-xl sm:text-2xl font-bold tracking-tight text-ink-primary dark:text-slate-100">
@@ -220,8 +364,8 @@ export function ImStuckModal() {
                 </>
               )}
 
-              {/* CASE 3: Body feels bad */}
-              {selectedReason === 'body_feels_bad' && (
+              {/* CASE 3: Body feels bad — wellness upgrade */}
+              {selectedReason === 'body_feels_bad' && !wellnessMode && (
                 <>
                   <div className="space-y-2">
                     <span className="text-2xl">🤢</span>
@@ -229,34 +373,48 @@ export function ImStuckModal() {
                       Listen to your physical body.
                     </h3>
                     <p className="text-sm text-ink-muted dark:text-slate-400">
-                      Executive function requires physical energy. If your body is depleted, forcing effort is grueling.
+                      Executive function requires physical energy. Your body needs something right now.
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-gentle-amberBg/40 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-900/40 space-y-2 text-xs sm:text-sm text-ink-secondary dark:text-slate-300">
-                    <p className="font-semibold text-amber-900 dark:text-amber-200">Bodily reset:</p>
-                    <ul className="list-disc list-inside space-y-1 text-ink-muted dark:text-slate-400">
-                      <li>Drink water or a warm soothing beverage</li>
-                      <li>Have a quick bite to eat (protein or toast)</li>
-                      <li>Stretch neck and drop shoulders away from ears</li>
-                      <li>Lie flat or rest eyes for 5 minutes</li>
-                    </ul>
+                  <div className="p-4 rounded-2xl bg-brand-50/60 dark:bg-brand-950/30 border border-brand-200/60 dark:border-brand-900/40">
+                    <p className="text-sm font-semibold text-brand-900 dark:text-brand-200 mb-2">Start with one thing:</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { label: 'Drink water', icon: '💧' },
+                        { label: 'Eat something', icon: '🍎' },
+                        { label: 'Shower', icon: '🚿' },
+                        { label: 'Brush teeth', icon: '🪥' },
+                        { label: 'Wash face', icon: '🧼' },
+                        { label: 'Move 5 minutes', icon: '🚶' },
+                      ].map((action) => (
+                        <button
+                          key={action.label}
+                          type="button"
+                          onClick={() => setPickedAction({ label: action.label, description: 'Do this first. Then come back.', icon: action.icon })}
+                          className="flex items-center gap-2 p-2.5 rounded-xl bg-surface dark:bg-surface-dark border border-brand-200/50 dark:border-brand-800/50 text-xs font-medium text-ink-primary dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-brand-950/30 text-left transition-all"
+                        >
+                          <span>{action.icon}</span>
+                          <span>{action.label}</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
-                  <div className="space-y-2 pt-1">
+                  <div className="space-y-2">
+                    <button
+                      type="button"
+                      onClick={handleBodyFeelingStuck}
+                      className="w-full py-3 px-4 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-ink-secondary dark:text-slate-200 font-medium text-sm transition-all"
+                    >
+                      What do I need? (Body / Environment / Brain)
+                    </button>
                     <button
                       type="button"
                       onClick={() => handleLogAndExit('Chose rest for body comfort', false)}
                       className="w-full py-3.5 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-medium text-sm transition-all"
                     >
                       TAKE A 10-MINUTE REST
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleLogAndExit('Returned to task after stretch', true)}
-                      className="w-full py-3 px-4 rounded-2xl bg-slate-100 dark:bg-slate-800 text-ink-secondary dark:text-slate-200 font-medium text-sm transition-all"
-                    >
-                      TRY AGAIN GENTLY
                     </button>
                   </div>
                 </>
@@ -313,6 +471,7 @@ export function ImStuckModal() {
                       <li>Put on earplugs or noise-cancelling headphones</li>
                       <li>Dim bright overhead lamps or reduce screen brightness</li>
                       <li>Move clutter out of your immediate field of vision</li>
+                      <li>Open a window for fresh air</li>
                     </ul>
                   </div>
 
@@ -342,7 +501,7 @@ export function ImStuckModal() {
                   <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-2 text-xs sm:text-sm text-ink-secondary dark:text-slate-300">
                     <p className="font-semibold text-ink-primary dark:text-slate-100">Answer just one question:</p>
                     <p className="text-xs text-ink-muted dark:text-slate-400 italic">
-                      “What physical tool or website must be open to do this?”
+                      "What physical tool or website must be open to do this?"
                     </p>
                   </div>
 

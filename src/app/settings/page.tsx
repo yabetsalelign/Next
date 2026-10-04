@@ -8,18 +8,18 @@ import {
   Volume2, 
   VolumeX, 
   RotateCcw, 
-  ShieldCheck, 
   Heart, 
-  Info,
   Clock,
-  Sparkles
+  Sparkles,
+  BookOpen,
+  RefreshCw
 } from 'lucide-react';
 
 export default function SettingsPage() {
-  const { settings, updateSettings, resetToDemoData } = useApp();
+  const { settings, updateSettings, resetToDemoData, activeReset, archiveReset } = useApp();
 
   return (
-    <div className="max-w-2xl mx-auto pb-24 md:pb-12 space-y-7 animate-fade-in">
+    <div className="max-w-2xl mx-auto space-y-7 animate-fade-in">
       {/* Header */}
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-ink-primary dark:text-slate-100">
@@ -40,7 +40,7 @@ export default function SettingsPage() {
           {[
             { id: 'light', label: 'Light', icon: Sun },
             { id: 'dark', label: 'Dark', icon: Moon },
-            { id: 'system', label: 'System', icon: Sparkles },
+            { id: 'system', label: 'System', icon: RefreshCw },
           ].map((item) => (
             <button
               key={item.id}
@@ -68,7 +68,7 @@ export default function SettingsPage() {
           </h2>
         </div>
         <p className="text-xs text-ink-subtle">
-          The default duration suggested in “Help Me Start”.
+          The default duration suggested in &ldquo;Help Me Start&rdquo;.
         </p>
 
         <div className="grid grid-cols-3 gap-2.5">
@@ -86,6 +86,64 @@ export default function SettingsPage() {
               {mins} Minutes
             </button>
           ))}
+        </div>
+      </section>
+
+      {/* Wellness Features */}
+      <section className="p-6 rounded-3xl bg-surface dark:bg-surface-dark border border-slate-200/90 dark:border-slate-800 shadow-card space-y-4">
+        <div className="flex items-center gap-2">
+          <Heart className="w-4 h-4 text-brand-500 dark:text-brand-400" />
+          <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-slate-400">
+            Self-Care & Wellness
+          </h2>
+        </div>
+
+        <div className="space-y-3">
+          {/* Wellness enabled */}
+          <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50/60 dark:bg-slate-900/40">
+            <div className="flex items-center gap-3">
+              <Heart className="w-5 h-5 text-brand-500" />
+              <div>
+                <p className="text-xs sm:text-sm font-semibold text-ink-primary dark:text-slate-100">
+                  Wellness features
+                </p>
+                <p className="text-[11px] text-ink-muted">
+                  Self-care routines, presets, and body-care tracking.
+                </p>
+              </div>
+            </div>
+            <input
+              type="checkbox"
+              checked={settings.wellnessEnabled ?? true}
+              onChange={(e) => updateSettings({ wellnessEnabled: e.target.checked })}
+              className="w-5 h-5 rounded text-brand-600 focus:ring-brand-500 cursor-pointer"
+            />
+          </div>
+
+          {/* Active Reset */}
+          {activeReset && (
+            <div className="p-3.5 rounded-2xl bg-brand-50/60 dark:bg-brand-950/30 border border-brand-200/60 dark:border-brand-900/40 space-y-2">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-brand-600 dark:text-brand-400" />
+                <p className="text-xs font-semibold text-brand-800 dark:text-brand-200">Active Reset</p>
+              </div>
+              <p className="text-sm font-semibold text-ink-primary dark:text-slate-100">{activeReset.name}</p>
+              <p className="text-xs text-ink-muted dark:text-slate-400">
+                {activeReset.startDate} → {activeReset.endDate}
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  if (confirm('Archive this reset? Your progress will be saved.')) {
+                    archiveReset(activeReset.id);
+                  }
+                }}
+                className="text-xs text-ink-muted hover:text-ink-primary font-medium underline underline-offset-2"
+              >
+                Archive this reset
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
@@ -144,7 +202,7 @@ export default function SettingsPage() {
         </h2>
 
         <p className="text-xs text-ink-muted">
-          Your tasks and routines are stored locally in your browser (LocalStorage). No external servers are tracking your day.
+          Your tasks, routines, wellness data, and journal entries are stored locally in your browser (LocalStorage). No external servers are tracking your day.
         </p>
 
         <div className="pt-1">
@@ -175,10 +233,16 @@ export default function SettingsPage() {
         </div>
 
         <p className="text-xs sm:text-sm text-ink-secondary dark:text-slate-300 leading-relaxed">
-          <span className="font-semibold text-ink-primary dark:text-slate-100">Next. Not everything.</span> Designed for task initiation, overwhelm reduction, routines, and guilt-free returns after falling off.
+          <span className="font-semibold text-ink-primary dark:text-slate-100">Next. Not everything.</span> Designed for task initiation, overwhelm reduction, routines, self-care, and guilt-free returns after falling off.
         </p>
+        <div className="space-y-1 text-[11px] text-ink-subtle">
+          <p>The minimum counts.</p>
+          <p>You don&apos;t have to catch up.</p>
+          <p>Returning matters more than streaks.</p>
+          <p>Take care of yourself before trying to optimize yourself.</p>
+        </div>
         <p className="text-[11px] text-ink-subtle">
-          Version 1.0 • Built with Next.js, TypeScript & Tailwind CSS.
+          Version 1.1 • Built with Next.js, TypeScript & Tailwind CSS.
         </p>
       </section>
     </div>

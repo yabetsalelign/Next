@@ -11,6 +11,10 @@ export type EnvironmentPreference =
 
 export type TaskCategory = 'productive' | 'rest' | 'routine' | 'wellness';
 
+export type BodyState = 'tired' | 'stressed' | 'dehydrated' | 'heavy' | 'comfortable' | 'energized';
+export type HydrationLevel = 'low' | 'okay' | 'good';
+export type EnergyLevel = 'almost_none' | 'a_little' | 'okay' | 'plenty';
+
 export interface TaskStep {
   id: string;
   title: string;
@@ -38,6 +42,7 @@ export interface Task {
   startedAt?: string;
   notes?: string;
   orderIndex: number;
+  resetId?: string; // If this task belongs to an active Reset
 }
 
 export interface RoutineStep {
@@ -55,6 +60,7 @@ export interface Routine {
   enabled: boolean;
   timeOfDay?: 'morning' | 'afternoon' | 'evening' | 'anytime';
   steps: RoutineStep[];
+  category?: 'wellness' | 'general'; // Optional category for filtering
 }
 
 export type StuckReason = 
@@ -77,7 +83,8 @@ export interface StuckLog {
 export interface DailyCheckIn {
   date: string;
   energy: number; // 1 to 5
-  bodyState: 'okay' | 'tense' | 'overwhelmed' | 'uncomfortable';
+  bodyState: BodyState;
+  hydration?: HydrationLevel;
   environment: 'alone' | 'someone_nearby' | 'observed' | 'noisy';
   completedAt: string;
 }
@@ -96,10 +103,48 @@ export interface HelpfulInsight {
   count: number;
 }
 
+// --- Reset types ---
+export interface ResetDayTask {
+  id: string;
+  title: string;
+  isOptional: boolean;
+  completed: boolean;
+}
+
+export interface ResetDay {
+  day: number;       // 1-indexed
+  date: string;      // YYYY-MM-DD
+  tasks: ResetDayTask[];
+  completedAt?: string;
+}
+
+export interface Reset {
+  id: string;
+  name: string;
+  goal: string;
+  startDate: string;  // YYYY-MM-DD
+  endDate: string;    // YYYY-MM-DD
+  totalDays: number;
+  days: ResetDay[];
+  archived: boolean;
+  templateId?: string;
+}
+
+// --- Wellness journal ---
+export interface WellnessJournalEntry {
+  id: string;
+  date: string;       // YYYY-MM-DD
+  prompt: string;
+  response: string;
+  resetId?: string;
+}
+
 export interface UserSettings {
   theme: 'light' | 'dark' | 'system';
   defaultTimerMinutes: 2 | 5 | 10;
   soundEnabled: boolean;
   reducedMotion: boolean;
   hapticFeedback: boolean;
+  wellnessEnabled: boolean;    // Show wellness features
+  activeResetId?: string;      // Currently active reset
 }

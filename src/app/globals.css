@@ -7,6 +7,13 @@
     --canvas-bg: #F7F8FA;
     --surface-bg: #FFFFFF;
     --ink-primary: #0F172A;
+    /* Safe area insets — used throughout the app */
+    --sat: env(safe-area-inset-top, 0px);
+    --sar: env(safe-area-inset-right, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+    /* Bottom nav height — 56px nav + safe area */
+    --bottom-nav-h: calc(3.75rem + var(--sab));
   }
 
   .dark {
@@ -15,21 +22,60 @@
     --ink-primary: #F8FAFC;
   }
 
+  html {
+    /* Prevent elastic overscroll — feels more native on Android */
+    overscroll-behavior: none;
+    /* Ensure full height uses dynamic viewport (excludes browser chrome) */
+    height: 100%;
+    overflow: hidden;
+  }
+
   body {
     background-color: var(--canvas-bg);
     color: var(--ink-primary);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Prevent tap highlight flash on Android */
     -webkit-tap-highlight-color: transparent;
+    /* Remove 300ms tap delay on Android WebView */
+    touch-action: manipulation;
+    /* Keep the document stationary; scrolling belongs to the content viewport. */
+    overscroll-behavior: none;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* All buttons and links should inherit touch-action */
+  button, a, [role="button"] {
+    touch-action: manipulation;
+  }
+
+  /* Better text size on Android — prevent auto-inflate */
+  * {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 }
 
-/* Custom gentle utilities */
+/* ─── Safe area utilities ────────────────────────────────────── */
+/* Padding bottom that respects safe area (used on bottom nav) */
 .pb-safe {
-  padding-bottom: env(safe-area-inset-bottom, 0.75rem);
+  padding-bottom: max(env(safe-area-inset-bottom, 0.5rem), 0.5rem);
 }
 
+/* Padding bottom that clears the bottom nav AND safe area */
+.pb-nav {
+  padding-bottom: var(--bottom-nav-h);
+}
+
+/* Extra bottom clearance for pages with content near the nav */
+.pb-nav-lg {
+  padding-bottom: calc(var(--bottom-nav-h) + 1.5rem);
+}
+
+/* ─── Animations ─────────────────────────────────────────────── */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -45,6 +91,35 @@
   animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Sheet slide up — for bottom-sheet modals on mobile */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ─── Scrolling ──────────────────────────────────────────────── */
+/* Smooth momentum scrolling on iOS/Android */
+.scroll-smooth-touch {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+.modal-sheet {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
     animation-duration: 0.01ms !important;

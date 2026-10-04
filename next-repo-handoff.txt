@@ -1,0 +1,46 @@
+I’m continuing from the mobile-first productivity app work. The app already has the right local-first architecture and core features; the goal is to keep refining it toward a native Android feel without breaking the product principles:
+- clarity
+- immediate action
+- low cognitive load
+- no streak punishment
+- local-first / offline-friendly persistence
+
+What has already been validated:
+- Web app build passes: npm run build
+- Android Gradle issue was resolved by using the correct JDK:
+  - C:\Program Files\Android\Android Studio\jbr
+- VS Code Java setting:
+  - "java.import.gradle.java.home": "C:\\Program Files\\Android\\Android Studio\\jbr"
+- Android debug build works with that JDK
+
+Current product focus:
+- make the app feel less like a desktop website shell and more like a single-purpose Android task flow
+- reduce visual chrome and empty dead space on mobile
+- strengthen the “Today” screen and primary CTA hierarchy
+- keep the “Help me start” path obvious and frictionless
+- simplify Plan and header patterns for small screens
+- ensure task creation and quick actions remain fast and low-effort
+
+Key files already touched / relevant:
+- src/components/today/CurrentTaskCard.tsx
+- src/app/plan/page.tsx
+- src/components/layout/Header.tsx
+- src/app/layout.tsx
+- public/sw.js
+
+Important implementation notes:
+- do not rewrite the store architecture; it is local-first and intentionally persistent
+- avoid stale service worker issues on localhost by keeping SW registration disabled locally
+- prefer mobile-safe spacing, compact stacked patterns, and thumb-friendly actions
+- keep “primary action first” hierarchy, not dashboard-like clutter
+
+Goal for next pass:
+- continue native mobile polish with minimal scope changes
+- preserve current behavior while trimming desktop-like framing
+- validate with build after each meaningful UI iteration
+
+If you want, the next step can be:
+1. refine the Today screen further into a cleaner “start task” experience
+2. tighten the Plan screen for smaller screens
+3. improve modal/sheet interactions to feel more Android-native
+4. polish header and bottom nav behavior

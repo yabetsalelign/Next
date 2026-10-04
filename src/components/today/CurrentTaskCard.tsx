@@ -62,137 +62,127 @@ export function CurrentTaskCard({ task }: CurrentTaskCardProps) {
   return (
     <article 
       aria-label={`Current task: ${task.title}`}
-      className="relative overflow-hidden rounded-3xl bg-surface dark:bg-surface-dark border border-slate-200/90 dark:border-slate-800 shadow-focus transition-all duration-300"
+      className="relative overflow-hidden rounded-[28px] border border-slate-200/80 bg-surface shadow-[0_10px_30px_-18px_rgba(15,23,42,0.28)] transition-all duration-300 dark:border-slate-800 dark:bg-surface-dark"
     >
-      {/* Top Banner with subtle color accent */}
-      <div className={`px-6 pt-5 pb-3 flex items-center justify-between border-b ${
+      <div className={`flex items-center justify-between border-b px-4 pb-3 pt-4 ${
         isRest 
-          ? 'bg-amber-50/60 dark:bg-amber-950/20 border-amber-100/80 dark:border-amber-900/30' 
-          : 'bg-slate-50/80 dark:bg-slate-800/40 border-slate-100 dark:border-slate-800/60'
+          ? 'border-amber-100 bg-amber-50/70 dark:border-amber-900/40 dark:bg-amber-950/20' 
+          : 'border-slate-100 bg-slate-50/80 dark:border-slate-800/70 dark:bg-slate-800/40'
       }`}>
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase bg-brand-600 dark:bg-brand-500 text-white">
+          <span className="inline-flex items-center rounded-full bg-brand-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-white dark:bg-brand-500">
             NOW
           </span>
           {isRest && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-amber-100/80 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200">
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-medium text-amber-900 dark:bg-amber-900/40 dark:text-amber-200">
               <Coffee className="w-3 h-3" />
-              Rest activity
+              Rest
             </span>
           )}
         </div>
 
         {company && (
-          <div className="flex items-center gap-1.5 text-xs text-ink-muted dark:text-slate-400">
+          <div className="flex items-center gap-1.5 text-[11px] text-ink-muted dark:text-slate-400">
             <company.icon className="w-3.5 h-3.5" />
-            <span className="hidden xs:inline">{company.label}</span>
+            <span>{company.label}</span>
           </div>
         )}
       </div>
 
-      {/* Main Task Body */}
-      <div className="p-6 sm:p-7">
-        {/* Title and Icon */}
-        <div className="flex items-start gap-3.5 mb-5">
-          <span className="text-3xl sm:text-4xl select-none" role="img" aria-label="Task icon">
+      <div className="p-4 sm:p-5">
+        <div className="mb-4 flex items-start gap-3">
+          <span className="select-none text-3xl sm:text-4xl" role="img" aria-label="Task icon">
             {task.icon || (isRest ? '☕' : '📋')}
           </span>
-          <div className="flex-1 min-w-0">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-ink-primary dark:text-slate-100 leading-snug break-words">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-xl font-bold leading-snug tracking-tight text-ink-primary dark:text-slate-100 sm:text-[1.75rem]">
               {task.title}
             </h2>
-            <p className="text-xs sm:text-sm text-ink-muted dark:text-slate-400 mt-0.5">
-              Estimated ~{task.durationMinutes} min • Flexible
+            <p className="mt-1 text-xs text-ink-muted dark:text-slate-400 sm:text-sm">
+              ~{task.durationMinutes} min • flexible
             </p>
           </div>
         </div>
 
-        {/* Minimum Card (The heart of task initiation) */}
-        <div className="mb-6 rounded-2xl bg-brand-50/70 dark:bg-brand-950/40 border border-brand-100/80 dark:border-brand-900/50 p-4 transition-all">
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs font-bold uppercase tracking-wider text-brand-700 dark:text-brand-300">
-              Minimum (Counts as done)
+        <div className="mb-4 rounded-2xl border border-brand-100 bg-brand-50/80 p-3.5 dark:border-brand-900/50 dark:bg-brand-950/35">
+          <div className="mb-1.5 flex items-center justify-between gap-2">
+            <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-brand-700 dark:text-brand-300">
+              Minimum
             </span>
-            <span className="text-[11px] font-medium text-brand-600/80 dark:text-brand-400/80">
-              The minimum counts
+            <span className="text-[10px] font-medium text-brand-600/80 dark:text-brand-400/80">
+              Counts as done
             </span>
           </div>
-          <p className="text-sm sm:text-base font-medium text-ink-primary dark:text-slate-100 leading-relaxed">
+          <p className="text-sm font-medium leading-relaxed text-ink-primary dark:text-slate-100 sm:text-base">
             {task.minimum || 'Start for 2 minutes and make one small step'}
           </p>
         </div>
 
-        {/* Expandable Normal / Extra flexibility */}
-        <div className="mb-6">
+        <div className="mb-4">
           <button
             type="button"
             onClick={() => setShowDetails(!showDetails)}
-            className="flex items-center gap-1.5 text-xs font-medium text-ink-muted dark:text-slate-400 hover:text-ink-primary dark:hover:text-slate-200 transition-colors"
+            className="flex items-center gap-1.5 text-[11px] font-medium text-ink-muted transition-colors hover:text-ink-primary dark:text-slate-400 dark:hover:text-slate-200"
           >
-            <span>{showDetails ? 'Hide intended & extra' : 'See intended & extra options'}</span>
+            <span>{showDetails ? 'Hide details' : 'See intended & extra'}</span>
             {showDetails ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
           </button>
 
           {showDetails && (
-            <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2.5 text-xs sm:text-sm">
+            <div className="mt-3 space-y-2 border-t border-slate-100 pt-3 text-xs text-ink-muted dark:border-slate-800 dark:text-slate-400 sm:text-sm">
               <div className="flex items-start gap-2">
-                <span className="font-semibold text-ink-secondary dark:text-slate-300 min-w-[60px]">Normal:</span>
-                <span className="text-ink-muted dark:text-slate-400">{task.normal || `${task.durationMinutes} minutes`}</span>
+                <span className="min-w-[54px] font-semibold text-ink-secondary dark:text-slate-300">Normal:</span>
+                <span>{task.normal || `${task.durationMinutes} minutes`}</span>
               </div>
               {task.extra && (
                 <div className="flex items-start gap-2">
-                  <span className="font-semibold text-ink-secondary dark:text-slate-300 min-w-[60px]">Extra:</span>
-                  <span className="text-ink-muted dark:text-slate-400">{task.extra}</span>
+                  <span className="min-w-[54px] font-semibold text-ink-secondary dark:text-slate-300">Extra:</span>
+                  <span>{task.extra}</span>
                 </div>
               )}
             </div>
           )}
         </div>
 
-        {/* Primary CTA: HELP ME START */}
         <div className="space-y-3">
           <button
             type="button"
             onClick={() => openModal('help_start', task.id)}
-            className="w-full relative group overflow-hidden py-4 px-6 rounded-2xl bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white font-semibold text-base sm:text-lg tracking-tight shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2.5 active:scale-[0.99]"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-600 px-5 py-4 text-base font-semibold tracking-tight text-white shadow-[0_12px_20px_-10px_rgba(43,82,121,0.65)] transition-all hover:bg-brand-700 active:scale-[0.99]"
           >
-            <Sparkles className="w-5 h-5 text-brand-200 animate-pulse" />
-            <span>HELP ME START</span>
+            <Sparkles className="h-5 w-5 text-brand-200" />
+            <span>Help me start</span>
           </button>
 
-          {/* Secondary Actions Bar */}
-          <div className="flex items-center justify-between gap-2 pt-1">
-            {/* I'm Stuck (One tap emergency exit) */}
+          <div className="grid grid-cols-3 gap-2">
             <button
               type="button"
               onClick={() => openModal('stuck', task.id)}
-              className="flex-1 min-h-[44px] flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200/90 dark:border-slate-700/80 bg-surface dark:bg-surface-dark hover:bg-slate-50 dark:hover:bg-slate-800/80 text-ink-secondary dark:text-slate-300 text-xs sm:text-sm font-medium transition-colors"
+              className="flex min-h-[52px] flex-col items-center justify-center gap-1 rounded-xl border border-slate-200 bg-surface px-2 py-2 text-[11px] font-medium text-ink-secondary transition-colors active:bg-slate-50 dark:border-slate-700 dark:bg-surface-dark dark:text-slate-300"
             >
-              <HelpCircle className="w-4 h-4 text-gentle-coral" />
-              <span>I&apos;m stuck</span>
+              <HelpCircle className="h-[18px] w-[18px] text-gentle-coral" />
+              <span>Stuck</span>
             </button>
 
-            {/* Break into steps */}
             <button
               type="button"
               onClick={() => openModal('breakdown', task.id)}
-              className="min-h-[44px] flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200/90 dark:border-slate-700/80 bg-surface dark:bg-surface-dark hover:bg-slate-50 dark:hover:bg-slate-800/80 text-ink-secondary dark:text-slate-300 text-xs sm:text-sm font-medium transition-colors"
-              title="Break into smaller steps"
+              className="flex min-h-[52px] flex-col items-center justify-center gap-1 rounded-xl border border-slate-200 bg-surface px-2 py-2 text-[11px] font-medium text-ink-secondary transition-colors active:bg-slate-50 dark:border-slate-700 dark:bg-surface-dark dark:text-slate-300"
+              aria-label="Break into smaller steps"
             >
-              <ListTree className="w-4 h-4 text-brand-500" />
-              <span className="hidden sm:inline">Break down</span>
+              <ListTree className="h-[18px] w-[18px] text-brand-500" />
+              <span>Break down</span>
             </button>
 
-            {/* Done (Minimum counts) */}
             <button
               type="button"
               onClick={handleCompleteMinimum}
               disabled={justCompletedMinimum}
-              className="min-h-[44px] flex items-center justify-center gap-1 px-3 py-2 rounded-xl bg-gentle-greenBg dark:bg-emerald-950/40 text-gentle-green dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-xs sm:text-sm font-medium transition-colors"
-              title="Mark minimum completed"
+              className="flex min-h-[52px] flex-col items-center justify-center gap-1 rounded-xl bg-gentle-greenBg px-2 py-2 text-[11px] font-medium text-gentle-green transition-colors active:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300"
+              aria-label="Mark minimum completed"
             >
-              <Check className="w-4 h-4" />
-              <span>Done min</span>
+              <Check className="h-[18px] w-[18px]" />
+              <span>Done</span>
             </button>
           </div>
         </div>
