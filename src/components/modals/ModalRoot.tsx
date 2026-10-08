@@ -10,6 +10,7 @@ import { TaskCreatorModal } from './TaskCreatorModal';
 import { RoutineRunnerModal } from './RoutineRunnerModal';
 import { FreshStartModal } from './FreshStartModal';
 import { JournalModal } from './JournalModal';
+import { CheckInModal } from './CheckInModal';
 
 export function ModalRoot() {
   const { activeModal } = useApp();
@@ -33,6 +34,8 @@ export function ModalRoot() {
       return <FreshStartModal />;
     case 'journal':
       return <JournalModal />;
+    case 'check_in':
+      return <CheckInModal />;
     default:
       return null;
   }

@@ -35,6 +35,7 @@ type ModalType =
   | 'body_check'
   | 'fresh_start'
   | 'journal'
+  | 'check_in'
   | null;
 
 interface AppContextType {
@@ -73,6 +74,9 @@ interface AppContextType {
   updateSettings: (updates: Partial<UserSettings>) => void;
   setNotPlanningToday: (val: boolean) => void;
   resetToDemoData: () => void;
+  deferTask: (taskId: string) => void;
+  completeOnboarding: (mode: 'empty' | 'example', goals?: string[], difficulty?: 'gentle' | 'balanced' | 'structured') => void;
+  resetToEmptyDay: () => void;
   recordHelpfulFactor: (factorId: string) => void;
   // Reset actions
   activateFreshStart: () => Reset;
@@ -362,12 +366,46 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
+  const deferTask = (taskId: string) => {
+    setTasks(prev => {
+      const targetIndex = prev.findIndex(t => t.id === taskId);
+      if (targetIndex === -1) return prev;
+      const target = prev[targetIndex];
+      const others = prev.filter(t => t.id !== taskId);
+      // Change timeCategory to later and move to back of queue
+      return [...others, { ...target, timeCategory: 'later' as const }];
+    });
+  };
+
+  const completeOnboarding = (
+    mode: 'empty' | 'example',
+    goals?: string[],
+    difficulty?: 'gentle' | 'balanced' | 'structured'
+  ) => {
+    if (mode === 'empty') {
+      setTasks([]);
+    } else {
+      setTasks(INITIAL_TASKS);
+    }
+    setSettings(prev => ({
+      ...prev,
+      hasCompletedOnboarding: true,
+      startingDifficulty: difficulty || prev.startingDifficulty || 'gentle',
+      onboardingGoals: goals || prev.onboardingGoals || [],
+    }));
+  };
+
+  const resetToEmptyDay = () => {
+    setTasks([]);
+    setNotPlanningTodayState(false);
+  };
+
   const resetToDemoData = () => {
     setTasks(INITIAL_TASKS);
     setRoutines(INITIAL_ROUTINES);
     setReturns(INITIAL_RETURNS);
     setHelpfulInsights(INITIAL_HELPFUL_INSIGHTS);
-    setSettings(DEFAULT_SETTINGS);
+    setSettings({ ...DEFAULT_SETTINGS, hasCompletedOnboarding: true });
     setStuckLogs([]);
     setNotPlanningTodayState(false);
     setResets(INITIAL_RESETS);
@@ -489,6 +527,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         updateRoutine,
         updateSettings,
         setNotPlanningToday,
+        deferTask,
+        completeOnboarding,
+        resetToEmptyDay,
         resetToDemoData,
         recordHelpfulFactor,
         activateFreshStart,

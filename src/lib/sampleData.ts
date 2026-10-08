@@ -346,4 +346,8 @@ export const DEFAULT_SETTINGS: UserSettings = {
   reducedMotion: false,
   hapticFeedback: true,
   wellnessEnabled: true,
+  hasCompletedOnboarding: false,
+  startingDifficulty: 'gentle',
+  showExtras: false,
+  onboardingGoals: [],
 };

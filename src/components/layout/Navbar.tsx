@@ -124,16 +124,6 @@ export function Navbar() {
           })}
         </div>
       </nav>
-      {pathname === '/' && (
-        <button
-          type="button"
-          onClick={() => openModal('create_task')}
-          aria-label="Add new task"
-          className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-brand-600 text-white shadow-lg shadow-brand-600/30 active:scale-95 sm:hidden"
-        >
-          <Plus className="h-6 w-6" />
-        </button>
-      )}
     </>
   );
 }

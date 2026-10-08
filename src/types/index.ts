@@ -147,4 +147,8 @@ export interface UserSettings {
   hapticFeedback: boolean;
   wellnessEnabled: boolean;    // Show wellness features
   activeResetId?: string;      // Currently active reset
+  hasCompletedOnboarding?: boolean;
+  startingDifficulty?: 'gentle' | 'balanced' | 'structured';
+  showExtras?: boolean;
+  onboardingGoals?: string[];
 }

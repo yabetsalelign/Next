@@ -2,13 +2,34 @@
 
 import React, { useMemo } from 'react';
 import { useApp } from '@/lib/store';
-import { Plus, Coffee, RotateCcw } from 'lucide-react';
+import { Plus, Coffee, Heart, RotateCcw } from 'lucide-react';
 
 function WelcomeBackState() {
-  const { openModal, setNotPlanningToday, addTask, tasks } = useApp();
+  const { openModal, setNotPlanningToday, addTask, tasks, resetToDemoData } = useApp();
 
-  const handleStartAgain = () => {
-    // Add the minimum recovery tasks if they don't already exist today
+  const handleOneSmallThing = () => {
+    addTask({
+      title: 'One small thing',
+      category: 'productive',
+      icon: '🌱',
+      timeCategory: 'now',
+      durationMinutes: 5,
+      priority: 'must',
+      minimum: 'Spend 2 minutes on anything that feels easy',
+      normal: '5 minutes of low-pressure focus',
+      steps: [
+        { id: `wb-min-1`, title: 'Choose one small physical action', completed: false, isMinimum: true },
+        { id: `wb-min-2`, title: 'Do it gently without hurry', completed: false },
+      ],
+      companyPreference: 'no_preference',
+    });
+  };
+
+  const handleNormalDay = () => {
+    resetToDemoData();
+  };
+
+  const handleJustCare = () => {
     const existingTitles = tasks.map(t => t.title.toLowerCase());
     const minimums = [
       { title: 'Drink water', icon: '💧', minimum: 'Even just three sips', normal: 'Drink a full glass of water' },
@@ -38,87 +59,89 @@ function WelcomeBackState() {
   };
 
   return (
-    <div className="my-8 p-8 rounded-3xl bg-brand-50/60 dark:bg-brand-950/30 border border-brand-200/70 dark:border-brand-900/50 text-center space-y-5 max-w-md mx-auto animate-fade-in shadow-card">
-      <div className="w-14 h-14 rounded-2xl bg-brand-100 dark:bg-brand-950/60 text-brand-600 dark:text-brand-400 mx-auto flex items-center justify-center">
-        <RotateCcw className="w-7 h-7" />
-      </div>
-
+    <div className="my-6 p-7 sm:p-8 rounded-3xl bg-surface dark:bg-surface-dark border border-slate-200/90 dark:border-slate-800 text-center space-y-6 max-w-md mx-auto animate-fade-in shadow-card">
       <div className="space-y-2">
-        <h3 className="text-xl font-bold text-ink-primary dark:text-slate-100">
+        <h3 className="text-2xl font-bold tracking-tight text-ink-primary dark:text-slate-100">
           Welcome back.
         </h3>
-        <p className="text-sm text-ink-secondary dark:text-slate-300 leading-relaxed">
-          You don&apos;t need to catch up.
+        <p className="text-base text-ink-secondary dark:text-slate-300">
+          Nothing needs catching up.
         </p>
-        <p className="text-xs text-ink-muted dark:text-slate-400 leading-relaxed pt-1">
-          Start with today&apos;s minimum. One small thing. That&apos;s enough.
+        <p className="text-sm text-ink-muted dark:text-slate-400 pt-1">
+          What&apos;s manageable today?
         </p>
       </div>
 
-      {/* Minimum suggestions */}
-      <div className="text-left space-y-2 pt-1">
-        {[
-          { icon: '💧', text: 'Drink water' },
-          { icon: '🪥', text: 'Brush teeth' },
-          { icon: '💦', text: 'Wash face' },
-        ].map((item) => (
-          <div
-            key={item.text}
-            className="flex items-center gap-3 px-3 py-2 rounded-xl bg-white/60 dark:bg-slate-900/40 border border-brand-100/60 dark:border-brand-900/40"
-          >
-            <span className="text-base">{item.icon}</span>
-            <span className="text-sm text-ink-secondary dark:text-slate-300">{item.text}</span>
-          </div>
-        ))}
-      </div>
-
-      <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+      <div className="flex flex-col gap-2.5 pt-1">
         <button
           type="button"
-          onClick={handleStartAgain}
-          className="w-full sm:w-auto flex items-center justify-center gap-2 py-3 px-5 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm shadow-sm transition-all active:scale-[0.98]"
+          onClick={handleOneSmallThing}
+          className="w-full py-3.5 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm shadow-sm transition-all active:scale-[0.99]"
         >
-          <RotateCcw className="w-4 h-4" />
-          <span>Start again</span>
+          One small thing
         </button>
 
         <button
           type="button"
-          onClick={() => openModal('create_task')}
-          className="w-full sm:w-auto flex items-center justify-center gap-2 py-3 px-4 rounded-2xl border border-brand-200 dark:border-brand-800 hover:bg-brand-50 dark:hover:bg-brand-950/50 text-brand-700 dark:text-brand-300 font-medium text-sm transition-colors"
+          onClick={handleNormalDay}
+          className="w-full py-3.5 px-4 rounded-2xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-ink-primary dark:text-slate-200 font-medium text-sm transition-colors"
         >
-          <Plus className="w-4 h-4" />
-          <span>Add something else</span>
+          A normal day
+        </button>
+
+        <button
+          type="button"
+          onClick={handleJustCare}
+          className="w-full py-3.5 px-4 rounded-2xl border border-brand-200 dark:border-brand-800/80 hover:bg-brand-50/60 dark:hover:bg-brand-950/40 text-brand-700 dark:text-brand-300 font-medium text-sm transition-colors"
+        >
+          Just care
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setNotPlanningToday(true)}
+          className="w-full py-2.5 px-4 text-xs font-medium text-ink-muted hover:text-ink-secondary dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+        >
+          I don&apos;t know yet
         </button>
       </div>
-
-      <button
-        type="button"
-        onClick={() => setNotPlanningToday(true)}
-        className="text-xs text-ink-subtle hover:text-ink-muted transition-colors underline underline-offset-2"
-      >
-        I&apos;m taking today off
-      </button>
     </div>
   );
 }
 
 export function TodayEmptyState() {
-  const { openModal, notPlanningToday, setNotPlanningToday, returns } = useApp();
+  const { openModal, notPlanningToday, setNotPlanningToday, returns, addTask } = useApp();
 
-  // Detect multi-day absence: check if the last 2+ return days were paused
+  // Detect multi-day absence or return flag
   const isReturning = useMemo(() => {
     if (returns.length < 2) return false;
-    // Get the last 2 entries; if both were paused, show the welcome-back screen
     const recent = returns.slice(-2);
     return recent.every(r => r.status === 'paused');
   }, [returns]);
 
+  const handleJustCareForSelf = () => {
+    addTask({
+      title: 'Care for yourself',
+      category: 'wellness',
+      icon: '✨',
+      timeCategory: 'now',
+      durationMinutes: 5,
+      priority: 'must',
+      minimum: 'Sit comfortably and drink a sip of water',
+      normal: 'Take 5 gentle minutes for yourself',
+      steps: [
+        { id: `c-1`, title: 'Settle in comfortably', completed: false, isMinimum: true },
+        { id: `c-2`, title: 'Take a slow, gentle exhale', completed: false }
+      ],
+      companyPreference: 'no_preference',
+    });
+  };
+
   if (notPlanningToday) {
     return (
-      <div className="my-8 p-8 rounded-3xl bg-surface dark:bg-surface-dark border border-slate-200/80 dark:border-slate-800 text-center space-y-4 max-w-md mx-auto animate-fade-in shadow-card">
-        <div className="w-14 h-14 rounded-2xl bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 mx-auto flex items-center justify-center">
-          <Coffee className="w-7 h-7" />
+      <div className="my-6 p-7 sm:p-8 rounded-3xl bg-surface dark:bg-surface-dark border border-slate-200/90 dark:border-slate-800 text-center space-y-4 max-w-md mx-auto animate-fade-in shadow-card">
+        <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 mx-auto flex items-center justify-center">
+          <Coffee className="w-6 h-6" />
         </div>
         <h3 className="text-xl font-bold text-ink-primary dark:text-slate-100">
           Resting today.
@@ -140,45 +163,47 @@ export function TodayEmptyState() {
     );
   }
 
-  // Show return state if user has been absent for 2+ paused days
   if (isReturning) {
     return <WelcomeBackState />;
   }
 
   return (
-    <div className="my-8 p-8 rounded-3xl bg-surface dark:bg-surface-dark border border-slate-200/80 dark:border-slate-800 text-center space-y-5 max-w-md mx-auto shadow-card animate-fade-in">
-      <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 text-brand-600 dark:text-brand-400 mx-auto flex items-center justify-center">
-        <span className="text-2xl">🙂</span>
-      </div>
-
-      <div className="space-y-1.5">
-        <h3 className="text-xl font-bold text-ink-primary dark:text-slate-100">
-          Nothing scheduled.
+    <div className="my-6 p-7 sm:p-8 rounded-3xl bg-surface dark:bg-surface-dark border border-slate-200/90 dark:border-slate-800 text-center space-y-6 max-w-md mx-auto shadow-card animate-fade-in">
+      <div className="space-y-2">
+        <h3 className="text-2xl font-bold tracking-tight text-ink-primary dark:text-slate-100">
+          Nothing planned yet.
         </h3>
-        <p className="text-sm text-ink-secondary dark:text-slate-300 font-medium">
-          That&apos;s completely okay.
+        <p className="text-base text-ink-secondary dark:text-slate-300">
+          That&apos;s okay.
         </p>
-        <p className="text-xs sm:text-sm text-ink-muted dark:text-slate-400 leading-relaxed pt-1">
-          You can add something small, or just move at your own pace with whatever you need right now.
+        <p className="text-sm text-ink-muted dark:text-slate-400 pt-1">
+          What would help right now?
         </p>
       </div>
 
-      <div className="pt-3 flex flex-col sm:flex-row items-center justify-center gap-3">
+      <div className="flex flex-col gap-2.5 pt-1">
         <button
           type="button"
           onClick={() => openModal('create_task')}
-          className="w-full sm:w-auto flex items-center justify-center gap-2 py-3 px-5 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm shadow-sm transition-all"
+          className="w-full py-3.5 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm shadow-sm transition-all active:scale-[0.99]"
         >
-          <Plus className="w-4 h-4" />
-          <span>Add something</span>
+          Add one thing
+        </button>
+
+        <button
+          type="button"
+          onClick={handleJustCareForSelf}
+          className="w-full py-3.5 px-4 rounded-2xl border border-brand-200 dark:border-brand-800/80 hover:bg-brand-50/60 dark:hover:bg-brand-950/40 text-brand-700 dark:text-brand-300 font-medium text-sm transition-colors"
+        >
+          Just care for yourself
         </button>
 
         <button
           type="button"
           onClick={() => setNotPlanningToday(true)}
-          className="w-full sm:w-auto py-3 px-4 rounded-2xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-ink-secondary dark:text-slate-300 font-medium text-sm transition-colors"
+          className="w-full py-2.5 px-4 text-xs font-medium text-ink-muted hover:text-ink-secondary dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
         >
-          I&apos;m not planning today
+          I&apos;ll figure it out later
         </button>
       </div>
     </div>
