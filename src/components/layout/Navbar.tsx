@@ -15,7 +15,12 @@ import { useApp } from '@/lib/store';
 
 export function Navbar() {
   const pathname = usePathname();
-  const { openModal } = useApp();
+  const { openModal, settings, hydrated } = useApp();
+
+  // Hide navigation entirely during initial onboarding to keep user focused
+  if (hydrated && !settings.hasCompletedOnboarding) {
+    return null;
+  }
 
   const navItems = [
     { label: 'Today', href: '/', icon: CheckCircle2 },

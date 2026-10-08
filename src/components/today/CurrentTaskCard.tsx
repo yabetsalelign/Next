@@ -78,18 +78,22 @@ export function CurrentTaskCard({ task }: CurrentTaskCardProps) {
         </p>
 
         {/* Time and category metadata */}
-        <div className="flex items-center gap-2 pt-1 text-xs text-ink-muted dark:text-slate-400">
-          <span>About {task.durationMinutes} min</span>
-          {isRest && (
-            <>
+        {(Boolean(task.durationMinutes && task.durationMinutes > 0) || isRest) && (
+          <div className="flex items-center gap-2 pt-1 text-xs text-ink-muted dark:text-slate-400">
+            {task.durationMinutes && task.durationMinutes > 0 ? (
+              <span>About {task.durationMinutes} min</span>
+            ) : null}
+            {task.durationMinutes && task.durationMinutes > 0 && isRest ? (
               <span>•</span>
+            ) : null}
+            {isRest && (
               <span className="inline-flex items-center gap-1 text-amber-700 dark:text-amber-400">
                 <Coffee className="w-3 h-3" />
                 Rest
               </span>
-            </>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Main Action: Help me start */}
@@ -108,7 +112,7 @@ export function CurrentTaskCard({ task }: CurrentTaskCardProps) {
             type="button"
             onClick={handleDone}
             disabled={justCompletedMinimum}
-            className="py-2.5 px-4 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-gentle-green transition-colors min-h-[44px]"
+            className="py-2.5 px-4 rounded-xl border border-slate-200/90 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-ink-primary dark:text-slate-100 font-medium transition-colors min-h-[44px]"
           >
             Done
           </button>

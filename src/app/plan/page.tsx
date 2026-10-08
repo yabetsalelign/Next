@@ -119,13 +119,11 @@ export default function PlanPage() {
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className={`text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-md ${
-              timelineLabel === 'NOW'
-                ? 'bg-brand-600 text-white'
-                : 'bg-slate-100 text-ink-secondary dark:bg-slate-800 dark:text-slate-400'
-            }`}>
-              {timelineLabel}
-            </span>
+            {task.priority === 'must' && (
+              <span className="text-[10px] font-medium text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-brand-950/40 px-2 py-0.5 rounded-md">
+                Must
+              </span>
+            )}
 
             {isRest && (
               <span className="text-[10px] font-medium text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-md">
@@ -139,9 +137,11 @@ export default function PlanPage() {
               </span>
             )}
 
-            <span className="text-[11px] text-ink-muted dark:text-slate-400 ml-auto">
-              {task.durationMinutes} min
-            </span>
+            {task.durationMinutes && task.durationMinutes > 0 ? (
+              <span className="text-[11px] text-ink-muted dark:text-slate-400 ml-auto">
+                {task.durationMinutes} min
+              </span>
+            ) : null}
           </div>
 
           <h3 className="text-sm sm:text-base font-semibold text-ink-primary dark:text-slate-100 truncate">
@@ -154,13 +154,14 @@ export default function PlanPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="flex items-center gap-1 self-center shrink-0">
+        <div className="flex items-center gap-1.5 self-center shrink-0">
           {timelineLabel !== 'NOW' && (
             <button
               type="button"
               onClick={() => setCurrentTask(task.id)}
               title="Make this your active task now"
-              className="p-2 rounded-xl text-ink-muted hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              aria-label="Make active task now"
+              className="w-11 h-11 flex items-center justify-center rounded-xl text-ink-muted hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             >
               <ArrowUpRight className="w-4 h-4" />
             </button>
@@ -173,7 +174,8 @@ export default function PlanPage() {
               completeTask(task.id, 'minimum');
             }}
             title="Mark minimum completed"
-            className="p-2 rounded-xl text-ink-muted hover:text-gentle-green dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors"
+            aria-label="Mark minimum completed"
+            className="w-11 h-11 flex items-center justify-center rounded-xl text-ink-muted hover:text-ink-primary dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             <Check className="w-4 h-4" />
           </button>

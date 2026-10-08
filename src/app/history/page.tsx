@@ -67,7 +67,7 @@ export default function HistoryPage() {
             You completed
           </h2>
           <p className="text-2xl font-bold tracking-tight text-brand-600 dark:text-brand-400">
-            {minimumsCount} minimums
+            {minimumsCount} {minimumsCount === 1 ? 'minimum' : 'minimums'}
           </p>
           <p className="text-[11px] text-ink-muted dark:text-slate-400">
             Every minimum counts as full progress.

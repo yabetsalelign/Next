@@ -96,7 +96,7 @@ export function TaskCreatorModal() {
               required
               inputMode="text"
               enterKeyHint="next"
-              placeholder="e.g. Work on project, Listen to music, Tidy desk..."
+              placeholder="e.g. Work on project, tidy desk..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 text-base text-ink-primary dark:text-slate-100 placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all font-medium"

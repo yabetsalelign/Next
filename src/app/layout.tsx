@@ -55,7 +55,7 @@ export default function RootLayout({
                 - pb-nav ensures content doesn't hide behind the bottom nav on mobile
                 - md:pb-0 removes that on desktop where sidebar is used instead
             */}
-            <main className="flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-smooth-touch md:pl-64 px-4 sm:px-5 lg:px-8 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] sm:pt-[calc(1.25rem+env(safe-area-inset-top,0px))] pb-[calc(5.25rem+env(safe-area-inset-bottom,0px))] md:pb-10">
+            <main className="flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-smooth-touch md:pl-64 px-4 sm:px-5 lg:px-8 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] sm:pt-[calc(1.25rem+env(safe-area-inset-top,0px))] pb-[calc(6.5rem+env(safe-area-inset-bottom,0px))] md:pb-10">
               {children}
             </main>
           </div>
