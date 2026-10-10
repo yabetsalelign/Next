@@ -59,15 +59,15 @@ function WelcomeBackState() {
   };
 
   return (
-    <div className="my-6 p-7 sm:p-8 rounded-3xl bg-surface dark:bg-surface-dark border border-slate-200/90 dark:border-slate-800 text-center space-y-6 max-w-md mx-auto animate-fade-in shadow-card">
+    <div className="my-6 p-7 sm:p-8 rounded-3xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] text-center space-y-6 max-w-md mx-auto animate-fade-in shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
       <div className="space-y-2">
-        <h3 className="text-2xl font-bold tracking-tight text-ink-primary dark:text-slate-100">
+        <h3 className="text-2xl font-bold tracking-tight text-ink-primary dark:text-linen">
           Welcome back.
         </h3>
-        <p className="text-base text-ink-secondary dark:text-slate-300">
+        <p className="text-base text-ink-secondary dark:text-linen-muted">
           Nothing needs catching up.
         </p>
-        <p className="text-sm text-ink-muted dark:text-slate-400 pt-1">
+        <p className="text-sm text-ink-muted dark:text-linen-subtle pt-1">
           What&apos;s manageable today?
         </p>
       </div>
@@ -76,7 +76,7 @@ function WelcomeBackState() {
         <button
           type="button"
           onClick={handleOneSmallThing}
-          className="w-full py-3.5 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm shadow-sm transition-all active:scale-[0.99]"
+          className="w-full py-3.5 px-4 rounded-2xl bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-stone-950 font-bold text-sm shadow-[0_4px_18px_rgba(229,149,63,0.25)] transition-all active:scale-[0.99]"
         >
           One small thing
         </button>
@@ -84,7 +84,7 @@ function WelcomeBackState() {
         <button
           type="button"
           onClick={handleNormalDay}
-          className="w-full py-3.5 px-4 rounded-2xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-ink-primary dark:text-slate-200 font-medium text-sm transition-colors"
+          className="w-full py-3.5 px-4 rounded-2xl border border-stone-200 dark:border-white/[0.1] hover:bg-stone-50 dark:hover:bg-white/[0.04] text-ink-primary dark:text-linen font-medium text-sm transition-colors"
         >
           A normal day
         </button>
@@ -92,7 +92,7 @@ function WelcomeBackState() {
         <button
           type="button"
           onClick={handleJustCare}
-          className="w-full py-3.5 px-4 rounded-2xl border border-brand-200 dark:border-brand-800/80 hover:bg-brand-50/60 dark:hover:bg-brand-950/40 text-brand-700 dark:text-brand-300 font-medium text-sm transition-colors"
+          className="w-full py-3.5 px-4 rounded-2xl border border-terracotta/30 dark:border-terracotta/40 hover:bg-terracotta/10 text-terracotta font-medium text-sm transition-colors"
         >
           Just care
         </button>
@@ -100,7 +100,7 @@ function WelcomeBackState() {
         <button
           type="button"
           onClick={() => setNotPlanningToday(true)}
-          className="w-full py-2.5 px-4 text-xs font-medium text-ink-muted hover:text-ink-secondary dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+          className="w-full py-2.5 px-4 text-xs font-medium text-ink-muted hover:text-ink-secondary dark:text-linen-subtle dark:hover:text-linen transition-colors"
         >
           I don&apos;t know yet
         </button>
@@ -139,14 +139,14 @@ export function TodayEmptyState() {
 
   if (notPlanningToday) {
     return (
-      <div className="my-6 p-7 sm:p-8 rounded-3xl bg-surface dark:bg-surface-dark border border-slate-200/90 dark:border-slate-800 text-center space-y-4 max-w-md mx-auto animate-fade-in shadow-card">
-        <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 mx-auto flex items-center justify-center">
+      <div className="my-6 p-7 sm:p-8 rounded-3xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] text-center space-y-4 max-w-md mx-auto animate-fade-in shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+        <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/20 text-amber-600 dark:text-amber-400 mx-auto flex items-center justify-center">
           <Coffee className="w-6 h-6" />
         </div>
-        <h3 className="text-xl font-bold text-ink-primary dark:text-slate-100">
+        <h3 className="text-xl font-bold text-ink-primary dark:text-linen">
           Resting today.
         </h3>
-        <p className="text-sm text-ink-muted dark:text-slate-400 leading-relaxed">
+        <p className="text-sm text-ink-muted dark:text-linen-subtle leading-relaxed">
           You chose not to plan today. That is completely valid.
           No obligations or overdue badges will appear.
         </p>
@@ -154,7 +154,7 @@ export function TodayEmptyState() {
           <button
             type="button"
             onClick={() => setNotPlanningToday(false)}
-            className="py-2.5 px-4 rounded-xl text-xs font-semibold text-brand-600 dark:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="py-2.5 px-4 rounded-xl text-xs font-semibold text-amber-700 dark:text-amber-400 hover:bg-stone-100 dark:hover:bg-white/[0.04] transition-colors"
           >
             Switch back to planning mode
           </button>
@@ -168,15 +168,15 @@ export function TodayEmptyState() {
   }
 
   return (
-    <div className="my-6 p-7 sm:p-8 rounded-3xl bg-surface dark:bg-surface-dark border border-slate-200/90 dark:border-slate-800 text-center space-y-6 max-w-md mx-auto shadow-card animate-fade-in">
+    <div className="my-6 p-7 sm:p-8 rounded-3xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] text-center space-y-6 max-w-md mx-auto shadow-[0_8px_32px_rgba(0,0,0,0.3)] animate-fade-in">
       <div className="space-y-2">
-        <h3 className="text-2xl font-bold tracking-tight text-ink-primary dark:text-slate-100">
+        <h3 className="text-2xl font-bold tracking-tight text-ink-primary dark:text-linen">
           Nothing planned yet.
         </h3>
-        <p className="text-base text-ink-secondary dark:text-slate-300">
+        <p className="text-base text-ink-secondary dark:text-linen-muted">
           That&apos;s okay.
         </p>
-        <p className="text-sm text-ink-muted dark:text-slate-400 pt-1">
+        <p className="text-sm text-ink-muted dark:text-linen-subtle pt-1">
           What would help right now?
         </p>
       </div>
@@ -185,7 +185,7 @@ export function TodayEmptyState() {
         <button
           type="button"
           onClick={() => openModal('create_task')}
-          className="w-full py-3.5 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm shadow-sm transition-all active:scale-[0.99]"
+          className="w-full py-3.5 px-4 rounded-2xl bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-stone-950 font-bold text-sm shadow-[0_4px_18px_rgba(229,149,63,0.25)] transition-all active:scale-[0.99]"
         >
           Add one thing
         </button>
@@ -193,7 +193,7 @@ export function TodayEmptyState() {
         <button
           type="button"
           onClick={handleJustCareForSelf}
-          className="w-full py-3.5 px-4 rounded-2xl border border-brand-200 dark:border-brand-800/80 hover:bg-brand-50/60 dark:hover:bg-brand-950/40 text-brand-700 dark:text-brand-300 font-medium text-sm transition-colors"
+          className="w-full py-3.5 px-4 rounded-2xl border border-terracotta/30 dark:border-terracotta/40 hover:bg-terracotta/10 text-terracotta font-medium text-sm transition-colors"
         >
           Just care for yourself
         </button>
@@ -201,7 +201,7 @@ export function TodayEmptyState() {
         <button
           type="button"
           onClick={() => setNotPlanningToday(true)}
-          className="w-full py-2.5 px-4 text-xs font-medium text-ink-muted hover:text-ink-secondary dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+          className="w-full py-2.5 px-4 text-xs font-medium text-ink-muted hover:text-ink-secondary dark:text-linen-subtle dark:hover:text-linen transition-colors"
         >
           I&apos;ll figure it out later
         </button>

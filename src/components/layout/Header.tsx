@@ -22,13 +22,13 @@ export function Header() {
 
   return (
     <header className="mb-6 pt-1 sm:pt-2">
-      <p suppressHydrationWarning className="text-sm font-medium text-ink-muted dark:text-slate-400">
+      <p suppressHydrationWarning className="text-xs sm:text-sm font-medium text-ink-muted dark:text-linen-subtle">
         {dateString}
       </p>
-      <h1 suppressHydrationWarning className="mt-1 text-2xl sm:text-[1.75rem] font-semibold tracking-tight text-ink-primary dark:text-slate-100">
+      <h1 suppressHydrationWarning className="mt-1 text-2xl sm:text-[1.75rem] font-semibold tracking-tight text-ink-primary dark:text-linen">
         {greeting}.
       </h1>
-      <p className="mt-1 text-base sm:text-lg text-ink-secondary dark:text-slate-300">
+      <p className="mt-1 text-sm sm:text-base text-ink-secondary dark:text-linen-muted">
         What&apos;s next?
       </p>
     </header>

@@ -30,8 +30,8 @@ export const viewport: Viewport = {
   // Capacitor handles native zoom prevention at the WebView level
   viewportFit: 'cover',
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#F7F8FA' },
-    { media: '(prefers-color-scheme: dark)', color: '#0F141C' },
+    { media: '(prefers-color-scheme: light)', color: '#F7F5F0' },
+    { media: '(prefers-color-scheme: dark)', color: '#12131C' },
   ],
 };
 
@@ -42,8 +42,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="bg-canvas dark:bg-canvas-dark text-ink-primary dark:text-slate-100 font-sans selection:bg-brand-100 selection:text-brand-900">
+      <body className="bg-canvas dark:bg-canvas-dark text-ink-primary dark:text-linen font-sans selection:bg-amber-500/20 selection:text-amber-300">
         <AppProvider>
+          {/* Subtle warm ambient atmospheric glow in dark mode */}
+          <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden" aria-hidden="true">
+            <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[650px] h-[500px] bg-[radial-gradient(ellipse_at_top,rgba(229,149,63,0.07),rgba(116,105,182,0.04),transparent_70%)] blur-3xl opacity-90 dark:block hidden" />
+          </div>
+
           {/* Keep the app shell inside the visible viewport; only main content scrolls. */}
           <div className="flex h-dvh min-h-0 overflow-hidden">
             {/* Responsive Navigation: Sidebar on desktop, Bottom nav on mobile */}

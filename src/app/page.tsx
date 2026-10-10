@@ -7,7 +7,23 @@ import { Header } from '@/components/layout/Header';
 import { CurrentTaskCard } from '@/components/today/CurrentTaskCard';
 import { TodayEmptyState } from '@/components/today/TodayEmptyState';
 import { OnboardingFlow } from '@/components/today/OnboardingFlow';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Coffee, Sparkles, Clock, CheckCircle2 } from 'lucide-react';
+
+function TaskCategoryIcon({ category, icon }: { category?: string; icon?: string }) {
+  if (category === 'rest') {
+    return <Coffee className="w-4 h-4 text-amber-500/90 shrink-0" />;
+  }
+  if (category === 'wellness') {
+    return <Sparkles className="w-4 h-4 text-terracotta shrink-0" />;
+  }
+  if (category === 'routine') {
+    return <Clock className="w-4 h-4 text-sage-500 shrink-0" />;
+  }
+  if (icon && !['📌', '☕', '💧', '✨', '🧹', '🚿', '🪥', '🍳'].includes(icon)) {
+    return <span className="text-sm select-none">{icon}</span>;
+  }
+  return <CheckCircle2 className="w-4 h-4 text-stone-400 dark:text-linen-subtle shrink-0" />;
+}
 
 export default function TodayPage() {
   const { currentTask, upNextTasks, hydrated, notPlanningToday, settings, openModal } = useApp();
@@ -36,7 +52,7 @@ export default function TodayPage() {
               <button
                 type="button"
                 onClick={() => setShowUpcoming(!showUpcoming)}
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-muted hover:text-ink-primary dark:text-slate-400 dark:hover:text-slate-200 transition-colors py-2 px-3 rounded-xl hover:bg-slate-100/70 dark:hover:bg-slate-800/50"
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-muted hover:text-ink-primary dark:text-linen-subtle dark:hover:text-linen transition-colors py-2 px-3 rounded-xl hover:bg-stone-100/70 dark:hover:bg-white/[0.04]"
               >
                 <span>{upNextTasks.length} more {upNextTasks.length === 1 ? 'thing' : 'things'} today</span>
                 {showUpcoming ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
@@ -47,19 +63,21 @@ export default function TodayPage() {
                   {upNextTasks.map((t) => (
                     <div
                       key={t.id}
-                      className="flex items-center justify-between p-3.5 rounded-2xl bg-surface dark:bg-surface-dark border border-slate-200/80 dark:border-slate-800"
+                      className="flex items-center justify-between p-3.5 rounded-2xl bg-surface dark:bg-surface-dark border border-stone-200/80 dark:border-white/[0.08] shadow-sm"
                     >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <span className="text-base select-none">{t.icon || '📌'}</span>
-                        <span className="text-xs sm:text-sm font-medium text-ink-primary dark:text-slate-100 truncate">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-7 h-7 rounded-xl bg-stone-100 dark:bg-white/[0.04] flex items-center justify-center shrink-0">
+                          <TaskCategoryIcon category={t.category} icon={t.icon} />
+                        </div>
+                        <span className="text-xs sm:text-sm font-medium text-ink-primary dark:text-linen truncate">
                           {t.title}
                         </span>
                       </div>
-                      <span className="text-[11px] text-ink-subtle shrink-0">~{t.durationMinutes} min</span>
+                      <span className="text-[11px] text-ink-subtle dark:text-linen-faint shrink-0">~{t.durationMinutes} min</span>
                     </div>
                   ))}
                   <div className="pt-1 text-center">
-                    <Link href="/plan" className="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline">
+                    <Link href="/plan" className="text-xs font-semibold text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 hover:underline">
                       View full day in Plan →
                     </Link>
                   </div>
@@ -73,7 +91,7 @@ export default function TodayPage() {
             <button
               type="button"
               onClick={() => openModal('check_in')}
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-muted hover:text-ink-primary dark:text-slate-400 dark:hover:text-slate-200 transition-colors py-2.5 px-4 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 min-h-[44px]"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-muted hover:text-ink-primary dark:text-linen-subtle dark:hover:text-linen transition-colors py-2.5 px-4 rounded-xl hover:bg-stone-100 dark:hover:bg-white/[0.04] min-h-[44px]"
             >
               <span>Check in</span>
             </button>

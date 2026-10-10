@@ -111,7 +111,7 @@ export default function PlanPage() {
     return (
       <div
         key={task.id}
-        className="flex items-start gap-3.5 p-4 sm:p-4.5 rounded-2xl bg-surface dark:bg-surface-dark border border-slate-200/80 dark:border-slate-800 shadow-sm transition-all hover:border-slate-300 dark:hover:border-slate-700"
+        className="flex items-start gap-3.5 p-4 sm:p-4.5 rounded-2xl bg-surface dark:bg-surface-dark border border-stone-200/80 dark:border-white/[0.08] shadow-sm transition-all hover:border-stone-300 dark:hover:border-white/[0.15]"
       >
         <span className="text-xl sm:text-2xl select-none pt-0.5" role="img" aria-hidden="true">
           {task.icon || (isRest ? '☕' : isCare ? '✨' : '📋')}
@@ -120,35 +120,35 @@ export default function PlanPage() {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             {task.priority === 'must' && (
-              <span className="text-[10px] font-medium text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-brand-950/40 px-2 py-0.5 rounded-md">
+              <span className="text-[10px] font-medium text-amber-800 dark:text-amber-300 bg-amber-500/15 border border-amber-500/20 px-2 py-0.5 rounded-md">
                 Must
               </span>
             )}
 
             {isRest && (
-              <span className="text-[10px] font-medium text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-md">
+              <span className="text-[10px] font-medium text-amber-800 dark:text-amber-300 bg-amber-500/15 border border-amber-500/20 px-2 py-0.5 rounded-md">
                 Rest
               </span>
             )}
 
             {isCare && (
-              <span className="text-[10px] font-medium text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-brand-950/40 px-2 py-0.5 rounded-md">
+              <span className="text-[10px] font-medium text-terracotta bg-terracotta/15 border border-terracotta/20 px-2 py-0.5 rounded-md">
                 Care
               </span>
             )}
 
             {task.durationMinutes && task.durationMinutes > 0 ? (
-              <span className="text-[11px] text-ink-muted dark:text-slate-400 ml-auto">
+              <span className="text-[11px] text-ink-muted dark:text-linen-subtle ml-auto">
                 {task.durationMinutes} min
               </span>
             ) : null}
           </div>
 
-          <h3 className="text-sm sm:text-base font-semibold text-ink-primary dark:text-slate-100 truncate">
+          <h3 className="text-sm sm:text-base font-semibold text-ink-primary dark:text-linen truncate">
             {task.title}
           </h3>
 
-          <p className="text-xs text-ink-muted dark:text-slate-400 mt-0.5 line-clamp-1">
+          <p className="text-xs text-ink-muted dark:text-linen-subtle mt-0.5 line-clamp-1">
             {task.minimum}
           </p>
         </div>
@@ -161,7 +161,7 @@ export default function PlanPage() {
               onClick={() => setCurrentTask(task.id)}
               title="Make this your active task now"
               aria-label="Make active task now"
-              className="w-11 h-11 flex items-center justify-center rounded-xl text-ink-muted hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="w-11 h-11 flex items-center justify-center rounded-xl text-ink-muted hover:text-amber-600 dark:hover:text-amber-400 hover:bg-stone-100 dark:hover:bg-white/[0.04] transition-colors"
             >
               <ArrowUpRight className="w-4 h-4" />
             </button>
@@ -175,9 +175,9 @@ export default function PlanPage() {
             }}
             title="Mark minimum completed"
             aria-label="Mark minimum completed"
-            className="w-11 h-11 flex items-center justify-center rounded-xl text-ink-muted hover:text-ink-primary dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="w-11 h-11 flex items-center justify-center rounded-xl text-ink-muted hover:text-sage-600 dark:hover:text-sage-300 hover:bg-sage-500/10 transition-colors"
           >
-            <Check className="w-4 h-4" />
+            <Check className="w-4 h-4 stroke-[2.2]" />
           </button>
         </div>
       </div>
@@ -188,16 +188,50 @@ export default function PlanPage() {
     <div className="max-w-xl mx-auto space-y-6 animate-fade-in pb-10">
       {/* Header */}
       <div>
-        <h1 className="text-2xl sm:text-[1.75rem] font-semibold tracking-tight text-ink-primary dark:text-slate-100">
+        <h1 className="text-2xl sm:text-[1.75rem] font-semibold tracking-tight text-ink-primary dark:text-linen">
           Plan
         </h1>
-        <p className="mt-1 text-xs sm:text-sm text-ink-muted dark:text-slate-400">
+        <p className="mt-1 text-xs sm:text-sm text-ink-muted dark:text-linen-subtle">
           Where am I in my day? Flexible sequence, zero guilt.
         </p>
       </div>
 
+      {/* Re-introduced: Schedule True Rest (From Version 1 with Version 3 Warm Dark tokens) */}
+      <section className="p-5 rounded-3xl bg-amber-500/10 dark:bg-amber-500/[0.08] border border-amber-500/25 dark:border-amber-500/20 space-y-3 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Coffee className="w-4 h-4 text-amber-700 dark:text-amber-400" />
+            <h2 className="text-xs font-bold uppercase tracking-wider text-amber-900 dark:text-amber-300">
+              Schedule True Rest
+            </h2>
+          </div>
+          <span className="text-[11px] text-amber-800/80 dark:text-amber-400/80 font-medium">
+            Rest is an essential activity
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {restPresets.map((r, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => handleAddRestPreset(r)}
+              className="flex items-center gap-2.5 p-2.5 rounded-2xl bg-surface dark:bg-surface-dark border border-amber-500/20 hover:border-amber-500/40 text-left transition-all active:scale-[0.98] shadow-sm"
+            >
+              <span className="text-base select-none">{r.icon}</span>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-semibold text-ink-primary dark:text-linen truncate">
+                  {r.title}
+                </p>
+                <p className="text-[10px] text-ink-muted dark:text-linen-subtle">~{r.duration} min</p>
+              </div>
+            </button>
+          ))}
+        </div>
+      </section>
+
       {/* Filter Tabs: All · Must · Care · Rest */}
-      <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-800/70 rounded-2xl">
+      <div className="flex items-center gap-1.5 p-1 bg-stone-100 dark:bg-white/[0.04] rounded-2xl border border-transparent dark:border-white/[0.04]">
         {[
           { id: 'all', label: 'All' },
           { id: 'must', label: 'Must' },
@@ -210,8 +244,8 @@ export default function PlanPage() {
             onClick={() => setFilter(tab.id as any)}
             className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-semibold text-center transition-all ${
               filter === tab.id
-                ? 'bg-surface dark:bg-surface-dark text-ink-primary dark:text-slate-100 shadow-sm'
-                : 'text-ink-muted hover:text-ink-primary'
+                ? 'bg-surface dark:bg-surface-dark text-ink-primary dark:text-linen shadow-sm'
+                : 'text-ink-muted dark:text-linen-subtle hover:text-ink-primary dark:hover:text-linen'
             }`}
           >
             {tab.label}

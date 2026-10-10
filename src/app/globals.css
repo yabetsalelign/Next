@@ -4,9 +4,15 @@
 
 @layer base {
   :root {
-    --canvas-bg: #F7F8FA;
+    --canvas-bg: #F7F5F0;
     --surface-bg: #FFFFFF;
-    --ink-primary: #0F172A;
+    --surface-elevated: #FDFBF7;
+    --ink-primary: #1C1917;
+    --ink-secondary: #57534E;
+    --ink-muted: #78716C;
+    --ink-subtle: #A8A29E;
+    --accent-amber: #E5953F;
+    --accent-sage: #4E9B78;
     /* Safe area insets — used throughout the app */
     --sat: env(safe-area-inset-top, 0px);
     --sar: env(safe-area-inset-right, 0px);
@@ -17,9 +23,16 @@
   }
 
   .dark {
-    --canvas-bg: #0F141C;
-    --surface-bg: #171E29;
-    --ink-primary: #F8FAFC;
+    --canvas-bg: #12131C;
+    --surface-bg: #1A1B26;
+    --surface-elevated: #222332;
+    --surface-muted: #161722;
+    --ink-primary: #F4F1EA; /* Warm soft linen tone */
+    --ink-secondary: #C5C0B6;
+    --ink-muted: #8E887E;
+    --ink-subtle: #5E5850;
+    --accent-amber: #E5953F;
+    --accent-sage: #4E9B78;
   }
 
   html {
