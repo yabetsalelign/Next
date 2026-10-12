@@ -73,6 +73,7 @@ export default function SettingsPage() {
         returns: JSON.parse(localStorage.getItem('next_returns_v1') || '[]'),
         insights: JSON.parse(localStorage.getItem('next_insights_v1') || '[]'),
         settings: JSON.parse(localStorage.getItem('next_settings_v1') || '{}'),
+        stuckLogs: JSON.parse(localStorage.getItem('next_stuck_logs_v1') || '[]'),
         resets: JSON.parse(localStorage.getItem('next_resets_v1') || '[]'),
         journal: JSON.parse(localStorage.getItem('next_journal_v1') || '[]'),
         checkins: JSON.parse(localStorage.getItem('next_checkins_v1') || '[]'),
@@ -109,26 +110,35 @@ export default function SettingsPage() {
           throw new Error('Missing backup identifiers');
         }
 
-        if (data.tasks !== undefined && !Array.isArray(data.tasks)) {
-          throw new Error('Tasks must be an array');
-        }
-        if (data.routines !== undefined && !Array.isArray(data.routines)) {
-          throw new Error('Routines must be an array');
+        // Validate all expected array fields before committing anything
+        const arrayFields = ['tasks', 'routines', 'returns', 'insights', 'stuckLogs', 'resets', 'journal', 'checkins'] as const;
+        for (const field of arrayFields) {
+          if (data[field] !== undefined && !Array.isArray(data[field])) {
+            throw new Error(`${field} must be an array`);
+          }
         }
         if (data.settings !== undefined && (typeof data.settings !== 'object' || Array.isArray(data.settings))) {
           throw new Error('Settings must be an object');
         }
 
-        // Apply validated backup safely
-        if (data.tasks) localStorage.setItem('next_tasks_v1', JSON.stringify(data.tasks));
-        if (data.routines) localStorage.setItem('next_routines_v1', JSON.stringify(data.routines));
-        if (data.returns) localStorage.setItem('next_returns_v1', JSON.stringify(data.returns));
-        if (data.insights) localStorage.setItem('next_insights_v1', JSON.stringify(data.insights));
-        if (data.settings) localStorage.setItem('next_settings_v1', JSON.stringify(data.settings));
-        if (data.resets) localStorage.setItem('next_resets_v1', JSON.stringify(data.resets));
-        if (data.journal) localStorage.setItem('next_journal_v1', JSON.stringify(data.journal));
-        if (data.checkins) localStorage.setItem('next_checkins_v1', JSON.stringify(data.checkins));
-        if (data.lastActiveDate) localStorage.setItem('next_last_active_date_v1', String(data.lastActiveDate));
+        // Stage all writes first so a failure during serialization
+        // never leaves localStorage in a partially overwritten state
+        const writes: Array<[string, string]> = [];
+        if (data.tasks) writes.push(['next_tasks_v1', JSON.stringify(data.tasks)]);
+        if (data.routines) writes.push(['next_routines_v1', JSON.stringify(data.routines)]);
+        if (data.returns) writes.push(['next_returns_v1', JSON.stringify(data.returns)]);
+        if (data.insights) writes.push(['next_insights_v1', JSON.stringify(data.insights)]);
+        if (data.settings) writes.push(['next_settings_v1', JSON.stringify(data.settings)]);
+        if (data.stuckLogs) writes.push(['next_stuck_logs_v1', JSON.stringify(data.stuckLogs)]);
+        if (data.resets) writes.push(['next_resets_v1', JSON.stringify(data.resets)]);
+        if (data.journal) writes.push(['next_journal_v1', JSON.stringify(data.journal)]);
+        if (data.checkins) writes.push(['next_checkins_v1', JSON.stringify(data.checkins)]);
+        if (data.lastActiveDate) writes.push(['next_last_active_date_v1', String(data.lastActiveDate)]);
+
+        // Commit all validated writes
+        for (const [key, value] of writes) {
+          localStorage.setItem(key, value);
+        }
 
         setImportStatus('Backup restored successfully. Reloading...');
         setTimeout(() => {
