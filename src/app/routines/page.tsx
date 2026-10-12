@@ -106,9 +106,9 @@ function RoutineCard({
                 onStart?.();
                 openModal('routine_runner', undefined, routine.id);
               }}
-              className="flex items-center gap-1.5 min-h-[44px] py-2.5 px-3.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs shadow-sm transition-all active:scale-95"
+              className="flex items-center gap-1.5 min-h-[44px] py-2 px-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-stone-950 font-bold text-xs shadow-sm transition-all active:scale-95"
             >
-              <Play className="w-3.5 h-3.5" />
+              <Play className="w-3.5 h-3.5 fill-current" />
               <span>Start</span>
             </button>
           )}
@@ -190,18 +190,21 @@ function RoutineCard({
                 onStart?.();
                 openModal('routine_runner', undefined, routine.id);
               }}
-              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs shadow-sm transition-all active:scale-[0.99]"
+              className="flex-1 flex items-center justify-center gap-2 min-h-[44px] py-3 px-4 rounded-2xl bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-stone-950 font-bold text-xs sm:text-sm shadow-sm transition-all active:scale-95"
             >
-              <Play className="w-3.5 h-3.5" />
+              <Play className="w-3.5 h-3.5 fill-current" />
               <span>Start routine</span>
             </button>
 
             <button
               type="button"
-              onClick={() => resetRoutineSteps(routine.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                resetRoutineSteps(routine.id);
+              }}
               title="Reset checkmarks"
               aria-label="Reset routine steps"
-              className="p-3 rounded-2xl border border-stone-200 dark:border-white/[0.08] text-ink-muted hover:text-ink-primary hover:bg-stone-50 dark:hover:bg-white/[0.04] transition-colors"
+              className="w-11 h-11 flex items-center justify-center rounded-2xl border border-stone-200/90 dark:border-white/[0.08] bg-surface dark:bg-surface-dark text-ink-muted hover:text-ink-primary dark:hover:text-linen hover:bg-stone-50 dark:hover:bg-white/[0.04] transition-all active:scale-95 shrink-0"
             >
               <RotateCcw className="w-4 h-4" />
             </button>
@@ -212,9 +215,9 @@ function RoutineCard({
               onClick={handleToggleActive}
               title={isEnabled ? 'Hide from My Routines' : 'Add to My Routines'}
               aria-label={isEnabled ? 'Hide from My Routines' : 'Add to My Routines'}
-              className="p-3 rounded-2xl border border-stone-200 dark:border-white/[0.08] text-ink-muted hover:text-ink-primary hover:bg-stone-50 dark:hover:bg-white/[0.04] transition-colors text-xs font-medium"
+              className="w-11 h-11 flex items-center justify-center rounded-2xl border border-stone-200/90 dark:border-white/[0.08] bg-surface dark:bg-surface-dark text-ink-muted hover:text-ink-primary dark:hover:text-linen hover:bg-stone-50 dark:hover:bg-white/[0.04] transition-all active:scale-95 shrink-0"
             >
-              {isEnabled ? <MinusCircle className="w-4 h-4 text-stone-400" /> : <PlusCircle className="w-4 h-4 text-amber-600" />}
+              {isEnabled ? <MinusCircle className="w-4 h-4 text-stone-400" /> : <PlusCircle className="w-4 h-4 text-amber-600 dark:text-amber-400" />}
             </button>
           </div>
 
@@ -225,16 +228,19 @@ function RoutineCard({
               placeholder="Add step to routine..."
               value={newStepText}
               onChange={(e) => setNewStepText(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') handleAddStep(); }}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); handleAddStep(); } }}
               inputMode="text"
               enterKeyHint="done"
-              className="flex-1 px-3.5 py-2 text-xs rounded-xl border border-stone-200 dark:border-white/[0.12] bg-stone-50/60 dark:bg-white/[0.04] text-ink-primary dark:text-linen placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-amber-500"
+              className="flex-1 px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-stone-200 dark:border-white/[0.12] bg-surface dark:bg-surface-dark text-ink-primary dark:text-linen placeholder:text-ink-subtle dark:placeholder:text-linen-faint focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
             <button
               type="button"
-              onClick={handleAddStep}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleAddStep();
+              }}
               aria-label="Add step"
-              className="p-2 rounded-xl bg-stone-100 dark:bg-white/[0.06] text-ink-primary dark:text-linen hover:bg-stone-200"
+              className="w-10 h-10 flex items-center justify-center rounded-xl bg-stone-100 dark:bg-white/[0.06] text-ink-primary dark:text-linen hover:bg-stone-200/80 dark:hover:bg-white/[0.1] active:scale-95 transition-all shrink-0"
             >
               <Plus className="w-3.5 h-3.5" />
             </button>
@@ -287,15 +293,21 @@ export default function RoutinesPage() {
               <div className="flex items-center justify-center gap-2 pt-1">
                 <button
                   type="button"
-                  onClick={() => openModal('routine_library')}
-                  className="py-2 px-3.5 rounded-xl border border-stone-200 dark:border-white/[0.12] text-xs font-semibold text-ink-primary dark:text-linen hover:bg-stone-50 dark:hover:bg-white/[0.04] transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openModal('routine_library');
+                  }}
+                  className="min-h-[44px] py-2.5 px-4 rounded-xl border border-stone-200 dark:border-white/[0.12] text-xs font-semibold text-ink-primary dark:text-linen hover:bg-stone-50 dark:hover:bg-white/[0.04] active:scale-95 transition-all"
                 >
                   Browse library
                 </button>
                 <button
                   type="button"
-                  onClick={() => openModal('add_routine')}
-                  className="py-2 px-3.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold shadow-sm transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openModal('add_routine');
+                  }}
+                  className="min-h-[44px] py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-stone-950 font-bold text-xs shadow-sm active:scale-95 transition-all"
                 >
                   Create routine
                 </button>
@@ -309,8 +321,11 @@ export default function RoutinesPage() {
       <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
         <button
           type="button"
-          onClick={() => openModal('add_routine')}
-          className="w-full sm:flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] hover:border-stone-300 text-xs font-semibold text-ink-primary dark:text-linen shadow-sm transition-all"
+          onClick={(e) => {
+            e.stopPropagation();
+            openModal('add_routine');
+          }}
+          className="w-full sm:flex-1 flex items-center justify-center gap-2 min-h-[48px] py-3.5 px-5 rounded-2xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] hover:border-stone-300 dark:hover:border-white/[0.15] hover:bg-stone-50 dark:hover:bg-white/[0.04] text-xs sm:text-sm font-semibold text-ink-primary dark:text-linen shadow-sm transition-all active:scale-95"
         >
           <Plus className="w-4 h-4 text-amber-600 dark:text-amber-400" />
           <span>Add routine</span>
@@ -318,10 +333,13 @@ export default function RoutinesPage() {
 
         <button
           type="button"
-          onClick={() => openModal('routine_library')}
-          className="w-full sm:flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl border border-stone-200/80 dark:border-white/[0.08] text-xs font-semibold text-ink-secondary dark:text-linen-subtle hover:bg-stone-50 dark:hover:bg-white/[0.04] transition-colors"
+          onClick={(e) => {
+            e.stopPropagation();
+            openModal('routine_library');
+          }}
+          className="w-full sm:flex-1 flex items-center justify-center gap-2 min-h-[48px] py-3.5 px-5 rounded-2xl border border-stone-200/80 dark:border-white/[0.08] bg-surface dark:bg-surface-dark text-xs sm:text-sm font-semibold text-ink-secondary dark:text-linen-subtle hover:text-ink-primary dark:hover:text-linen hover:bg-stone-50 dark:hover:bg-white/[0.04] shadow-sm transition-all active:scale-95"
         >
-          <BookOpen className="w-4 h-4 text-ink-muted" />
+          <BookOpen className="w-4 h-4 text-ink-muted dark:text-linen-subtle" />
           <span>Routine library ({libraryRoutines.length})</span>
         </button>
       </div>

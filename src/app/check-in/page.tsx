@@ -39,18 +39,18 @@ export default function CheckInPage() {
         {/* Body & Energy Check */}
         <button
           type="button"
-          onClick={() => openModal('body_check')}
-          className="w-full flex items-center justify-between gap-4 p-4 sm:p-5 rounded-3xl bg-surface dark:bg-surface-dark border border-slate-200/90 dark:border-slate-800 shadow-sm hover:border-slate-300 dark:hover:border-slate-700 transition-all text-left active:scale-[0.99] group"
+          onClick={(e) => { e.stopPropagation(); openModal('body_check'); }}
+          className="w-full flex items-center justify-between gap-4 p-4 sm:p-5 rounded-3xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] shadow-sm hover:border-stone-300 dark:hover:border-white/[0.15] transition-all text-left active:scale-[0.99] group"
         >
           <div className="flex items-center gap-4 min-w-0 flex-1">
             <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-700 dark:text-amber-400 flex items-center justify-center shrink-0">
               <HeartHandshake className="w-6 h-6" />
             </div>
             <div className="min-w-0 flex-1">
-              <h2 className="text-base font-semibold text-ink-primary dark:text-slate-100 break-words leading-snug">
-                Body & energy check
+              <h2 className="text-base font-semibold text-ink-primary dark:text-linen break-words leading-snug">
+                Body &amp; energy check
               </h2>
-              <p className="text-xs text-ink-muted dark:text-slate-400 mt-0.5 leading-relaxed break-words">
+              <p className="text-xs text-ink-muted dark:text-linen-subtle mt-0.5 leading-relaxed break-words">
                 Physical fatigue, tension, hydration, and gentle advice.
               </p>
             </div>
@@ -61,18 +61,18 @@ export default function CheckInPage() {
         {/* Quick Reflection Journal */}
         <button
           type="button"
-          onClick={() => openModal('journal')}
-          className="w-full flex items-center justify-between gap-4 p-4 sm:p-5 rounded-3xl bg-surface dark:bg-surface-dark border border-slate-200/90 dark:border-slate-800 shadow-sm hover:border-slate-300 dark:hover:border-slate-700 transition-all text-left active:scale-[0.99] group"
+          onClick={(e) => { e.stopPropagation(); openModal('journal'); }}
+          className="w-full flex items-center justify-between gap-4 p-4 sm:p-5 rounded-3xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] shadow-sm hover:border-stone-300 dark:hover:border-white/[0.15] transition-all text-left active:scale-[0.99] group"
         >
           <div className="flex items-center gap-4 min-w-0 flex-1">
-            <div className="w-12 h-12 rounded-2xl bg-stone-100 dark:bg-slate-800 text-ink-secondary dark:text-slate-300 flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-stone-100 dark:bg-white/[0.04] text-ink-secondary dark:text-linen-muted flex items-center justify-center shrink-0">
               <BookOpen className="w-6 h-6" />
             </div>
             <div className="min-w-0 flex-1">
-              <h2 className="text-base font-semibold text-ink-primary dark:text-slate-100 break-words leading-snug">
+              <h2 className="text-base font-semibold text-ink-primary dark:text-linen break-words leading-snug">
                 Quiet quick reflection
               </h2>
-              <p className="text-xs text-ink-muted dark:text-slate-400 mt-0.5 leading-relaxed break-words">
+              <p className="text-xs text-ink-muted dark:text-linen-subtle mt-0.5 leading-relaxed break-words">
                 What did I accomplish? What felt easier? What do I need tomorrow?
               </p>
             </div>
@@ -83,7 +83,7 @@ export default function CheckInPage() {
         {/* 7-Day Fresh Start */}
         <button
           type="button"
-          onClick={() => openModal('fresh_start')}
+          onClick={(e) => { e.stopPropagation(); openModal('fresh_start'); }}
           className="w-full flex items-center justify-between gap-4 p-4 sm:p-5 rounded-3xl bg-amber-500/10 dark:bg-amber-500/[0.08] border border-amber-500/25 dark:border-amber-500/20 shadow-sm hover:border-amber-500/40 transition-all text-left active:scale-[0.99] group"
         >
           <div className="flex items-center gap-4 min-w-0 flex-1">
@@ -110,16 +110,16 @@ export default function CheckInPage() {
         </button>
 
         {/* Taking the day off */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-surface dark:bg-surface-dark border border-slate-200/90 dark:border-slate-800 shadow-sm flex items-center justify-between gap-4">
+        <div className="p-4 sm:p-5 rounded-3xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] shadow-sm flex items-center justify-between gap-4">
           <div className="flex items-center gap-4 min-w-0 flex-1">
-            <div className="w-12 h-12 rounded-2xl bg-stone-100 dark:bg-slate-800/80 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-stone-100 dark:bg-white/[0.04] text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
               <Coffee className="w-6 h-6" />
             </div>
             <div className="min-w-0 flex-1">
-              <h2 className="text-base font-semibold text-ink-primary dark:text-slate-100 break-words leading-snug">
+              <h2 className="text-base font-semibold text-ink-primary dark:text-linen break-words leading-snug">
                 Taking the day off
               </h2>
-              <p className="text-xs text-ink-muted dark:text-slate-400 mt-0.5 leading-relaxed break-words">
+              <p className="text-xs text-ink-muted dark:text-linen-subtle mt-0.5 leading-relaxed break-words">
                 {notPlanningToday 
                   ? 'Active today: No demands, no overdue marks.' 
                   : 'Clear today\'s active pressure for genuine rest.'}
@@ -131,7 +131,7 @@ export default function CheckInPage() {
             onClick={() => setNotPlanningToday(!notPlanningToday)}
             className={`py-2 px-3.5 rounded-xl text-xs font-semibold shrink-0 transition-all ${
               notPlanningToday
-                ? 'bg-stone-100 dark:bg-slate-800 text-ink-primary dark:text-slate-200 border border-stone-200 dark:border-slate-700 hover:bg-stone-200 dark:hover:bg-slate-700'
+                ? 'bg-stone-100 dark:bg-white/[0.06] text-ink-primary dark:text-linen border border-stone-200 dark:border-white/[0.1] hover:bg-stone-200 dark:hover:bg-white/[0.09]'
                 : 'bg-amber-500 text-stone-950 shadow-[0_4px_18px_rgba(229,149,63,0.28)] hover:bg-amber-400'
             }`}
           >
@@ -143,7 +143,7 @@ export default function CheckInPage() {
       {/* Recent Reflections & Wellness Logs */}
       {(journalEntries.length > 0 || recentCheckins.length > 0) && (
         <section className="space-y-3 pt-2">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-slate-400">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
             Recent reflections & check-ins
           </h2>
           
@@ -151,16 +151,16 @@ export default function CheckInPage() {
             {journalEntries.slice(0, 3).map((entry) => (
               <div 
                 key={entry.id}
-                className="p-4 rounded-2xl bg-surface dark:bg-surface-dark border border-slate-200/80 dark:border-slate-800 space-y-1.5 shadow-sm"
+                className="p-4 rounded-2xl bg-surface dark:bg-surface-dark border border-stone-200/80 dark:border-white/[0.08] space-y-1.5 shadow-sm"
               >
-                <div className="flex items-center justify-between text-xs text-ink-muted dark:text-slate-400">
+                <div className="flex items-center justify-between text-xs text-ink-muted dark:text-linen-subtle">
                   <span className="font-semibold text-amber-700 dark:text-amber-400">Journal prompt</span>
                   <span>{entry.date}</span>
                 </div>
-                <p className="text-xs text-ink-secondary dark:text-slate-300 italic break-words">
+                <p className="text-xs text-ink-secondary dark:text-linen-muted italic break-words">
                   &ldquo;{entry.prompt}&rdquo;
                 </p>
-                <p className="text-xs sm:text-sm font-medium text-ink-primary dark:text-slate-100 break-words leading-relaxed">
+                <p className="text-xs sm:text-sm font-medium text-ink-primary dark:text-linen break-words leading-relaxed">
                   {entry.response}
                 </p>
               </div>
@@ -169,15 +169,15 @@ export default function CheckInPage() {
             {recentCheckins.slice(0, 2).map((checkin, idx) => (
               <div 
                 key={idx}
-                className="p-3.5 rounded-2xl bg-surface dark:bg-surface-dark border border-slate-200/80 dark:border-slate-800 flex items-center justify-between gap-2 text-xs shadow-sm"
+                className="p-3.5 rounded-2xl bg-surface dark:bg-surface-dark border border-stone-200/80 dark:border-white/[0.08] flex items-center justify-between gap-2 text-xs shadow-sm"
               >
                 <div className="flex items-center gap-2 min-w-0 flex-1">
                   <SunMedium className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
-                  <span className="font-medium text-ink-primary dark:text-slate-200 break-words leading-snug">
+                  <span className="font-medium text-ink-primary dark:text-linen break-words leading-snug">
                     Energy: {checkin.energy}/5 · {checkin.bodyState}
                   </span>
                 </div>
-                <span className="text-ink-muted dark:text-slate-400 text-[11px] shrink-0">
+                <span className="text-ink-muted dark:text-linen-subtle text-[11px] shrink-0">
                   {checkin.date}
                 </span>
               </div>
@@ -188,7 +188,7 @@ export default function CheckInPage() {
 
       {/* Gentle reassurance reminder */}
       <div className="p-4 rounded-2xl bg-stone-100/70 dark:bg-white/[0.04] text-center">
-        <p className="text-xs text-ink-muted dark:text-slate-400 leading-relaxed">
+        <p className="text-xs text-ink-muted dark:text-linen-subtle leading-relaxed">
           &ldquo;The minimum counts. Returning &gt; streaks.&rdquo;
         </p>
       </div>

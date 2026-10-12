@@ -108,7 +108,7 @@ export function CurrentTaskCard({ task }: CurrentTaskCardProps) {
       <div className="mt-6 space-y-4">
         <button
           type="button"
-          onClick={() => openModal('help_start', task.id)}
+          onClick={(e) => { e.stopPropagation(); openModal('help_start', task.id); }}
           className="flex w-full items-center justify-center rounded-2xl bg-amber-500 hover:bg-amber-400 active:bg-amber-600 py-3.5 px-5 text-base font-bold text-stone-950 shadow-[0_4px_20px_rgba(229,149,63,0.28)] transition-all active:scale-[0.99]"
         >
           Help me start
@@ -205,7 +205,7 @@ export function CurrentTaskCard({ task }: CurrentTaskCardProps) {
               <div className="pt-2">
                 <button
                   type="button"
-                  onClick={() => openModal('breakdown', task.id)}
+                  onClick={(e) => { e.stopPropagation(); openModal('breakdown', task.id); }}
                   className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300"
                 >
                   <ListTree className="w-3.5 h-3.5" />

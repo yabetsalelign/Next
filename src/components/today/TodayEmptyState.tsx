@@ -184,8 +184,11 @@ export function TodayEmptyState() {
       <div className="flex flex-col gap-2.5 pt-1">
         <button
           type="button"
-          onClick={() => openModal('create_task')}
-          className="w-full py-3.5 px-4 rounded-2xl bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-stone-950 font-bold text-sm shadow-[0_4px_18px_rgba(229,149,63,0.25)] transition-all active:scale-[0.99]"
+          onClick={(e) => {
+            e.stopPropagation();
+            openModal('create_task');
+          }}
+          className="w-full min-h-[48px] py-3.5 px-4 rounded-2xl bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-stone-950 font-bold text-sm shadow-[0_4px_18px_rgba(229,149,63,0.25)] transition-all active:scale-95"
         >
           Add one thing
         </button>
