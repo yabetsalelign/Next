@@ -35,7 +35,7 @@ export function FreshStartModal() {
     // Pre-activation screen
     return (
       <div 
-        className="fixed inset-0 z-50 flex items-end justify-center pb-[env(safe-area-inset-bottom,0px)] sm:items-center sm:p-4 bg-slate-900/40 dark:bg-slate-950/70"
+        className="fixed inset-0 z-50 flex items-end justify-center pb-[env(safe-area-inset-bottom,0px)] sm:items-center sm:p-4 bg-stone-900/40 dark:bg-black/60 backdrop-blur-[1px] animate-fade-in"
         role="dialog"
         aria-modal="true"
         aria-labelledby="fresh-start-title"
@@ -129,7 +129,7 @@ export function FreshStartModal() {
   // Active reset view
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-end justify-center pb-[env(safe-area-inset-bottom,0px)] sm:items-center sm:p-4 bg-slate-900/40 dark:bg-slate-950/70"
+      className="fixed inset-0 z-50 flex items-end justify-center pb-[env(safe-area-inset-bottom,0px)] sm:items-center sm:p-4 bg-stone-900/40 dark:bg-black/60 backdrop-blur-[1px] animate-fade-in"
       role="dialog"
       aria-modal="true"
       aria-labelledby="fresh-start-active-title"

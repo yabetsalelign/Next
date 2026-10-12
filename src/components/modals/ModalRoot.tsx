@@ -11,6 +11,8 @@ import { RoutineRunnerModal } from './RoutineRunnerModal';
 import { FreshStartModal } from './FreshStartModal';
 import { JournalModal } from './JournalModal';
 import { CheckInModal } from './CheckInModal';
+import { RoutineLibraryModal } from './RoutineLibraryModal';
+import { AddRoutineModal } from './AddRoutineModal';
 
 export function ModalRoot() {
   const { activeModal } = useApp();
@@ -36,6 +38,10 @@ export function ModalRoot() {
       return <JournalModal />;
     case 'check_in':
       return <CheckInModal />;
+    case 'routine_library':
+      return <RoutineLibraryModal />;
+    case 'add_routine':
+      return <AddRoutineModal />;
     default:
       return null;
   }

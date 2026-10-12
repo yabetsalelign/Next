@@ -37,7 +37,7 @@ import {
   addDays,
 } from './dateUtils';
 
-type ModalType = 
+export type ModalType =
   | 'help_start' 
   | 'stuck' 
   | 'breakdown' 
@@ -47,6 +47,8 @@ type ModalType =
   | 'fresh_start'
   | 'journal'
   | 'check_in'
+  | 'routine_library'
+  | 'add_routine'
   | null;
 
 interface AppContextType {

@@ -4,6 +4,7 @@ import './globals.css';
 import { AppProvider } from '@/lib/store';
 import { Navbar } from '@/components/layout/Navbar';
 import { ModalRoot } from '@/components/modals/ModalRoot';
+import { AndroidBackHandler } from '@/components/layout/AndroidBackHandler';
 
 export const metadata: Metadata = {
   title: 'Next — Next. Not everything.',
@@ -41,7 +42,33 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    // suppressHydrationWarning: the inline theme script mutates className before
+    // React hydrates, causing an intentional server/client mismatch on the html element.
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/*
+          CRITICAL — Theme initializer: runs synchronously before the browser paints
+          any pixels, so the correct dark/light class is already on <html> when CSS is
+          applied. This eliminates the dark↔light flicker visible on cold launch and
+          every app resume on Android WebView.
+
+          Logic (mirrors store.tsx updateSettings):
+            1. Read next_settings_v1 from localStorage.
+            2. If theme === 'light'  → remove 'dark'.
+            3. If theme === 'system' → follow prefers-color-scheme.
+            4. Anything else (incl. 'dark' or missing) → add 'dark' (default).
+
+          This must be a plain synchronous <script> in the <head> — Next.js Script
+          strategies (beforeInteractive, afterInteractive) all defer to after React
+          hydration, which is too late and causes the visible flash.
+        */}
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var s=localStorage.getItem('next_settings_v1');var t=s?JSON.parse(s).theme:'dark';if(t==='light'){document.documentElement.classList.remove('dark');}else if(t==='system'){if(!window.matchMedia('(prefers-color-scheme: dark)').matches){document.documentElement.classList.remove('dark');}else{document.documentElement.classList.add('dark');}}else{document.documentElement.classList.add('dark');}}catch(e){document.documentElement.classList.add('dark');}})();`,
+          }}
+        />
+      </head>
       <body className="bg-canvas dark:bg-canvas-dark text-ink-primary dark:text-linen font-sans selection:bg-amber-500/20 selection:text-amber-300">
         <AppProvider>
           {/* Subtle warm ambient atmospheric glow in dark mode — never intercepts pointer events */}
@@ -67,6 +94,7 @@ export default function RootLayout({
 
           {/* Unified Modal Root */}
           <ModalRoot />
+          <AndroidBackHandler />
         </AppProvider>
 
         {/* Service Worker Registration */}

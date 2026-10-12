@@ -22,6 +22,7 @@ export default function SettingsPage() {
   const [confirmModal, setConfirmModal] = useState<'empty_day' | 'reset_demo' | null>(null);
   const [showDataSection, setShowDataSection] = useState(false);
   const [importStatus, setImportStatus] = useState<string | null>(null);
+  const [exportStatus, setExportStatus] = useState<string | null>(null);
 
   // Close modals with Escape key
   useEffect(() => {
@@ -62,8 +63,9 @@ export default function SettingsPage() {
     updateSettings({ startingDifficulty: next });
   };
 
-  const handleExportData = () => {
+  const handleExportData = async () => {
     try {
+      setExportStatus(null);
       const todayStr = getLocalDateString();
       const backupData = {
         version: 1,
@@ -81,15 +83,57 @@ export default function SettingsPage() {
         lastActiveDate: localStorage.getItem('next_last_active_date_v1') || todayStr,
         lastAckReturnDate: localStorage.getItem('next_last_ack_return_date_v1') || null,
       };
-      const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `next-backup-${todayStr}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch (e) {
+
+      const jsonString = JSON.stringify(backupData, null, 2);
+      const fileName = `next-backup-${todayStr}.json`;
+
+      // 1. Try modern Web Share API with File object (Supported on Android WebView / mobile browsers)
+      if (typeof navigator !== 'undefined' && navigator.canShare) {
+        try {
+          const file = new File([jsonString], fileName, { type: 'application/json' });
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: fileName,
+              text: 'Next planner backup file',
+            });
+            setExportStatus('Backup shared/saved successfully.');
+            return;
+          }
+        } catch (shareErr: any) {
+          if (shareErr.name === 'AbortError') {
+            setExportStatus('Export cancelled.');
+            return;
+          }
+          console.warn('Web Share failed, falling back to download', shareErr);
+        }
+      }
+
+      // 2. Standard browser download fallback using data URI and Blob
+      try {
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+        setExportStatus('Backup file downloaded.');
+      } catch (dlErr: any) {
+        console.error('Download fallback failed', dlErr);
+        // 3. Ultimate fallback: copy to clipboard
+        if (navigator.clipboard) {
+          await navigator.clipboard.writeText(jsonString);
+          setExportStatus('Backup copied to clipboard (file download was not supported).');
+        } else {
+          throw new Error('Unable to save file or copy to clipboard.');
+        }
+      }
+    } catch (e: any) {
       console.error('Export failed', e);
+      setExportStatus(`Export failed: ${e?.message || 'Unknown error'}`);
     }
   };
 
@@ -394,6 +438,11 @@ export default function SettingsPage() {
                 />
               </label>
             </div>
+            {exportStatus && (
+              <p className="text-xs text-amber-700 dark:text-amber-300 font-medium pt-1">
+                {exportStatus}
+              </p>
+            )}
             {importStatus && (
               <p className="text-xs text-amber-700 dark:text-amber-300 font-medium pt-1">
                 {importStatus}
@@ -440,7 +489,7 @@ export default function SettingsPage() {
       {/* CONFIRMATION MODALS (NEVER SHIFTING THE PAGE INLINE) */}
       {confirmModal && (
         <div
-          className="fixed inset-0 z-50 flex items-end justify-center pb-[env(safe-area-inset-bottom,0px)] sm:items-center sm:p-4 bg-slate-900/50 dark:bg-slate-950/75 animate-fade-in"
+          className="fixed inset-0 z-50 flex items-end justify-center pb-[env(safe-area-inset-bottom,0px)] sm:items-center sm:p-4 bg-stone-900/40 dark:bg-black/60 backdrop-blur-[1px] animate-fade-in"
           role="dialog"
           aria-modal="true"
           onClick={() => setConfirmModal(null)}
