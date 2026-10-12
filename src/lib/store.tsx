@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import {
   Task,
+  TaskTimeCategory,
+  TaskPriority,
   Routine,
   ReturnDay,
   HelpfulInsight,
@@ -89,6 +91,8 @@ interface AppContextType {
   completeOnboarding: (mode: 'empty' | 'example', goals?: string[], difficulty?: 'gentle' | 'balanced' | 'structured') => void;
   resetToEmptyDay: () => void;
   recordHelpfulFactor: (factorId: string) => void;
+  pendingReturn: boolean;
+  acknowledgeReturn: () => void;
   // Reset actions
   activateFreshStart: () => Reset;
   archiveReset: (resetId: string) => void;
@@ -109,8 +113,52 @@ const STORAGE_KEYS = {
   NOT_PLANNING: 'next_not_planning_v1',
   RESETS: 'next_resets_v1',
   JOURNAL: 'next_journal_v1',
+  CHECKINS: 'next_checkins_v1',
   LAST_ACTIVE_DATE: 'next_last_active_date_v1',
+  LAST_ACK_RETURN_DATE: 'next_last_ack_return_date_v1',
 };
+
+export function createTasksForResetDay(reset: Reset, dayIndex: number, dateStr: string): Task[] {
+  const day = reset.days[dayIndex];
+  if (!day) return [];
+
+  const getTaskIcon = (title: string): string => {
+    const lower = title.toLowerCase();
+    if (lower.includes('water') || lower.includes('hydrate')) return '💧';
+    if (lower.includes('eat') || lower.includes('meal')) return '🍳';
+    if (lower.includes('teeth') || lower.includes('brush')) return '🪥';
+    if (lower.includes('face') || lower.includes('wash') || lower.includes('shower')) return '🧼';
+    if (lower.includes('moisturize') || lower.includes('skin') || lower.includes('lip')) return '🧴';
+    if (lower.includes('move') || lower.includes('walk')) return '🚶';
+    if (lower.includes('sleep') || lower.includes('bed')) return '🌙';
+    if (lower.includes('journal')) return '📓';
+    if (lower.includes('reset') || lower.includes('room')) return '🧹';
+    return '✨';
+  };
+
+  return day.tasks.map((rt, idx) => ({
+    id: `reset-task-${reset.id}-d${dayIndex}-${rt.id}`,
+    title: rt.title,
+    category: 'wellness' as const,
+    icon: getTaskIcon(rt.title),
+    timeCategory: (rt.isOptional ? 'later' : 'today') as TaskTimeCategory,
+    durationMinutes: rt.isOptional ? 10 : 3,
+    priority: (rt.isOptional ? 'could' : 'must') as TaskPriority,
+    minimum: rt.title,
+    normal: rt.title,
+    steps: [
+      { id: `${rt.id}-s1`, title: rt.title, completed: rt.completed, isMinimum: true },
+    ],
+    companyPreference: 'no_preference' as const,
+    completed: rt.completed,
+    orderIndex: 100 + idx,
+    resetId: reset.id,
+    resetTaskId: rt.id,
+    resetDayIndex: dayIndex,
+    isOptional: rt.isOptional,
+    scheduledDate: dateStr,
+  }));
+}
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
@@ -124,6 +172,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [resets, setResets] = useState<Reset[]>(INITIAL_RESETS);
   const [journalEntries, setJournalEntries] = useState<WellnessJournalEntry[]>(INITIAL_JOURNAL_ENTRIES);
 
+  const [pendingReturn, setPendingReturn] = useState<boolean>(false);
   const [activeModal, setActiveModal] = useState<ModalType>(null);
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
   const [activeRoutineId, setActiveRoutineId] = useState<string | null>(null);
@@ -133,6 +182,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     try {
       const todayStr = getLocalDateString();
       const storedLastDate = localStorage.getItem(STORAGE_KEYS.LAST_ACTIVE_DATE);
+      const storedLastAck = localStorage.getItem(STORAGE_KEYS.LAST_ACK_RETURN_DATE);
 
       const storedTasks = localStorage.getItem(STORAGE_KEYS.TASKS);
       let parsedTasks: Task[] = storedTasks ? JSON.parse(storedTasks) : INITIAL_TASKS;
@@ -147,7 +197,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (storedInsights) setHelpfulInsights(JSON.parse(storedInsights));
 
       const storedSettings = localStorage.getItem(STORAGE_KEYS.SETTINGS);
-      if (storedSettings) setSettings(JSON.parse(storedSettings));
+      let parsedSettings: UserSettings = DEFAULT_SETTINGS;
+      if (storedSettings) {
+        parsedSettings = JSON.parse(storedSettings);
+        setSettings(parsedSettings);
+      }
 
       const storedStuckLogs = localStorage.getItem(STORAGE_KEYS.STUCK_LOGS);
       if (storedStuckLogs) setStuckLogs(JSON.parse(storedStuckLogs));
@@ -156,7 +210,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       let parsedNotPlanning = storedNotPlanning ? JSON.parse(storedNotPlanning) : false;
 
       const storedResets = localStorage.getItem(STORAGE_KEYS.RESETS);
-      if (storedResets) setResets(JSON.parse(storedResets));
+      let parsedResets: Reset[] = INITIAL_RESETS;
+      if (storedResets) {
+        parsedResets = JSON.parse(storedResets);
+        setResets(parsedResets);
+      }
 
       const storedJournal = localStorage.getItem(STORAGE_KEYS.JOURNAL);
       if (storedJournal) setJournalEntries(JSON.parse(storedJournal));
@@ -206,6 +264,38 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 note: 'Returned after a pause.',
               },
             ];
+          }
+          // Only prompt if not already acknowledged today
+          if (storedLastAck !== todayStr) {
+            setPendingReturn(true);
+          }
+        }
+      }
+
+      // 5. Synchronize active Fresh Start reset tasks for the current day into planner
+      const activeResetId = parsedSettings?.activeResetId;
+      if (activeResetId && Array.isArray(parsedResets)) {
+        const currentReset = parsedResets.find((r: Reset) => r.id === activeResetId && !r.archived);
+        if (currentReset) {
+          const currentDayIdx = currentReset.days.findIndex((d: ResetDay) => d.date === todayStr);
+          if (currentDayIdx >= 0) {
+            const dayResetTasks = createTasksForResetDay(currentReset, currentDayIdx, todayStr);
+            dayResetTasks.forEach(dTask => {
+              const existingIdx = parsedTasks.findIndex(t => t.id === dTask.id);
+              if (existingIdx === -1) {
+                parsedTasks.push(dTask);
+              } else {
+                // Ensure synchronization of completion status
+                const resetDayTask = currentReset.days[currentDayIdx].tasks.find(rt => rt.id === dTask.resetTaskId);
+                if (resetDayTask && resetDayTask.completed !== parsedTasks[existingIdx].completed) {
+                  parsedTasks[existingIdx] = {
+                    ...parsedTasks[existingIdx],
+                    completed: resetDayTask.completed,
+                    completedAt: resetDayTask.completed ? (parsedTasks[existingIdx].completedAt || new Date().toISOString()) : undefined,
+                  };
+                }
+              }
+            });
           }
         }
       }
@@ -268,6 +358,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             },
           ];
         });
+        const lastAck = localStorage.getItem(STORAGE_KEYS.LAST_ACK_RETURN_DATE);
+        if (lastAck !== todayStr) {
+          setPendingReturn(true);
+        }
+      }
+
+      // Synchronize active reset tasks for the new day
+      const currentActiveReset = resets.find(r => r.id === settings.activeResetId && !r.archived);
+      if (currentActiveReset) {
+        const newDayIdx = currentActiveReset.days.findIndex(d => d.date === todayStr);
+        if (newDayIdx >= 0) {
+          const dayResetTasks = createTasksForResetDay(currentActiveReset, newDayIdx, todayStr);
+          setTasks(prev => {
+            const existingIds = new Set(prev.map(t => t.id));
+            const toAdd = dayResetTasks.filter(t => !existingIds.has(t.id));
+            return toAdd.length > 0 ? [...prev, ...toAdd] : prev;
+          });
+        }
       }
 
       localStorage.setItem(STORAGE_KEYS.LAST_ACTIVE_DATE, todayStr);
@@ -427,22 +535,62 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (target?.category === 'rest') {
       recordHelpfulFactor('h4');
     }
+
+    // Synchronize completion with active reset if task is from a reset
+    if (target?.resetId && target?.resetTaskId) {
+      setResets(prev =>
+        prev.map(r => {
+          if (r.id !== target.resetId) return r;
+          return {
+            ...r,
+            days: r.days.map((d, dIdx) => {
+              if (target.resetDayIndex !== undefined && dIdx !== target.resetDayIndex) return d;
+              return {
+                ...d,
+                tasks: d.tasks.map(rt => rt.id === target.resetTaskId ? { ...rt, completed: true } : rt),
+              };
+            }),
+          };
+        })
+      );
+    }
   };
 
   const uncompleteTask = (taskId: string) => {
+    let uncompletedTask: Task | undefined;
     setTasks(prev =>
       prev.map(t => {
         if (t.id === taskId) {
-          return {
+          uncompletedTask = {
             ...t,
             completed: false,
             completedAt: undefined,
             completedTier: undefined,
           };
+          return uncompletedTask;
         }
         return t;
       })
     );
+
+    const target = tasks.find(t => t.id === taskId) || uncompletedTask;
+    if (target?.resetId && target?.resetTaskId) {
+      setResets(prev =>
+        prev.map(r => {
+          if (r.id !== target.resetId) return r;
+          return {
+            ...r,
+            days: r.days.map((d, dIdx) => {
+              if (target.resetDayIndex !== undefined && dIdx !== target.resetDayIndex) return d;
+              return {
+                ...d,
+                tasks: d.tasks.map(rt => rt.id === target.resetTaskId ? { ...rt, completed: false } : rt),
+              };
+            }),
+          };
+        })
+      );
+    }
   };
 
   const addTask = (newTaskData: Omit<Task, 'id' | 'orderIndex' | 'completed'>): Task => {
@@ -615,9 +763,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setNotPlanningTodayState(false);
     setResets(INITIAL_RESETS);
     setJournalEntries(INITIAL_JOURNAL_ENTRIES);
+    setPendingReturn(false);
     try {
-      localStorage.clear();
+      // Selectively remove only app-owned keys instead of clearing entire localStorage
+      Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
       localStorage.setItem(STORAGE_KEYS.LAST_ACTIVE_DATE, getLocalDateString());
+    } catch {}
+  };
+
+  const acknowledgeReturn = () => {
+    setPendingReturn(false);
+    try {
+      localStorage.setItem(STORAGE_KEYS.LAST_ACK_RETURN_DATE, getLocalDateString());
     } catch {}
   };
 
@@ -661,6 +818,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     setResets(prev => [reset, ...prev]);
     setSettings(prev => ({ ...prev, activeResetId: reset.id }));
+
+    // Inject day 1 tasks into planner (Today)
+    const day1Tasks = createTasksForResetDay(reset, 0, startDate);
+    setTasks(prev => {
+      const existingIds = new Set(prev.map(t => t.id));
+      const toAdd = day1Tasks.filter(t => !existingIds.has(t.id));
+      return toAdd.length > 0 ? [...prev, ...toAdd] : prev;
+    });
+
     return reset;
   };
 
@@ -669,9 +835,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (settings.activeResetId === resetId) {
       setSettings(prev => ({ ...prev, activeResetId: undefined }));
     }
+    // Remove incomplete reset tasks from active planner so they don't linger, preserving completed history
+    setTasks(prev => prev.filter(t => !(t.resetId === resetId && !t.completed)));
   };
 
   const completeResetDayTask = (resetId: string, dayIndex: number, taskId: string) => {
+    let newCompletedState: boolean | undefined;
     setResets(prev =>
       prev.map(r => {
         if (r.id !== resetId) return r;
@@ -681,10 +850,33 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             if (idx !== dayIndex) return day;
             return {
               ...day,
-              tasks: day.tasks.map(t => t.id === taskId ? { ...t, completed: !t.completed } : t),
+              tasks: day.tasks.map(t => {
+                if (t.id === taskId) {
+                  newCompletedState = !t.completed;
+                  return { ...t, completed: !t.completed };
+                }
+                return t;
+              }),
             };
           }),
         };
+      })
+    );
+
+    // Sync state to canonical tasks in planner
+    const canonicalTaskId = `reset-task-${resetId}-d${dayIndex}-${taskId}`;
+    setTasks(prev =>
+      prev.map(t => {
+        if (t.id === canonicalTaskId) {
+          const completed = newCompletedState !== undefined ? newCompletedState : !t.completed;
+          return {
+            ...t,
+            completed,
+            completedAt: completed ? (t.completedAt || new Date().toISOString()) : undefined,
+            completedTier: completed ? (t.completedTier || 'normal') : undefined,
+          };
+        }
+        return t;
       })
     );
   };
@@ -714,6 +906,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         activeTaskId,
         activeRoutineId,
         notPlanningToday,
+        pendingReturn,
+        acknowledgeReturn,
         currentTask,
         upNextTasks,
         activeReset,

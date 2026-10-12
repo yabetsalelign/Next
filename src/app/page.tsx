@@ -27,7 +27,7 @@ function TaskCategoryIcon({ category, icon }: { category?: string; icon?: string
 }
 
 export default function TodayPage() {
-  const { currentTask, upNextTasks, hydrated, notPlanningToday, settings } = useApp();
+  const { currentTask, upNextTasks, hydrated, notPlanningToday, pendingReturn, settings } = useApp();
   const [showUpcoming, setShowUpcoming] = useState(false);
 
   // If first launch has not been completed, present intentional onboarding
@@ -41,7 +41,7 @@ export default function TodayPage() {
       <Header />
 
       {/* Main Focus: What do I do next? */}
-      {notPlanningToday || !currentTask ? (
+      {pendingReturn || notPlanningToday || !currentTask ? (
         <TodayEmptyState />
       ) : (
         <div className="space-y-6">

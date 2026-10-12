@@ -5,9 +5,10 @@ import { useApp } from '@/lib/store';
 import { Plus, Coffee, Heart, RotateCcw } from 'lucide-react';
 
 function WelcomeBackState() {
-  const { openModal, setNotPlanningToday, addTask, tasks, resetToDemoData } = useApp();
+  const { openModal, setNotPlanningToday, addTask, tasks, acknowledgeReturn } = useApp();
 
   const handleOneSmallThing = () => {
+    acknowledgeReturn();
     addTask({
       title: 'One small thing',
       category: 'productive',
@@ -26,10 +27,13 @@ function WelcomeBackState() {
   };
 
   const handleNormalDay = () => {
-    resetToDemoData();
+    // Resume normal planning without deleting or resetting user data
+    setNotPlanningToday(false);
+    acknowledgeReturn();
   };
 
   const handleJustCare = () => {
+    acknowledgeReturn();
     const existingTitles = tasks.map(t => t.title.toLowerCase());
     const minimums = [
       { title: 'Drink water', icon: '💧', minimum: 'Even just three sips', normal: 'Drink a full glass of water' },
@@ -99,7 +103,10 @@ function WelcomeBackState() {
 
         <button
           type="button"
-          onClick={() => setNotPlanningToday(true)}
+          onClick={() => {
+            setNotPlanningToday(true);
+            acknowledgeReturn();
+          }}
           className="w-full py-2.5 px-4 text-xs font-medium text-ink-muted hover:text-ink-secondary dark:text-linen-subtle dark:hover:text-linen transition-colors"
         >
           I don&apos;t know yet
@@ -110,14 +117,7 @@ function WelcomeBackState() {
 }
 
 export function TodayEmptyState() {
-  const { openModal, notPlanningToday, setNotPlanningToday, returns, addTask } = useApp();
-
-  // Detect multi-day absence or return flag
-  const isReturning = useMemo(() => {
-    if (returns.length < 2) return false;
-    const recent = returns.slice(-2);
-    return recent.every(r => r.status === 'paused');
-  }, [returns]);
+  const { openModal, notPlanningToday, setNotPlanningToday, pendingReturn, addTask } = useApp();
 
   const handleJustCareForSelf = () => {
     addTask({
@@ -163,7 +163,7 @@ export function TodayEmptyState() {
     );
   }
 
-  if (isReturning) {
+  if (pendingReturn) {
     return <WelcomeBackState />;
   }
 

@@ -43,6 +43,9 @@ export interface Task {
   notes?: string;
   orderIndex: number;
   resetId?: string; // If this task belongs to an active Reset
+  resetTaskId?: string; // ID of the corresponding ResetDayTask
+  resetDayIndex?: number; // 0-indexed day within the active reset
+  isOptional?: boolean; // If this task is an optional bonus task
   createdAt?: string; // ISO timestamp or YYYY-MM-DD
   scheduledDate?: string; // YYYY-MM-DD target day
   rolloverDate?: string; // YYYY-MM-DD when moved to later
