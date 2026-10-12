@@ -10,27 +10,34 @@ export function TaskCreatorModal() {
 
   const [title, setTitle] = useState('');
   const [when, setWhen] = useState<TaskTimeCategory>('now');
+  const [category, setCategory] = useState<TaskCategory>('productive');
+  const [icon, setIcon] = useState('📌');
   const [minimum, setMinimum] = useState('');
   const [normal, setNormal] = useState('');
-  const [isRest, setIsRest] = useState(false);
   const [company, setCompany] = useState<EnvironmentPreference>('no_preference');
   const [durationMinutes, setDurationMinutes] = useState(15);
   const [showExtraFields, setShowExtraFields] = useState(false);
+
+  const EMOJI_OPTIONS = ['📌', '💻', '💧', '🪥', '🍳', '☕', '🧹', '🚶', '✨', '📖'];
+
+  const handleCategoryChange = (newCat: TaskCategory) => {
+    setCategory(newCat);
+    if (newCat === 'rest' && (icon === '📌' || icon === '💧')) setIcon('☕');
+    if (newCat === 'wellness' && (icon === '📌' || icon === '☕')) setIcon('💧');
+    if (newCat === 'productive' && (icon === '☕' || icon === '💧')) setIcon('📌');
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
 
-    const cat: TaskCategory = isRest ? 'rest' : 'productive';
-    const icon = isRest ? '☕' : '📌';
-
     addTask({
       title: title.trim(),
-      category: cat,
-      icon,
+      category,
+      icon: icon || (category === 'rest' ? '☕' : category === 'wellness' ? '💧' : '📌'),
       timeCategory: when,
       durationMinutes,
-      priority: isRest ? 'should' : 'must',
+      priority: category === 'rest' ? 'should' : 'must',
       minimum: minimum.trim() || 'Start for 2 minutes and make 1 small action',
       normal: normal.trim() || `${durationMinutes} minutes`,
       steps: [
@@ -131,26 +138,56 @@ export function TaskCreatorModal() {
             </div>
           </div>
 
-          {/* Is this Rest? */}
-          <label className="flex items-center justify-between p-3.5 rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-900/40 cursor-pointer min-h-[60px]">
-            <div className="flex items-center gap-2.5">
-              <Coffee className="w-4 h-4 text-amber-700 dark:text-amber-400" />
-              <div>
-                <p className="text-sm font-semibold text-amber-900 dark:text-amber-200">
-                  This is a rest activity
-                </p>
-                <p className="text-[11px] text-amber-800/80 dark:text-amber-300/80">
-                  Rest is a legitimate activity, not earned guilt.
-                </p>
-              </div>
+          {/* Activity Type Selector */}
+          <div className="space-y-2">
+            <span className="text-xs font-semibold uppercase tracking-wider text-ink-muted dark:text-slate-400">
+              Activity Type
+            </span>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { id: 'productive', label: '📋 Task' },
+                { id: 'wellness', label: '💧 Self-care' },
+                { id: 'rest', label: '☕ Rest' },
+              ].map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => handleCategoryChange(item.id as TaskCategory)}
+                  className={`py-2.5 px-3 rounded-xl text-xs font-semibold border transition-all text-center min-h-[44px] ${
+                    category === item.id
+                      ? 'bg-brand-600 text-white border-brand-600 shadow-sm'
+                      : 'border-slate-200 dark:border-slate-800 text-ink-secondary dark:text-slate-300 active:bg-slate-100 dark:active:bg-slate-800'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
             </div>
-            <input
-              type="checkbox"
-              checked={isRest}
-              onChange={(e) => setIsRest(e.target.checked)}
-              className="w-5 h-5 rounded text-amber-600 focus:ring-amber-500 cursor-pointer shrink-0"
-            />
-          </label>
+          </div>
+
+          {/* Emoji / Icon Selector */}
+          <div className="space-y-2">
+            <span className="text-xs font-semibold uppercase tracking-wider text-ink-muted dark:text-slate-400">
+              Icon
+            </span>
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 scrollbar-none">
+              {EMOJI_OPTIONS.map((e) => (
+                <button
+                  key={e}
+                  type="button"
+                  onClick={() => setIcon(e)}
+                  className={`w-10 h-10 rounded-xl text-lg flex items-center justify-center shrink-0 border transition-all ${
+                    icon === e
+                      ? 'border-brand-500 bg-brand-50/70 dark:bg-brand-950/40 scale-105 shadow-sm'
+                      : 'border-slate-200/80 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800'
+                  }`}
+                  aria-label={`Select icon ${e}`}
+                >
+                  {e}
+                </button>
+              ))}
+            </div>
+          </div>
 
           {/* Expandable MNE & Company preferences */}
           <div className="space-y-3 pt-1">

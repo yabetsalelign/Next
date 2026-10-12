@@ -25,6 +25,19 @@ export default function PlanPage() {
   const [addMode, setAddMode] = useState<'menu' | 'care' | 'rest'>('menu');
   const [showCompleted, setShowCompleted] = useState(false);
 
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowAddMenu(false);
+        setAddMode('menu');
+      }
+    };
+    if (showAddMenu) {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [showAddMenu]);
+
   const restPresets = [
     { title: 'Sit quietly & breathe', icon: '☕', duration: 10 },
     { title: 'Listen to calming music', icon: '🎵', duration: 15 },

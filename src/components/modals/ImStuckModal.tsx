@@ -72,6 +72,16 @@ export function ImStuckModal() {
   const task = tasks.find(t => t.id === activeTaskId) || null;
   const taskTitle = task?.title || 'this task';
 
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeModal();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [closeModal]);
+
   const handleSelectReason = (reason: StuckReason) => {
     setSelectedReason(reason);
   };

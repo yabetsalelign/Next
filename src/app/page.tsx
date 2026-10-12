@@ -10,6 +10,9 @@ import { OnboardingFlow } from '@/components/today/OnboardingFlow';
 import { ChevronDown, ChevronUp, Coffee, Sparkles, Clock, CheckCircle2 } from 'lucide-react';
 
 function TaskCategoryIcon({ category, icon }: { category?: string; icon?: string }) {
+  if (icon) {
+    return <span className="text-sm select-none">{icon}</span>;
+  }
   if (category === 'rest') {
     return <Coffee className="w-4 h-4 text-amber-500/90 shrink-0" />;
   }
@@ -18,9 +21,6 @@ function TaskCategoryIcon({ category, icon }: { category?: string; icon?: string
   }
   if (category === 'routine') {
     return <Clock className="w-4 h-4 text-sage-500 shrink-0" />;
-  }
-  if (icon && !['📌', '☕', '💧', '✨', '🧹', '🚿', '🪥', '🍳'].includes(icon)) {
-    return <span className="text-sm select-none">{icon}</span>;
   }
   return <CheckCircle2 className="w-4 h-4 text-stone-400 dark:text-linen-subtle shrink-0" />;
 }

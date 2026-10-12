@@ -71,6 +71,8 @@ interface AppContextType {
   toggleRoutineStep: (routineId: string, stepId: string) => void;
   resetRoutineSteps: (routineId: string) => void;
   updateRoutine: (routineId: string, updates: Partial<Routine>) => void;
+  addRoutine: (routine: Omit<Routine, 'id'>) => Routine;
+  deleteRoutine: (routineId: string) => void;
   updateSettings: (updates: Partial<UserSettings>) => void;
   setNotPlanningToday: (val: boolean) => void;
   resetToDemoData: () => void;
@@ -189,8 +191,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Derived: Current task (Now) and Up Next
   const { currentTask, upNextTasks } = useMemo(() => {
     const uncompleted = tasks.filter(t => !t.completed);
-    const nowTask = uncompleted.find(t => t.timeCategory === 'now') || uncompleted[0] || null;
-    const upNext = uncompleted.filter(t => t.id !== nowTask?.id).slice(0, 4);
+    // Eligible active tasks for Today (explicitly 'now', 'today', or 'scheduled')
+    const todayEligible = uncompleted.filter(
+      t => t.timeCategory === 'now' || t.timeCategory === 'today' || t.timeCategory === 'scheduled'
+    );
+
+    // 1. Explicit 'now' task takes priority
+    let nowTask = uncompleted.find(t => t.timeCategory === 'now') || null;
+
+    // 2. Otherwise pick the first eligible today task
+    if (!nowTask && todayEligible.length > 0) {
+      nowTask = todayEligible[0];
+    }
+
+    // 3. Up next tasks are remaining today-eligible tasks
+    const upNext = todayEligible.filter(t => t.id !== nowTask?.id).slice(0, 4);
     return { currentTask: nowTask, upNextTasks: upNext };
   }, [tasks]);
 
@@ -350,6 +365,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const updateRoutine = (routineId: string, updates: Partial<Routine>) => {
     setRoutines(prev => prev.map(r => (r.id === routineId ? { ...r, ...updates } : r)));
+  };
+
+  const addRoutine = (newRoutine: Omit<Routine, 'id'>): Routine => {
+    const id = `routine-${Date.now()}`;
+    const routine: Routine = { ...newRoutine, id };
+    setRoutines(prev => [...prev, routine]);
+    return routine;
+  };
+
+  const deleteRoutine = (routineId: string) => {
+    setRoutines(prev => prev.filter(r => r.id !== routineId));
   };
 
   const updateSettings = (updates: Partial<UserSettings>) => {
@@ -525,6 +551,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         toggleRoutineStep,
         resetRoutineSteps,
         updateRoutine,
+        addRoutine,
+        deleteRoutine,
         updateSettings,
         setNotPlanningToday,
         deferTask,

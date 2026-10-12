@@ -15,10 +15,10 @@ import {
 } from 'lucide-react';
 import { sounds } from '@/lib/sounds';
 
-// Default routine IDs considered "My routines" initially
-const CORE_ROUTINE_IDS = ['routine-morning-care', 'routine-night-care', 'routine-five-min-reset'];
+// Routine IDs considered library templates
+const LIBRARY_TEMPLATE_IDS = ['routine-morning', 'routine-evening', 'routine-reset', 'routine-event-prep'];
 
-function RoutineCard({ routine }: { routine: Routine }) {
+function RoutineCard({ routine, onStart }: { routine: Routine; onStart?: () => void }) {
   const { toggleRoutineStep, resetRoutineSteps, openModal, updateRoutine } = useApp();
   const [showSteps, setShowSteps] = useState(false);
   const [newStepText, setNewStepText] = useState('');
@@ -68,7 +68,11 @@ function RoutineCard({ routine }: { routine: Routine }) {
         <div className="flex items-center gap-2 shrink-0">
           <button
             type="button"
-            onClick={() => openModal('routine_runner', undefined, routine.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onStart?.();
+              openModal('routine_runner', undefined, routine.id);
+            }}
             className="flex items-center gap-1.5 py-2 px-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs shadow-sm transition-all active:scale-95"
           >
             <Play className="w-3.5 h-3.5" />
@@ -77,7 +81,10 @@ function RoutineCard({ routine }: { routine: Routine }) {
 
           <button
             type="button"
-            onClick={() => setShowSteps(!showSteps)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowSteps(!showSteps);
+            }}
             className="p-2 rounded-xl text-ink-muted hover:text-ink-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             aria-label={showSteps ? 'Collapse routine' : 'Expand routine'}
           >
@@ -144,7 +151,11 @@ function RoutineCard({ routine }: { routine: Routine }) {
           <div className="flex items-center gap-2 pt-1">
             <button
               type="button"
-              onClick={() => openModal('routine_runner', undefined, routine.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onStart?.();
+                openModal('routine_runner', undefined, routine.id);
+              }}
               className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs shadow-sm transition-all active:scale-[0.99]"
             >
               <Play className="w-3.5 h-3.5" />
@@ -188,16 +199,46 @@ function RoutineCard({ routine }: { routine: Routine }) {
 }
 
 export default function RoutinesPage() {
-  const { routines } = useApp();
+  const { routines, addRoutine } = useApp();
   const [showLibrary, setShowLibrary] = useState(false);
   const [showAddRoutineModal, setShowAddRoutineModal] = useState(false);
   const [newRoutineTitle, setNewRoutineTitle] = useState('');
   const [newRoutineDesc, setNewRoutineDesc] = useState('');
 
-  // Primary "My routines"
-  const myRoutines = routines.filter(r => CORE_ROUTINE_IDS.includes(r.id));
-  // Additional library routines
-  const libraryRoutines = routines.filter(r => !CORE_ROUTINE_IDS.includes(r.id));
+  // Primary "My routines" (non-template or user created)
+  const myRoutines = routines.filter(r => !LIBRARY_TEMPLATE_IDS.includes(r.id));
+  // Additional library template routines
+  const libraryRoutines = routines.filter(r => LIBRARY_TEMPLATE_IDS.includes(r.id));
+
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowLibrary(false);
+        setShowAddRoutineModal(false);
+      }
+    };
+    if (showLibrary || showAddRoutineModal) {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [showLibrary, showAddRoutineModal]);
+
+  const handleCreateRoutine = () => {
+    if (!newRoutineTitle.trim()) return;
+    addRoutine({
+      title: newRoutineTitle.trim(),
+      description: newRoutineDesc.trim() || 'Custom routine',
+      icon: '✨',
+      enabled: true,
+      timeOfDay: 'anytime',
+      steps: [
+        { id: `step-${Date.now()}-1`, title: 'First step', durationMinutes: 5, completed: false }
+      ],
+    });
+    setShowAddRoutineModal(false);
+    setNewRoutineTitle('');
+    setNewRoutineDesc('');
+  };
 
   return (
     <div className="max-w-xl mx-auto space-y-6 animate-fade-in pb-10">
@@ -218,9 +259,36 @@ export default function RoutinesPage() {
         </h2>
 
         <div className="space-y-3">
-          {myRoutines.map((routine) => (
-            <RoutineCard key={routine.id} routine={routine} />
-          ))}
+          {myRoutines.length > 0 ? (
+            myRoutines.map((routine) => (
+              <RoutineCard key={routine.id} routine={routine} />
+            ))
+          ) : (
+            <div className="p-6 text-center rounded-3xl bg-surface dark:bg-surface-dark border border-slate-200/90 dark:border-slate-800 space-y-3">
+              <p className="text-sm font-medium text-ink-primary dark:text-slate-200">
+                No active routines right now.
+              </p>
+              <p className="text-xs text-ink-muted dark:text-slate-400 max-w-sm mx-auto">
+                Routines are low-pressure step sequences to ease transitions. Pick a template from the library or create a small personal sequence.
+              </p>
+              <div className="flex items-center justify-center gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setShowLibrary(true)}
+                  className="py-2 px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-ink-primary dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                >
+                  Browse library
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowAddRoutineModal(true)}
+                  className="py-2 px-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold shadow-sm transition-colors"
+                >
+                  Create routine
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
@@ -282,7 +350,11 @@ export default function RoutinesPage() {
 
             <div className="space-y-3 pt-1">
               {libraryRoutines.map((routine) => (
-                <RoutineCard key={routine.id} routine={routine} />
+                <RoutineCard 
+                  key={routine.id} 
+                  routine={routine} 
+                  onStart={() => setShowLibrary(false)}
+                />
               ))}
             </div>
           </div>
@@ -346,12 +418,7 @@ export default function RoutinesPage() {
                 <button
                   type="button"
                   disabled={!newRoutineTitle.trim()}
-                  onClick={() => {
-                    // We can add routine logic here if needed
-                    setShowAddRoutineModal(false);
-                    setNewRoutineTitle('');
-                    setNewRoutineDesc('');
-                  }}
+                  onClick={handleCreateRoutine}
                   className="w-full py-3.5 px-5 rounded-2xl bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white font-semibold text-sm shadow-sm transition-all"
                 >
                   Create routine

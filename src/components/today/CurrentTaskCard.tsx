@@ -71,9 +71,14 @@ export function CurrentTaskCard({ task }: CurrentTaskCardProps) {
 
       {/* Primary Task Information */}
       <div className="space-y-3">
-        <h2 className="text-xl sm:text-2xl font-semibold leading-snug tracking-tight text-ink-primary dark:text-linen">
-          {task.title}
-        </h2>
+        <div className="flex items-start gap-3">
+          <span className="text-2xl sm:text-3xl select-none pt-0.5 shrink-0" role="img" aria-hidden="true">
+            {task.icon || (isRest ? '☕' : task.category === 'wellness' ? '💧' : '📌')}
+          </span>
+          <h2 className="text-xl sm:text-2xl font-semibold leading-snug tracking-tight text-ink-primary dark:text-linen">
+            {task.title}
+          </h2>
+        </div>
 
         {/* Integrated Minimum — NOT a separate card */}
         <p className="text-base leading-relaxed text-ink-secondary dark:text-linen-muted">

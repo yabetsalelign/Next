@@ -9,7 +9,8 @@ import {
   Sparkles, 
   RotateCcw, 
   Settings as SettingsIcon,
-  Plus
+  Plus,
+  HeartHandshake
 } from 'lucide-react';
 import { useApp } from '@/lib/store';
 
@@ -26,6 +27,7 @@ export function Navbar() {
     { label: 'Today', href: '/', icon: CheckCircle2 },
     { label: 'Plan', href: '/plan', icon: Calendar },
     { label: 'Routines', href: '/routines', icon: Sparkles },
+    { label: 'Check-in', href: '/check-in', icon: HeartHandshake },
     { label: 'History', href: '/history', icon: RotateCcw },
     { label: 'Settings', href: '/settings', icon: SettingsIcon },
   ];
