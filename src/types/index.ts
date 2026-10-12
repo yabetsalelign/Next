@@ -43,6 +43,10 @@ export interface Task {
   notes?: string;
   orderIndex: number;
   resetId?: string; // If this task belongs to an active Reset
+  createdAt?: string; // ISO timestamp or YYYY-MM-DD
+  scheduledDate?: string; // YYYY-MM-DD target day
+  rolloverDate?: string; // YYYY-MM-DD when moved to later
+  archived?: boolean; // Historical retention without active queue presence
 }
 
 export interface RoutineStep {

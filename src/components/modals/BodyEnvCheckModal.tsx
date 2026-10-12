@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useApp } from '@/lib/store';
 import { BodyState, HydrationLevel } from '@/types';
+import { getLocalDateString } from '@/lib/dateUtils';
 import { X, HeartHandshake, Check } from 'lucide-react';
 
 const BODY_STATES: { id: BodyState; label: string }[] = [
@@ -41,7 +42,7 @@ export function BodyEnvCheckModal() {
     // Store check-in in localStorage directly (keeps store lean)
     try {
       const entry = {
-        date: new Date().toISOString().split('T')[0],
+        date: getLocalDateString(),
         energy,
         bodyState,
         hydration,

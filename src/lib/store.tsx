@@ -25,6 +25,15 @@ import {
   INITIAL_JOURNAL_ENTRIES,
   FRESH_START_TEMPLATE,
 } from './sampleData';
+import {
+  getLocalDateString,
+  formatDayOfWeek,
+  isSameDay,
+  isBeforeDay,
+  isAfterDay,
+  getDaysDifference,
+  addDays,
+} from './dateUtils';
 
 type ModalType = 
   | 'help_start' 
@@ -100,6 +109,7 @@ const STORAGE_KEYS = {
   NOT_PLANNING: 'next_not_planning_v1',
   RESETS: 'next_resets_v1',
   JOURNAL: 'next_journal_v1',
+  LAST_ACTIVE_DATE: 'next_last_active_date_v1',
 };
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
@@ -118,17 +128,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
   const [activeRoutineId, setActiveRoutineId] = useState<string | null>(null);
 
-  // Safe localStorage hydration
+  // Safe localStorage hydration with local day rollover handling
   useEffect(() => {
     try {
+      const todayStr = getLocalDateString();
+      const storedLastDate = localStorage.getItem(STORAGE_KEYS.LAST_ACTIVE_DATE);
+
       const storedTasks = localStorage.getItem(STORAGE_KEYS.TASKS);
-      if (storedTasks) setTasks(JSON.parse(storedTasks));
+      let parsedTasks: Task[] = storedTasks ? JSON.parse(storedTasks) : INITIAL_TASKS;
 
       const storedRoutines = localStorage.getItem(STORAGE_KEYS.ROUTINES);
-      if (storedRoutines) setRoutines(JSON.parse(storedRoutines));
+      let parsedRoutines: Routine[] = storedRoutines ? JSON.parse(storedRoutines) : INITIAL_ROUTINES;
 
       const storedReturns = localStorage.getItem(STORAGE_KEYS.RETURNS);
-      if (storedReturns) setReturns(JSON.parse(storedReturns));
+      let parsedReturns: ReturnDay[] = storedReturns ? JSON.parse(storedReturns) : INITIAL_RETURNS;
 
       const storedInsights = localStorage.getItem(STORAGE_KEYS.INSIGHTS);
       if (storedInsights) setHelpfulInsights(JSON.parse(storedInsights));
@@ -140,19 +153,142 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (storedStuckLogs) setStuckLogs(JSON.parse(storedStuckLogs));
 
       const storedNotPlanning = localStorage.getItem(STORAGE_KEYS.NOT_PLANNING);
-      if (storedNotPlanning) setNotPlanningTodayState(JSON.parse(storedNotPlanning));
+      let parsedNotPlanning = storedNotPlanning ? JSON.parse(storedNotPlanning) : false;
 
       const storedResets = localStorage.getItem(STORAGE_KEYS.RESETS);
       if (storedResets) setResets(JSON.parse(storedResets));
 
       const storedJournal = localStorage.getItem(STORAGE_KEYS.JOURNAL);
       if (storedJournal) setJournalEntries(JSON.parse(storedJournal));
+
+      // Sanitize legacy demo returns from September 2026 if present
+      if (Array.isArray(parsedReturns)) {
+        parsedReturns = parsedReturns.filter((r: ReturnDay) => !r.dateStr.startsWith('2026-09-'));
+      }
+
+      // Check for day rollover across midnight or on app launch
+      if (storedLastDate && isBeforeDay(storedLastDate, todayStr)) {
+        // 1. Move yesterday's incomplete active tasks to 'later' so they do not crowd today
+        parsedTasks = parsedTasks.map((t: Task) => {
+          if (!t.completed && (t.timeCategory === 'now' || t.timeCategory === 'today')) {
+            // Keep tasks explicitly scheduled for today or a future date
+            if (t.scheduledDate && isSameDay(t.scheduledDate, todayStr)) return t;
+            if (t.scheduledDate && isAfterDay(t.scheduledDate, todayStr)) return t;
+            return {
+              ...t,
+              timeCategory: 'later' as const,
+              rolloverDate: todayStr,
+            };
+          }
+          return t;
+        });
+
+        // 2. Reset yesterday's day off status for the fresh day
+        parsedNotPlanning = false;
+
+        // 3. Reset routine step checkmarks for the new day
+        parsedRoutines = parsedRoutines.map((r: Routine) => ({
+          ...r,
+          steps: r.steps.map(s => ({ ...s, completed: false })),
+        }));
+
+        // 4. Return recording: if gap >= 2 days, mark today as a gentle return
+        const daysGap = getDaysDifference(storedLastDate, todayStr);
+        if (daysGap >= 2) {
+          const hasTodayReturn = parsedReturns.some((r: ReturnDay) => r.dateStr === todayStr);
+          if (!hasTodayReturn) {
+            parsedReturns = [
+              ...parsedReturns,
+              {
+                dayOfWeek: formatDayOfWeek(todayStr),
+                dateStr: todayStr,
+                status: 'returned' as const,
+                note: 'Returned after a pause.',
+              },
+            ];
+          }
+        }
+      }
+
+      // Ensure last active date is updated to current local calendar day
+      localStorage.setItem(STORAGE_KEYS.LAST_ACTIVE_DATE, todayStr);
+
+      setTasks(parsedTasks);
+      setRoutines(parsedRoutines);
+      setReturns(parsedReturns);
+      setNotPlanningTodayState(parsedNotPlanning);
     } catch (e) {
       console.error('Failed to load data from localStorage:', e);
     } finally {
       setHydrated(true);
     }
   }, []);
+
+  // Periodic & visibility-change day rollover check (e.g. across midnight or returning to foreground)
+  useEffect(() => {
+    if (!hydrated) return;
+
+    const checkRollover = () => {
+      const todayStr = getLocalDateString();
+      const lastDate = localStorage.getItem(STORAGE_KEYS.LAST_ACTIVE_DATE);
+      if (!lastDate || !isBeforeDay(lastDate, todayStr)) return;
+
+      // Day changed while app was running or paused
+      setTasks(prev =>
+        prev.map(t => {
+          if (!t.completed && (t.timeCategory === 'now' || t.timeCategory === 'today')) {
+            if (t.scheduledDate && isSameDay(t.scheduledDate, todayStr)) return t;
+            if (t.scheduledDate && isAfterDay(t.scheduledDate, todayStr)) return t;
+            return { ...t, timeCategory: 'later', rolloverDate: todayStr };
+          }
+          return t;
+        })
+      );
+
+      setNotPlanningTodayState(false);
+
+      setRoutines(prev =>
+        prev.map(r => ({
+          ...r,
+          steps: r.steps.map(s => ({ ...s, completed: false })),
+        }))
+      );
+
+      const daysGap = getDaysDifference(lastDate, todayStr);
+      if (daysGap >= 2) {
+        setReturns(prev => {
+          if (prev.some(r => r.dateStr === todayStr)) return prev;
+          return [
+            ...prev,
+            {
+              dayOfWeek: formatDayOfWeek(todayStr),
+              dateStr: todayStr,
+              status: 'returned',
+              note: 'Returned after a pause.',
+            },
+          ];
+        });
+      }
+
+      localStorage.setItem(STORAGE_KEYS.LAST_ACTIVE_DATE, todayStr);
+    };
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        checkRollover();
+      }
+    };
+
+    window.addEventListener('focus', checkRollover);
+    document.addEventListener('visibilitychange', handleVisibility);
+    const interval = setInterval(checkRollover, 60000);
+
+    return () => {
+      window.removeEventListener('focus', checkRollover);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      clearInterval(interval);
+    };
+  }, [hydrated]);
 
   // Sync to localStorage
   useEffect(() => {
@@ -241,23 +377,55 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const completeTask = (taskId: string, tier: 'minimum' | 'normal' | 'extra') => {
+    const todayStr = getLocalDateString();
+    let completedTask: Task | undefined;
+
     setTasks(prev =>
       prev.map(t => {
         if (t.id === taskId) {
-          return {
+          completedTask = {
             ...t,
             completed: true,
             completedAt: new Date().toISOString(),
             completedTier: tier,
           };
+          return completedTask;
         }
         return t;
       })
     );
 
-    // If tier is minimum, increment helpful insight for mini starts
+    // Record activity for today in returns
+    setReturns(prev => {
+      const idx = prev.findIndex(r => r.dateStr === todayStr);
+      if (idx >= 0) {
+        // If it's already marked as 'returned' or 'active', preserve status
+        return prev;
+      }
+      return [
+        ...prev,
+        {
+          dayOfWeek: formatDayOfWeek(todayStr),
+          dateStr: todayStr,
+          status: 'active',
+          note: tier === 'minimum' ? 'Completed a minimum.' : 'Active today.',
+        },
+      ];
+    });
+
+    // Record helpful factor based on tier and context
     if (tier === 'minimum') {
       recordHelpfulFactor('h1');
+    }
+    const target = tasks.find(t => t.id === taskId) || completedTask;
+    if (target?.companyPreference === 'someone_nearby' || target?.companyPreference === 'body_double') {
+      recordHelpfulFactor('h2');
+    }
+    if (target?.companyPreference === 'background_company') {
+      recordHelpfulFactor('h3');
+    }
+    if (target?.category === 'rest') {
+      recordHelpfulFactor('h4');
     }
   };
 
@@ -279,11 +447,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const addTask = (newTaskData: Omit<Task, 'id' | 'orderIndex' | 'completed'>): Task => {
     const id = `task-${Date.now()}`;
+    const todayStr = getLocalDateString();
     const task: Task = {
       ...newTaskData,
       id,
       completed: false,
       orderIndex: tasks.length,
+      createdAt: todayStr,
+      scheduledDate: (newTaskData.timeCategory === 'now' || newTaskData.timeCategory === 'today')
+        ? todayStr
+        : newTaskData.scheduledDate,
     };
 
     setTasks(prev => {
@@ -310,6 +483,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setTasks(prev =>
       prev.map(t => {
         if (t.id !== taskId) return t;
+        const targetStep = t.steps.find(s => s.id === stepId);
+        const willComplete = targetStep ? !targetStep.completed : false;
+        if (willComplete) {
+          recordHelpfulFactor('h5');
+        }
         return {
           ...t,
           steps: t.steps.map(s => (s.id === stepId ? { ...s, completed: !s.completed } : s)),
@@ -337,6 +515,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     // Record helpful intervention
     if (reason === 'watched') recordHelpfulFactor('h2');
     if (reason === 'environment_too_much') recordHelpfulFactor('h3');
+    if (reason === 'too_much' || reason === 'dont_know_what_next') recordHelpfulFactor('h5');
   };
 
   const toggleRoutineStep = (routineId: string, stepId: string) => {
@@ -438,18 +617,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setJournalEntries(INITIAL_JOURNAL_ENTRIES);
     try {
       localStorage.clear();
+      localStorage.setItem(STORAGE_KEYS.LAST_ACTIVE_DATE, getLocalDateString());
     } catch {}
   };
 
   // --- Reset actions ---
   const activateFreshStart = (): Reset => {
     const today = new Date();
-    const startDate = today.toISOString().split('T')[0];
-    const endDate = new Date(today.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const startDate = getLocalDateString(today);
+    const endDate = getLocalDateString(addDays(today, 6));
 
     const days: ResetDay[] = Array.from({ length: 7 }, (_, i) => {
-      const d = new Date(today.getTime() + i * 24 * 60 * 60 * 1000);
-      const dateStr = d.toISOString().split('T')[0];
+      const d = addDays(today, i);
+      const dateStr = getLocalDateString(d);
       const tasks: ResetDayTask[] = [
         ...FRESH_START_TEMPLATE.dailyMinimumTasks.map((t, j) => ({
           id: `fst-${i}-min-${j}`,

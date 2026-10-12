@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useApp } from '@/lib/store';
 import { Header } from '@/components/layout/Header';
 import { Task } from '@/types';
 import { WELLNESS_TASK_PRESETS } from '@/lib/sampleData';
+import { getLocalDateString, isSameDay } from '@/lib/dateUtils';
 import { 
   Plus, 
   Coffee, 
@@ -90,8 +91,9 @@ export default function PlanPage() {
   };
 
   // Filter tasks
+  const todayStr = useMemo(() => getLocalDateString(), []);
   const uncompletedTasks = tasks.filter(t => !t.completed);
-  const completedTasks = tasks.filter(t => t.completed);
+  const completedToday = tasks.filter(t => t.completed && t.completedAt && isSameDay(t.completedAt, todayStr));
 
   const applyFilter = (list: Task[]) => {
     return list.filter(t => {
@@ -355,20 +357,20 @@ export default function PlanPage() {
       </div>
 
       {/* Completed tasks toggle (subtle and secondary) */}
-      {completedTasks.length > 0 && (
+      {completedToday.length > 0 && (
         <div className="pt-2 text-center">
           <button
             type="button"
             onClick={() => setShowCompleted(!showCompleted)}
             className="inline-flex items-center gap-1.5 text-xs text-ink-muted hover:text-ink-primary dark:text-slate-400 dark:hover:text-slate-200 transition-colors py-1.5 px-3 rounded-xl"
           >
-            <span>{completedTasks.length} completed today</span>
+            <span>{completedToday.length} completed today</span>
             {showCompleted ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
           </button>
 
           {showCompleted && (
             <div className="mt-3 space-y-2 text-left animate-fade-in">
-              {completedTasks.map((t) => (
+              {completedToday.map((t) => (
                 <div
                   key={t.id}
                   className="flex items-center justify-between p-3 rounded-2xl bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-800/60 opacity-70"

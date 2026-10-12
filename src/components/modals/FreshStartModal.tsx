@@ -3,13 +3,14 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '@/lib/store';
 import { FRESH_START_TEMPLATE } from '@/lib/sampleData';
+import { getLocalDateString } from '@/lib/dateUtils';
 import { X, Check, Sparkles, RotateCcw, Calendar, ChevronDown, ChevronUp } from 'lucide-react';
 
 export function FreshStartModal() {
   const { activeReset, activateFreshStart, archiveReset, completeResetDayTask, closeModal } = useApp();
   const [expanded, setExpanded] = useState<number | null>(null);
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = useMemo(() => getLocalDateString(), []);
 
   // Find which day we're on
   const currentDayIndex = useMemo(() => {
@@ -112,9 +113,9 @@ export function FreshStartModal() {
               onClick={() => {
                 activateFreshStart();
               }}
-              className="w-full py-4 px-6 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm sm:text-base shadow-md transition-all active:scale-[0.99]"
+              className="w-full py-4 px-6 rounded-2xl bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-semibold text-sm sm:text-base shadow-sm transition-all active:scale-[0.99]"
             >
-              START 7-DAY FRESH START
+              Start 7-Day Fresh Start
             </button>
             <p className="text-[11px] text-ink-subtle text-center">
               Tasks feed into your Today page each day. Archive it anytime.

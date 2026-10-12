@@ -188,7 +188,7 @@ export const INITIAL_ROUTINES: Routine[] = [
     title: 'Midday Cognitive Reset',
     icon: '🍃',
     description: 'When feeling scattered, step back to ground yourself',
-    enabled: true,
+    enabled: false,
     timeOfDay: 'afternoon',
     steps: [
       { id: 'r1', title: 'Stand up and roll shoulders back', durationMinutes: 2, completed: false },
@@ -203,7 +203,7 @@ export const INITIAL_ROUTINES: Routine[] = [
     title: 'Morning Care',
     icon: '☀️',
     description: 'Simple self-care to start the day feeling a little more like yourself',
-    enabled: true,
+    enabled: false,
     timeOfDay: 'morning',
     category: 'wellness',
     steps: [
@@ -222,7 +222,7 @@ export const INITIAL_ROUTINES: Routine[] = [
     title: 'Night Care',
     icon: '🌙',
     description: 'End the day feeling clean and ready to actually rest',
-    enabled: true,
+    enabled: false,
     timeOfDay: 'evening',
     category: 'wellness',
     steps: [
@@ -256,7 +256,7 @@ export const INITIAL_ROUTINES: Routine[] = [
     title: 'Event / Meeting Prep',
     icon: '🎯',
     description: 'Feel ready before something that matters. No scrambling.',
-    enabled: true,
+    enabled: false,
     timeOfDay: 'anytime',
     category: 'wellness',
     steps: [
@@ -317,22 +317,14 @@ export const JOURNAL_PROMPTS_RESET = [
   'What is one thing I did for myself today?',
 ];
 
-export const INITIAL_RETURNS: ReturnDay[] = [
-  { dayOfWeek: 'MON', dateStr: '2026-09-14', status: 'active', note: 'Did 2 minimums' },
-  { dayOfWeek: 'TUE', dateStr: '2026-09-15', status: 'paused', note: 'Rest day — no pressure' },
-  { dayOfWeek: 'WED', dateStr: '2026-09-16', status: 'paused', note: 'Quiet day off' },
-  { dayOfWeek: 'THU', dateStr: '2026-09-17', status: 'returned', note: 'Returned with 1 small task' },
-  { dayOfWeek: 'FRI', dateStr: '2026-09-18', status: 'active', note: 'Morning routine done' },
-  { dayOfWeek: 'SAT', dateStr: '2026-09-19', status: 'active', note: 'Today in progress' },
-  { dayOfWeek: 'SUN', dateStr: '2026-09-20', status: 'paused', note: 'Planned reset' },
-];
+export const INITIAL_RETURNS: ReturnDay[] = [];
 
 export const INITIAL_HELPFUL_INSIGHTS: HelpfulInsight[] = [
-  { id: 'h1', label: '2-minute mini starts', icon: '⏱', count: 9 },
-  { id: 'h2', label: 'Someone nearby / body double', icon: '👥', count: 6 },
-  { id: 'h3', label: 'Noise reduction / headphones', icon: '🎧', count: 5 },
-  { id: 'h4', label: 'Intentional quiet rest first', icon: '☕', count: 4 },
-  { id: 'h5', label: 'Breaking task into 1 tiny step', icon: '🧩', count: 7 },
+  { id: 'h1', label: '2-minute mini starts', icon: '⏱', count: 0 },
+  { id: 'h2', label: 'Someone nearby / body double', icon: '👥', count: 0 },
+  { id: 'h3', label: 'Noise reduction / headphones', icon: '🎧', count: 0 },
+  { id: 'h4', label: 'Intentional quiet rest first', icon: '☕', count: 0 },
+  { id: 'h5', label: 'Breaking task into 1 tiny step', icon: '🧩', count: 0 },
 ];
 
 export const INITIAL_RESETS: Reset[] = [];

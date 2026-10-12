@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '@/lib/store';
 import { Header } from '@/components/layout/Header';
+import { getLocalDateString } from '@/lib/dateUtils';
 import {
   ChevronRight,
   RotateCcw,
@@ -63,6 +64,7 @@ export default function SettingsPage() {
 
   const handleExportData = () => {
     try {
+      const todayStr = getLocalDateString();
       const backupData = {
         version: 1,
         exportedAt: new Date().toISOString(),
@@ -74,12 +76,13 @@ export default function SettingsPage() {
         resets: JSON.parse(localStorage.getItem('next_resets_v1') || '[]'),
         journal: JSON.parse(localStorage.getItem('next_journal_v1') || '[]'),
         checkins: JSON.parse(localStorage.getItem('next_checkins_v1') || '[]'),
+        lastActiveDate: localStorage.getItem('next_last_active_date_v1') || todayStr,
       };
       const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `next-backup-${new Date().toISOString().split('T')[0]}.json`;
+      a.download = `next-backup-${todayStr}.json`;
       a.click();
       URL.revokeObjectURL(url);
     } catch (e) {
@@ -93,7 +96,30 @@ export default function SettingsPage() {
     const reader = new FileReader();
     reader.onload = (event) => {
       try {
-        const data = JSON.parse(event.target?.result as string);
+        const raw = event.target?.result as string;
+        const data = JSON.parse(raw);
+
+        // Validate structure before committing to state
+        if (!data || typeof data !== 'object' || Array.isArray(data)) {
+          throw new Error('Root must be an object');
+        }
+
+        // Must have at least tasks, routines, or settings to be a valid backup
+        if (!data.tasks && !data.routines && !data.settings && !data.version) {
+          throw new Error('Missing backup identifiers');
+        }
+
+        if (data.tasks !== undefined && !Array.isArray(data.tasks)) {
+          throw new Error('Tasks must be an array');
+        }
+        if (data.routines !== undefined && !Array.isArray(data.routines)) {
+          throw new Error('Routines must be an array');
+        }
+        if (data.settings !== undefined && (typeof data.settings !== 'object' || Array.isArray(data.settings))) {
+          throw new Error('Settings must be an object');
+        }
+
+        // Apply validated backup safely
         if (data.tasks) localStorage.setItem('next_tasks_v1', JSON.stringify(data.tasks));
         if (data.routines) localStorage.setItem('next_routines_v1', JSON.stringify(data.routines));
         if (data.returns) localStorage.setItem('next_returns_v1', JSON.stringify(data.returns));
@@ -102,12 +128,14 @@ export default function SettingsPage() {
         if (data.resets) localStorage.setItem('next_resets_v1', JSON.stringify(data.resets));
         if (data.journal) localStorage.setItem('next_journal_v1', JSON.stringify(data.journal));
         if (data.checkins) localStorage.setItem('next_checkins_v1', JSON.stringify(data.checkins));
+        if (data.lastActiveDate) localStorage.setItem('next_last_active_date_v1', String(data.lastActiveDate));
+
         setImportStatus('Backup restored successfully. Reloading...');
         setTimeout(() => {
           window.location.reload();
         }, 1000);
       } catch (err) {
-        setImportStatus('Failed to restore: Invalid backup file format.');
+        setImportStatus('Failed to restore: This file is not a valid Next backup.');
       }
     };
     reader.readAsText(file);

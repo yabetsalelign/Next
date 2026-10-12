@@ -106,23 +106,33 @@ export function RoutineRunnerModal() {
               </div>
 
               {/* Step Action Buttons */}
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 <button
                   type="button"
                   onClick={handleCompleteStep}
-                  className="w-full flex items-center justify-center gap-2 py-4 px-5 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-base shadow-sm transition-all active:scale-[0.99]"
+                  className="w-full flex items-center justify-center gap-2 py-4 px-5 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-base shadow-sm transition-all active:scale-[0.99]"
                 >
                   <Check className="w-5 h-5" />
                   <span>Done with this step</span>
                 </button>
 
-                <button
-                  type="button"
-                  onClick={handleSkipStep}
-                  className="w-full py-2.5 px-4 rounded-xl text-xs font-medium text-ink-muted hover:text-ink-primary dark:hover:text-slate-200 transition-colors"
-                >
-                  Skip this step for today
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleSkipStep}
+                    className="flex-1 py-2.5 px-3 rounded-xl text-xs font-medium text-ink-muted hover:text-ink-primary dark:hover:text-slate-200 transition-colors border border-transparent hover:border-stone-200 dark:hover:border-white/[0.08]"
+                  >
+                    Skip step
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    className="flex-1 py-2.5 px-3 rounded-xl text-xs font-medium text-amber-700 dark:text-amber-400 hover:underline transition-colors"
+                  >
+                    Finish now (1 step counts)
+                  </button>
+                </div>
               </div>
             </div>
           )}

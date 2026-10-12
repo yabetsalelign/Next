@@ -3,6 +3,13 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '@/lib/store';
 import { Header } from '@/components/layout/Header';
+import {
+  getCurrentWeekDateStrings,
+  getLocalDateString,
+  formatDayOfWeek,
+  isSameDay,
+  isAfterDay,
+} from '@/lib/dateUtils';
 import { 
   RotateCcw, 
   Check, 
@@ -26,10 +33,46 @@ export default function HistoryPage() {
   const minimumsCount = completedTasks.filter(t => t.completedTier === 'minimum').length;
   const returnedDays = returns.filter(r => r.status === 'returned').length;
 
+  const todayStr = useMemo(() => getLocalDateString(), []);
+
+  // Generate current local calendar week (MON to SUN)
+  const currentWeekDays = useMemo(() => {
+    const dates = getCurrentWeekDateStrings();
+    return dates.map(dateStr => {
+      const dayOfWeek = formatDayOfWeek(dateStr);
+      const isToday = isSameDay(dateStr, todayStr);
+      const isFuture = isAfterDay(dateStr, todayStr);
+      const record = returns.find(r => r.dateStr === dateStr);
+      
+      let status: 'active' | 'paused' | 'returned' | 'upcoming' = 'paused';
+      if (record?.status === 'returned') {
+        status = 'returned';
+      } else if (record?.status === 'active') {
+        status = 'active';
+      } else if (isFuture) {
+        status = 'upcoming';
+      }
+
+      return {
+        dateStr,
+        dayOfWeek,
+        isToday,
+        isFuture,
+        status,
+        note: record?.note,
+      };
+    });
+  }, [returns, todayStr]);
+
   // Recent return days
   const recentReturns = useMemo(() => {
     return returns.filter(r => r.status === 'returned');
   }, [returns]);
+
+  // Check if there are any genuine insight observations recorded
+  const hasRecordedInsights = useMemo(() => {
+    return helpfulInsights.some(h => h.count > 0);
+  }, [helpfulInsights]);
 
   // Max count for the "What Helped?" observational bar chart
   const maxInsightCount = useMemo(() => {
@@ -55,7 +98,7 @@ export default function HistoryPage() {
         subtitle="Zero streak pressure. Returning matters more than streaks."
       />
 
-      {/* Soulful Return Philosophy Banner (From Version 1) */}
+      {/* Soulful Return Philosophy Banner */}
       <section className="p-5 sm:p-6 rounded-3xl bg-amber-500/10 dark:bg-amber-500/[0.08] border border-amber-500/25 dark:border-amber-500/20 space-y-2 shadow-sm">
         <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
           <RotateCcw className="w-4 h-4" />
@@ -101,7 +144,7 @@ export default function HistoryPage() {
         </div>
       </section>
 
-      {/* This Week's Rhythm: Horizontal 7-Day Pill Visualizer */}
+      {/* This Week's Rhythm: Dynamic Local Calendar Week Pill Visualizer */}
       <section className="p-6 rounded-3xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
@@ -128,19 +171,24 @@ export default function HistoryPage() {
         </div>
 
         <div className="grid grid-cols-7 gap-1.5 sm:gap-2 pt-1">
-          {returns.map((item) => {
+          {currentWeekDays.map((item) => {
             const isDone = item.status === 'active';
-            const isPaused = item.status === 'paused';
             const isReturn = item.status === 'returned';
+            const isUpcoming = item.status === 'upcoming';
+            const isPaused = item.status === 'paused';
 
             return (
               <div
-                key={item.dayOfWeek}
+                key={item.dateStr}
                 className={`flex flex-col items-center justify-center p-2.5 sm:p-3 rounded-2xl border transition-all ${
+                  item.isToday ? 'ring-2 ring-amber-500/40 ring-offset-1 dark:ring-offset-stone-900' : ''
+                } ${
                   isReturn
                     ? 'bg-amber-500/15 dark:bg-amber-500/20 border-amber-500/40 text-amber-800 dark:text-amber-300 shadow-[0_2px_10px_rgba(229,149,63,0.12)]'
                     : isDone
                     ? 'bg-sage-500/15 dark:bg-sage-500/20 border-sage-500/35 text-sage-800 dark:text-sage-300 shadow-[0_2px_10px_rgba(78,155,120,0.12)]'
+                    : isUpcoming
+                    ? 'bg-stone-50/40 dark:bg-white/[0.01] border-stone-200/40 dark:border-white/[0.03] text-ink-subtle dark:text-linen-faint opacity-50'
                     : 'bg-stone-100/70 dark:bg-white/[0.03] border-stone-200/70 dark:border-white/[0.06] text-ink-muted dark:text-linen-subtle'
                 }`}
               >
@@ -152,10 +200,11 @@ export default function HistoryPage() {
                   {isDone && <Check className="w-4 h-4 stroke-[2.5]" />}
                   {isPaused && <Minus className="w-4 h-4 stroke-[2]" />}
                   {isReturn && <RotateCcw className="w-4 h-4 stroke-[2.2]" />}
+                  {isUpcoming && <span className="w-1.5 h-1.5 rounded-full bg-stone-300 dark:bg-white/20" />}
                 </div>
 
                 <span className="text-[9px] text-center font-semibold tracking-tight opacity-90">
-                  {isReturn ? 'Return' : isDone ? 'Done' : 'Pause'}
+                  {isReturn ? 'Return' : isDone ? 'Done' : isUpcoming ? 'Later' : 'Pause'}
                 </span>
               </div>
             );
@@ -174,41 +223,52 @@ export default function HistoryPage() {
           </p>
         </div>
 
-        <div className="space-y-3 pt-1">
-          {helpfulInsights.map((factor) => {
-            const Icon = getInsightIcon(factor.id, factor.label);
-            const percentage = Math.round((factor.count / maxInsightCount) * 100);
+        {!hasRecordedInsights ? (
+          <div className="py-6 px-4 rounded-2xl bg-stone-50/80 dark:bg-white/[0.02] border border-stone-200/60 dark:border-white/[0.04] text-center space-y-1.5">
+            <p className="text-xs font-semibold text-ink-primary dark:text-linen">
+              No observations recorded yet
+            </p>
+            <p className="text-xs text-ink-muted dark:text-linen-subtle max-w-sm mx-auto leading-relaxed">
+              As you use 2-minute mini starts, background audio, or body doubling, supportive conditions will appear here quietly.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3 pt-1">
+            {helpfulInsights.filter(f => f.count > 0).map((factor) => {
+              const Icon = getInsightIcon(factor.id, factor.label);
+              const percentage = Math.round((factor.count / maxInsightCount) * 100);
 
-            return (
-              <div
-                key={factor.id}
-                className="p-3.5 rounded-2xl bg-stone-50/80 dark:bg-white/[0.03] border border-stone-200/60 dark:border-white/[0.06] space-y-2 transition-all hover:border-stone-300 dark:hover:border-white/[0.12]"
-              >
-                <div className="flex items-center justify-between gap-3 text-xs sm:text-sm">
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-7 h-7 rounded-xl bg-amber-500/10 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400 flex items-center justify-center shrink-0">
-                      <Icon className="w-4 h-4" />
+              return (
+                <div
+                  key={factor.id}
+                  className="p-3.5 rounded-2xl bg-stone-50/80 dark:bg-white/[0.03] border border-stone-200/60 dark:border-white/[0.06] space-y-2 transition-all hover:border-stone-300 dark:hover:border-white/[0.12]"
+                >
+                  <div className="flex items-center justify-between gap-3 text-xs sm:text-sm">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-7 h-7 rounded-xl bg-amber-500/10 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400 flex items-center justify-center shrink-0">
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <span className="font-medium text-ink-primary dark:text-linen truncate">
+                        {factor.label}
+                      </span>
                     </div>
-                    <span className="font-medium text-ink-primary dark:text-linen truncate">
-                      {factor.label}
+                    <span className="text-xs font-bold text-amber-800 dark:text-amber-300 bg-amber-500/15 dark:bg-amber-500/20 px-2.5 py-1 rounded-xl shrink-0">
+                      {factor.count} {factor.count === 1 ? 'time' : 'times'}
                     </span>
                   </div>
-                  <span className="text-xs font-bold text-amber-800 dark:text-amber-300 bg-amber-500/15 dark:bg-amber-500/20 px-2.5 py-1 rounded-xl shrink-0">
-                    {factor.count} {factor.count === 1 ? 'time' : 'times'}
-                  </span>
-                </div>
 
-                {/* Horizontal Progress Bar */}
-                <div className="w-full h-1.5 rounded-full bg-stone-200/70 dark:bg-white/[0.08] overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-amber-500 to-amber-400 transition-all duration-500"
-                    style={{ width: `${percentage}%` }}
-                  />
+                  {/* Horizontal Progress Bar */}
+                  <div className="w-full h-1.5 rounded-full bg-stone-200/70 dark:bg-white/[0.08] overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-amber-500 to-amber-400 transition-all duration-500"
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       {/* Recent Returns Log */}
@@ -218,7 +278,7 @@ export default function HistoryPage() {
         </h2>
 
         {recentReturns.length === 0 ? (
-          <div className="py-2 text-xs text-ink-muted dark:text-linen-subtle">
+          <div className="py-3 px-4 rounded-2xl bg-stone-50/60 dark:bg-white/[0.02] border border-stone-200/50 dark:border-white/[0.04] text-xs text-ink-muted dark:text-linen-subtle text-center">
             You are here right now. When you take a pause and step back in, Next marks that gently.
           </div>
         ) : (
@@ -230,7 +290,7 @@ export default function HistoryPage() {
               >
                 <div>
                   <span className="font-semibold text-amber-900 dark:text-amber-300 block">
-                    {r.dayOfWeek}
+                    {r.dayOfWeek} • {r.dateStr}
                   </span>
                   <span className="text-ink-muted dark:text-linen-subtle">
                     {r.note || 'You came back after a pause.'}

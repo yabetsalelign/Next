@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '@/lib/store';
 import { JOURNAL_PROMPTS_DAILY, JOURNAL_PROMPTS_RESET } from '@/lib/sampleData';
+import { getLocalDateString } from '@/lib/dateUtils';
 import { X, BookOpen, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export function JournalModal() {
@@ -11,7 +12,7 @@ export function JournalModal() {
   const [promptIndex, setPromptIndex] = useState(0);
   const [saved, setSaved] = useState(false);
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = useMemo(() => getLocalDateString(), []);
 
   const prompts = activeReset ? JOURNAL_PROMPTS_RESET : JOURNAL_PROMPTS_DAILY;
   const currentPrompt = prompts[promptIndex];
@@ -140,17 +141,17 @@ export function JournalModal() {
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="flex-1 py-3 px-4 rounded-2xl border border-slate-200 dark:border-slate-700 text-ink-muted hover:text-ink-primary font-medium text-xs sm:text-sm transition-colors text-center"
+                  className="flex-1 py-3 px-4 rounded-2xl border border-stone-200 dark:border-white/[0.08] text-ink-muted hover:text-ink-primary font-medium text-xs sm:text-sm transition-colors text-center"
                 >
-                  SKIP
+                  Skip
                 </button>
                 <button
                   type="button"
                   onClick={handleSave}
                   disabled={!response.trim()}
-                  className="flex-1 py-3 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 disabled:opacity-40 text-white font-medium text-xs sm:text-sm shadow-sm transition-all"
+                  className="flex-1 py-3 px-4 rounded-2xl bg-amber-600 hover:bg-amber-700 active:bg-amber-800 disabled:opacity-40 text-white font-medium text-xs sm:text-sm shadow-sm transition-all"
                 >
-                  SAVE
+                  Save
                 </button>
               </div>
             </>
