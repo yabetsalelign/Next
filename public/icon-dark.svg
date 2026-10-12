@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <!-- Container: Dark Charcoal -->
+  <rect width="512" height="512" rx="128" fill="#121218"/>
+
+  <g transform="rotate(-35 256 256)">
+    <!-- Left Pillar (Amber) -->
+    <rect x="156" y="126" width="90" height="260" rx="45" fill="#E08E45"/>
+    
+    <!-- Right Offset Pillar (Amber) -->
+    <rect x="266" y="126" width="90" height="260" rx="45" fill="#E08E45"/>
+    
+    <!-- Negative Space Cut / Interlock Bridge -->
+    <path d="M 156 316 L 356 196" stroke="#121218" stroke-width="24" stroke-linecap="round"/>
+  </g>
+</svg>

@@ -33,13 +33,12 @@ export function Navbar() {
     { label: 'Settings', href: '/settings', icon: SettingsIcon },
   ];
 
-  // Exactly 5 destinations on mobile bottom nav
+  // Primary 4 destinations on mobile bottom nav; history remains accessible from the Plan view and desktop nav.
   const mobileNavItems = [
     { label: 'Today', href: '/', icon: CheckCircle2 },
     { label: 'Plan', href: '/plan', icon: Calendar },
     { label: 'Routines', href: '/routines', icon: Sparkles },
     { label: 'Check-in', href: '/check-in', icon: HeartHandshake },
-    { label: 'History', href: '/history', icon: RotateCcw },
   ];
 
   return (

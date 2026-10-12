@@ -16,7 +16,8 @@ import {
   Sparkles,
   X,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  ChevronRight
 } from 'lucide-react';
 import { sounds } from '@/lib/sounds';
 
@@ -208,6 +209,19 @@ export default function PlanPage() {
         subtitle="Where am I in my day? Flexible sequence, zero guilt."
       />
 
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-[11px] font-medium text-amber-800/80 dark:text-amber-300/80">
+          Need a bigger picture?
+        </p>
+        <Link
+          href="/history"
+          className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1.5 text-[11px] font-semibold text-amber-800 dark:text-amber-300 transition-colors hover:bg-amber-500/15"
+        >
+          History & Returns
+          <ChevronRight className="w-3.5 h-3.5" />
+        </Link>
+      </div>
+
       {/* Rest Recommendations Section */}
       <section className="p-5 rounded-3xl bg-amber-500/10 dark:bg-amber-500/[0.08] border border-amber-500/25 dark:border-amber-500/20 space-y-3 shadow-sm">
         <div className="flex items-center justify-between">
@@ -232,7 +246,7 @@ export default function PlanPage() {
             >
               <span className="text-base select-none shrink-0">{r.icon}</span>
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-semibold text-ink-primary dark:text-linen truncate">
+                <p className="text-xs font-semibold text-ink-primary dark:text-linen leading-snug break-words">
                   {r.title}
                 </p>
                 <div className="flex items-center justify-between text-[10px] text-ink-muted dark:text-linen-subtle mt-0.5">
@@ -256,24 +270,30 @@ export default function PlanPage() {
           <button
             key={tab.id}
             type="button"
+            aria-pressed={filter === tab.id}
             onClick={() => setFilter(tab.id as any)}
-            className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-semibold text-center transition-all ${
+            className={`flex-1 py-2 px-3 rounded-xl text-xs font-semibold text-center transition-all border ${
               filter === tab.id
-                ? 'bg-amber-500/15 dark:bg-amber-500/20 text-amber-900 dark:text-amber-300 font-bold border border-amber-500/35 shadow-sm'
-                : 'text-ink-muted dark:text-linen-subtle hover:text-ink-primary dark:hover:text-linen'
+                ? 'border-amber-500/40 bg-amber-500 text-stone-950 shadow-[0_2px_12px_rgba(224,142,69,0.28)] ring-2 ring-amber-500/20'
+                : 'border-transparent text-ink-muted dark:text-linen-subtle hover:text-ink-primary dark:hover:text-linen hover:bg-stone-200/70 dark:hover:bg-white/[0.04]'
             }`}
           >
-            {tab.label}
+            <span className="inline-flex items-center justify-center gap-1.5">
+              {filter === tab.id && (
+                <span className="w-1.5 h-1.5 rounded-full bg-stone-950 shrink-0" aria-hidden="true" />
+              )}
+              <span>{tab.label}</span>
+            </span>
           </button>
         ))}
       </div>
 
       {/* Scheduled Tasks Header */}
-      <div className="flex items-center justify-between pt-1">
+      <div className="flex items-center justify-between pt-1 gap-2">
         <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
           Scheduled Tasks {filter !== 'all' ? `• ${filter.toUpperCase()}` : ''}
         </h2>
-        <span className="text-[11px] text-ink-subtle dark:text-linen-faint">
+        <span className="text-[11px] text-ink-subtle dark:text-linen-faint shrink-0">
           {filteredUncompleted.length} {filteredUncompleted.length === 1 ? 'task' : 'tasks'}
         </span>
       </div>
@@ -490,7 +510,7 @@ export default function PlanPage() {
                       className="flex items-center gap-2 p-2.5 rounded-xl border border-brand-200/60 dark:border-brand-900/40 hover:bg-brand-50 dark:hover:bg-brand-950/30 text-left transition-all"
                     >
                       <span className="text-base">{preset.icon}</span>
-                      <span className="text-xs font-medium text-ink-primary dark:text-slate-200 truncate">{preset.title}</span>
+                      <span className="text-xs font-medium text-ink-primary dark:text-slate-200 break-words leading-snug">{preset.title}</span>
                     </button>
                   ))}
                 </div>
@@ -509,7 +529,7 @@ export default function PlanPage() {
                     >
                       <span className="text-base">{r.icon}</span>
                       <div className="min-w-0 flex-1">
-                        <span className="text-xs font-medium text-ink-primary dark:text-slate-200 block truncate">{r.title}</span>
+                        <span className="text-xs font-medium text-ink-primary dark:text-slate-200 block break-words leading-snug">{r.title}</span>
                         <span className="text-[10px] text-ink-muted block">{r.duration}m</span>
                       </div>
                     </button>

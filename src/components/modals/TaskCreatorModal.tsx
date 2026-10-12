@@ -164,7 +164,7 @@ export function TaskCreatorModal() {
             <button
               type="submit"
               disabled={!title.trim()}
-              className="w-full py-3.5 px-6 rounded-2xl bg-amber-600 hover:bg-amber-700 active:bg-amber-800 disabled:opacity-40 text-white font-semibold text-sm sm:text-base shadow-sm transition-all active:scale-[0.99] flex items-center justify-center gap-2"
+              className="w-full py-3.5 px-6 rounded-2xl bg-amber-500 hover:bg-amber-400 active:bg-amber-600 disabled:opacity-40 text-stone-950 font-bold text-sm sm:text-base shadow-[0_2px_14px_rgba(224,142,69,0.28)] transition-all active:scale-[0.99] flex items-center justify-center gap-2"
             >
               <Check className="w-4 h-4 stroke-[2.5]" />
               <span>Add task</span>

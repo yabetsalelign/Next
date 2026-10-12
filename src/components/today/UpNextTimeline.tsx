@@ -89,11 +89,11 @@ export function UpNextTimeline({ tasks }: UpNextTimelineProps) {
                   </span>
                 </div>
 
-                <h4 className="text-sm sm:text-base font-semibold text-ink-primary dark:text-slate-100 truncate">
+                <h4 className="text-sm sm:text-base font-semibold text-ink-primary dark:text-slate-100 break-words leading-snug">
                   {task.title}
                 </h4>
 
-                <p className="text-xs text-ink-muted dark:text-slate-400 mt-1 line-clamp-1">
+                <p className="text-xs text-ink-muted dark:text-slate-400 mt-1 leading-relaxed break-words">
                   <span className="font-medium text-ink-secondary dark:text-slate-300">Min: </span>
                   {task.minimum || 'Start 2 min'}
                 </p>

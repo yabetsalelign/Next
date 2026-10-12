@@ -545,14 +545,14 @@ export default function SettingsPage() {
                   else resetToDemoData();
                   setConfirmModal(null);
                 }}
-                className="flex-1 py-3 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm transition-all"
+                className="flex-1 py-3 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-semibold text-sm transition-all shadow-sm"
               >
                 {confirmModal === 'empty_day' ? 'Yes, clear today' : 'Yes, reset to samples'}
               </button>
               <button
                 type="button"
                 onClick={() => setConfirmModal(null)}
-                className="flex-1 py-3 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-ink-primary dark:text-slate-200 font-medium text-sm transition-all"
+                className="flex-1 py-3 px-4 rounded-xl bg-stone-100 dark:bg-slate-800 hover:bg-stone-200 dark:hover:bg-slate-700 text-ink-primary dark:text-slate-200 font-medium text-sm transition-all border border-stone-200 dark:border-slate-700"
               >
                 Cancel
               </button>

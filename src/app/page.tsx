@@ -64,13 +64,13 @@ export default function TodayPage() {
                   {upNextTasks.map((t) => (
                     <div
                       key={t.id}
-                      className="flex items-center justify-between p-3.5 rounded-2xl bg-surface dark:bg-surface-dark border border-stone-200/80 dark:border-white/[0.08] shadow-sm"
+                      className="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-surface dark:bg-surface-dark border border-stone-200/80 dark:border-white/[0.08] shadow-sm"
                     >
-                      <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
                         <div className="w-7 h-7 rounded-xl bg-stone-100 dark:bg-white/[0.04] flex items-center justify-center shrink-0">
                           <TaskCategoryIcon category={t.category} icon={t.icon} />
                         </div>
-                        <span className="text-xs sm:text-sm font-medium text-ink-primary dark:text-linen truncate">
+                        <span className="text-xs sm:text-sm font-medium text-ink-primary dark:text-linen break-words leading-snug">
                           {t.title}
                         </span>
                       </div>

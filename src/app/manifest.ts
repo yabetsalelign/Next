@@ -9,8 +9,8 @@ export default function manifest(): MetadataRoute.Manifest {
         scope: "/",
         display: "standalone",
         orientation: "portrait",
-        background_color: "#2B5279",
-        theme_color: "#2B5279",
+        background_color: "#121218",
+        theme_color: "#121218",
         categories: ["productivity", "lifestyle"],
         icons: [
             {
@@ -26,7 +26,7 @@ export default function manifest(): MetadataRoute.Manifest {
                 purpose: "any",
             },
             {
-                src: "/icon-512.png",
+                src: "/icon-maskable-512.png",
                 sizes: "512x512",
                 type: "image/png",
                 purpose: "maskable",

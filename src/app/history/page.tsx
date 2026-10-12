@@ -180,7 +180,7 @@ export default function HistoryPage() {
             return (
               <div
                 key={item.dateStr}
-                className={`flex flex-col items-center justify-center p-2.5 sm:p-3 rounded-2xl border transition-all ${
+                className={`flex min-h-[86px] w-full flex-col items-center justify-center rounded-2xl border p-2 text-center transition-all sm:p-2.5 ${
                   item.isToday ? 'ring-2 ring-amber-500/40 ring-offset-1 dark:ring-offset-stone-900' : ''
                 } ${
                   isReturn
@@ -192,7 +192,7 @@ export default function HistoryPage() {
                     : 'bg-stone-100/70 dark:bg-white/[0.03] border-stone-200/70 dark:border-white/[0.06] text-ink-muted dark:text-linen-subtle'
                 }`}
               >
-                <span className="text-[10px] sm:text-[11px] font-bold tracking-wider">
+                <span className="text-[10px] sm:text-[11px] font-bold tracking-wider leading-tight">
                   {item.dayOfWeek}
                 </span>
 
@@ -203,7 +203,7 @@ export default function HistoryPage() {
                   {isUpcoming && <span className="w-1.5 h-1.5 rounded-full bg-stone-300 dark:bg-white/20" />}
                 </div>
 
-                <span className="text-[9px] text-center font-semibold tracking-tight opacity-90">
+                <span className="text-[9px] leading-[1.1] font-semibold tracking-tight break-words">
                   {isReturn ? 'Return' : isDone ? 'Done' : isUpcoming ? 'Later' : 'Pause'}
                 </span>
               </div>
@@ -248,7 +248,7 @@ export default function HistoryPage() {
                       <div className="w-7 h-7 rounded-xl bg-amber-500/10 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400 flex items-center justify-center shrink-0">
                         <Icon className="w-4 h-4" />
                       </div>
-                      <span className="font-medium text-ink-primary dark:text-linen truncate">
+                      <span className="font-medium text-ink-primary dark:text-linen break-words leading-snug">
                         {factor.label}
                       </span>
                     </div>
