@@ -77,7 +77,9 @@ export default function SettingsPage() {
         resets: JSON.parse(localStorage.getItem('next_resets_v1') || '[]'),
         journal: JSON.parse(localStorage.getItem('next_journal_v1') || '[]'),
         checkins: JSON.parse(localStorage.getItem('next_checkins_v1') || '[]'),
+        notPlanningToday: JSON.parse(localStorage.getItem('next_not_planning_v1') || 'false'),
         lastActiveDate: localStorage.getItem('next_last_active_date_v1') || todayStr,
+        lastAckReturnDate: localStorage.getItem('next_last_ack_return_date_v1') || null,
       };
       const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -105,7 +107,7 @@ export default function SettingsPage() {
           throw new Error('Root must be an object');
         }
 
-        // Must have at least tasks, routines, or settings to be a valid backup
+        // Must have at least tasks, routines, settings, or version to be a valid backup
         if (!data.tasks && !data.routines && !data.settings && !data.version) {
           throw new Error('Missing backup identifiers');
         }
@@ -117,12 +119,38 @@ export default function SettingsPage() {
             throw new Error(`${field} must be an array`);
           }
         }
-        if (data.settings !== undefined && (typeof data.settings !== 'object' || Array.isArray(data.settings))) {
+        if (data.settings !== undefined && (typeof data.settings !== 'object' || Array.isArray(data.settings) || data.settings === null)) {
           throw new Error('Settings must be an object');
         }
+        if (data.notPlanningToday !== undefined && typeof data.notPlanningToday !== 'boolean') {
+          throw new Error('notPlanningToday must be a boolean');
+        }
+        if (data.lastActiveDate !== undefined && typeof data.lastActiveDate !== 'string') {
+          throw new Error('lastActiveDate must be a string');
+        }
+        if (data.lastAckReturnDate !== undefined && data.lastAckReturnDate !== null && typeof data.lastAckReturnDate !== 'string') {
+          throw new Error('lastAckReturnDate must be a string or null');
+        }
 
-        // Stage all writes first so a failure during serialization
-        // never leaves localStorage in a partially overwritten state
+        // Validate task items sanity if present
+        if (data.tasks) {
+          for (const t of data.tasks) {
+            if (!t || typeof t !== 'object' || typeof t.id !== 'string' || typeof t.title !== 'string') {
+              throw new Error('Tasks array contains invalid task items');
+            }
+          }
+        }
+
+        // Validate routine items sanity if present
+        if (data.routines) {
+          for (const r of data.routines) {
+            if (!r || typeof r !== 'object' || typeof r.id !== 'string') {
+              throw new Error('Routines array contains invalid routine items');
+            }
+          }
+        }
+
+        // Stage all writes first
         const writes: Array<[string, string]> = [];
         if (data.tasks) writes.push(['next_tasks_v1', JSON.stringify(data.tasks)]);
         if (data.routines) writes.push(['next_routines_v1', JSON.stringify(data.routines)]);
@@ -133,19 +161,48 @@ export default function SettingsPage() {
         if (data.resets) writes.push(['next_resets_v1', JSON.stringify(data.resets)]);
         if (data.journal) writes.push(['next_journal_v1', JSON.stringify(data.journal)]);
         if (data.checkins) writes.push(['next_checkins_v1', JSON.stringify(data.checkins)]);
+        if (data.notPlanningToday !== undefined) writes.push(['next_not_planning_v1', JSON.stringify(data.notPlanningToday)]);
         if (data.lastActiveDate) writes.push(['next_last_active_date_v1', String(data.lastActiveDate)]);
+        if (data.lastAckReturnDate) writes.push(['next_last_ack_return_date_v1', String(data.lastAckReturnDate)]);
 
-        // Commit all validated writes
-        for (const [key, value] of writes) {
-          localStorage.setItem(key, value);
+        // 1. Snapshot previous state of target keys
+        const previousSnapshot = new Map<string, string | null>();
+        for (const [key] of writes) {
+          previousSnapshot.set(key, localStorage.getItem(key));
+        }
+
+        // 2. Perform writes with rollback on partial failure
+        try {
+          for (const [key, value] of writes) {
+            localStorage.setItem(key, value);
+          }
+        } catch (writeErr) {
+          let rollbackFailed = false;
+          try {
+            previousSnapshot.forEach((prevVal, key) => {
+              if (prevVal === null) {
+                localStorage.removeItem(key);
+              } else {
+                localStorage.setItem(key, prevVal);
+              }
+            });
+          } catch (rbErr) {
+            rollbackFailed = true;
+            console.error('Rollback failed:', rbErr);
+          }
+          if (rollbackFailed) {
+            throw new Error('Storage write failed and rollback failed. Some data may be partially updated.');
+          } else {
+            throw new Error('Storage write failed. All changes were safely rolled back.');
+          }
         }
 
         setImportStatus('Backup restored successfully. Reloading...');
         setTimeout(() => {
           window.location.reload();
         }, 1000);
-      } catch (err) {
-        setImportStatus('Failed to restore: This file is not a valid Next backup.');
+      } catch (err: any) {
+        setImportStatus(err?.message ? `Failed to restore: ${err.message}` : 'Failed to restore: This file is not a valid Next backup.');
       }
     };
     reader.readAsText(file);

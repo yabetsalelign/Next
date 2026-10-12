@@ -145,29 +145,148 @@ console.log('--- RUNNING FUNCTIONAL VERIFICATION SUITE ---');
   console.log('✓ Test 5 Passed: Old completed tasks are excluded from today completed count');
 }
 
-// Test 6: Backup validation
+// Test 6: Backup validation, snapshotting & atomic rollback
 {
-  const validBackup = {
-    version: 1,
-    tasks: [{ id: '1', title: 'Task' }],
-    routines: [{ id: 'r1', title: 'Routine' }],
-    settings: { theme: 'dark' },
+  const runImporter = (rawJson, mockStorage, failOnKey = null, failRollback = false) => {
+    const data = JSON.parse(rawJson);
+    if (!data || typeof data !== 'object' || Array.isArray(data)) {
+      throw new Error('Root must be an object');
+    }
+    if (!data.tasks && !data.routines && !data.settings && !data.version) {
+      throw new Error('Missing backup identifiers');
+    }
+    const arrayFields = ['tasks', 'routines', 'returns', 'insights', 'stuckLogs', 'resets', 'journal', 'checkins'];
+    for (const field of arrayFields) {
+      if (data[field] !== undefined && !Array.isArray(data[field])) {
+        throw new Error(`${field} must be an array`);
+      }
+    }
+    if (data.settings !== undefined && (typeof data.settings !== 'object' || Array.isArray(data.settings) || data.settings === null)) {
+      throw new Error('Settings must be an object');
+    }
+    if (data.tasks) {
+      for (const t of data.tasks) {
+        if (!t || typeof t !== 'object' || typeof t.id !== 'string' || typeof t.title !== 'string') {
+          throw new Error('Tasks array contains invalid task items');
+        }
+      }
+    }
+    if (data.routines) {
+      for (const r of data.routines) {
+        if (!r || typeof r !== 'object' || typeof r.id !== 'string') {
+          throw new Error('Routines array contains invalid routine items');
+        }
+      }
+    }
+
+    const writes = [];
+    if (data.tasks) writes.push(['next_tasks_v1', JSON.stringify(data.tasks)]);
+    if (data.routines) writes.push(['next_routines_v1', JSON.stringify(data.routines)]);
+    if (data.returns) writes.push(['next_returns_v1', JSON.stringify(data.returns)]);
+    if (data.insights) writes.push(['next_insights_v1', JSON.stringify(data.insights)]);
+    if (data.settings) writes.push(['next_settings_v1', JSON.stringify(data.settings)]);
+    if (data.stuckLogs) writes.push(['next_stuck_logs_v1', JSON.stringify(data.stuckLogs)]);
+    if (data.resets) writes.push(['next_resets_v1', JSON.stringify(data.resets)]);
+    if (data.journal) writes.push(['next_journal_v1', JSON.stringify(data.journal)]);
+    if (data.checkins) writes.push(['next_checkins_v1', JSON.stringify(data.checkins)]);
+    if (data.notPlanningToday !== undefined) writes.push(['next_not_planning_v1', JSON.stringify(data.notPlanningToday)]);
+    if (data.lastActiveDate) writes.push(['next_last_active_date_v1', String(data.lastActiveDate)]);
+    if (data.lastAckReturnDate) writes.push(['next_last_ack_return_date_v1', String(data.lastAckReturnDate)]);
+
+    // Snapshot previous values
+    const previousSnapshot = new Map();
+    for (const [key] of writes) {
+      previousSnapshot.set(key, mockStorage.has(key) ? mockStorage.get(key) : null);
+    }
+
+    // Write with rollback
+    try {
+      for (const [key, val] of writes) {
+        if (key === failOnKey) {
+          throw new Error('QuotaExceededError: storage full');
+        }
+        mockStorage.set(key, val);
+      }
+    } catch (writeErr) {
+      let rollbackFailed = false;
+      try {
+        if (failRollback) throw new Error('Unrecoverable disk failure');
+        for (const [key, prevVal] of previousSnapshot.entries()) {
+          if (prevVal === null) {
+            mockStorage.delete(key);
+          } else {
+            mockStorage.set(key, prevVal);
+          }
+        }
+      } catch (rbErr) {
+        rollbackFailed = true;
+      }
+      if (rollbackFailed) {
+        throw new Error('Storage write failed and rollback failed. Some data may be partially updated.');
+      } else {
+        throw new Error('Storage write failed. All changes were safely rolled back.');
+      }
+    }
   };
 
-  const isObject = typeof validBackup === 'object' && validBackup !== null && !Array.isArray(validBackup);
-  assert.strictEqual(isObject, true);
-  assert.strictEqual(Array.isArray(validBackup.tasks), true);
-  assert.strictEqual(Array.isArray(validBackup.routines), true);
+  // 1. Valid backup test
+  const storage1 = new Map();
+  storage1.set('next_tasks_v1', JSON.stringify([{ id: 'old-1', title: 'Old Task' }]));
+  storage1.set('unrelated_site_key', 'keep_me');
 
-  const invalidBackup = "not a json";
-  let failed = false;
+  const validBackupJson = JSON.stringify({
+    version: 1,
+    tasks: [{ id: 'new-1', title: 'New Task' }],
+    routines: [{ id: 'new-r1' }],
+    settings: { theme: 'dark' },
+    checkins: [{ id: 'c1', energy: 'okay' }],
+  });
+  runImporter(validBackupJson, storage1);
+  assert.strictEqual(JSON.parse(storage1.get('next_tasks_v1'))[0].title, 'New Task');
+  assert.strictEqual(storage1.get('unrelated_site_key'), 'keep_me', 'Unrelated storage keys preserved');
+
+  // 2. Malformed / corrupted JSON rejection
+  assert.throws(() => runImporter('not a json', storage1), /SyntaxError|Unexpected token/);
+
+  // 3. Schema invalidity rejection (e.g. tasks is not array)
+  assert.throws(() => runImporter(JSON.stringify({ version: 1, tasks: 'not an array' }), storage1), /tasks must be an array/);
+  assert.throws(() => runImporter(JSON.stringify({ version: 1, tasks: [{ id: 123 }] }), storage1), /Tasks array contains invalid task items/);
+
+  // 4. Simulated write failure with successful atomic rollback
+  const storage2 = new Map();
+  const initialTaskData = JSON.stringify([{ id: 'original-1', title: 'Original Task' }]);
+  storage2.set('next_tasks_v1', initialTaskData);
+  storage2.set('next_routines_v1', JSON.stringify([{ id: 'original-r1' }]));
+
+  let caughtErr = null;
   try {
-    const parsed = JSON.parse(invalidBackup);
-  } catch {
-    failed = true;
+    runImporter(
+      JSON.stringify({
+        version: 1,
+        tasks: [{ id: 'written-first', title: 'Written first' }],
+        routines: [{ id: 'fails-here' }],
+      }),
+      storage2,
+      'next_routines_v1' // Simulates failure when attempting to write routines
+    );
+  } catch (err) {
+    caughtErr = err;
   }
-  assert.strictEqual(failed, true);
-  console.log('✓ Test 6 Passed: Backup validation rejects corrupted files and accepts valid schemas');
+  assert.ok(caughtErr);
+  assert.strictEqual(caughtErr.message, 'Storage write failed. All changes were safely rolled back.');
+  assert.strictEqual(storage2.get('next_tasks_v1'), initialTaskData, 'Tasks rolled back to original snapshot');
+
+  // 5. Simulated failure with rollback failure reports honest message
+  let rollbackErr = null;
+  try {
+    runImporter(validBackupJson, storage2, 'next_routines_v1', true);
+  } catch (err) {
+    rollbackErr = err;
+  }
+  assert.ok(rollbackErr);
+  assert.ok(rollbackErr.message.includes('rollback failed'), 'Honest reporting on rollback failure');
+
+  console.log('✓ Test 6 Passed: Backup validation rejects bad schemas, and atomic snapshot & rollback protects data');
 }
 
 // ==========================================
