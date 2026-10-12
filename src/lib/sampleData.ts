@@ -340,7 +340,7 @@ export const INITIAL_RESETS: Reset[] = [];
 export const INITIAL_JOURNAL_ENTRIES: WellnessJournalEntry[] = [];
 
 export const DEFAULT_SETTINGS: UserSettings = {
-  theme: 'light',
+  theme: 'dark',
   defaultTimerMinutes: 2,
   soundEnabled: true,
   reducedMotion: false,

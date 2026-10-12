@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useApp } from '@/lib/store';
+import { Header } from '@/components/layout/Header';
 import { 
   RotateCcw, 
   Check, 
@@ -47,16 +48,12 @@ export default function HistoryPage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto space-y-6 animate-fade-in pb-12">
+    <div className="max-w-xl mx-auto space-y-6 animate-fade-in pb-28 md:pb-12">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl sm:text-[1.75rem] font-semibold tracking-tight text-ink-primary dark:text-linen">
-          History &amp; Returns
-        </h1>
-        <p className="mt-1 text-xs sm:text-sm text-ink-muted dark:text-linen-subtle">
-          Zero streak pressure. Returning matters more than streaks.
-        </p>
-      </div>
+      <Header
+        title="History & Returns"
+        subtitle="Zero streak pressure. Returning matters more than streaks."
+      />
 
       {/* Soulful Return Philosophy Banner (From Version 1) */}
       <section className="p-5 sm:p-6 rounded-3xl bg-amber-500/10 dark:bg-amber-500/[0.08] border border-amber-500/25 dark:border-amber-500/20 space-y-2 shadow-sm">
@@ -157,7 +154,7 @@ export default function HistoryPage() {
                   {isReturn && <RotateCcw className="w-4 h-4 stroke-[2.2]" />}
                 </div>
 
-                <span className="text-[9px] text-center font-semibold tracking-tight opacity-90 truncate max-w-full">
+                <span className="text-[9px] text-center font-semibold tracking-tight opacity-90">
                   {isReturn ? 'Return' : isDone ? 'Done' : 'Pause'}
                 </span>
               </div>

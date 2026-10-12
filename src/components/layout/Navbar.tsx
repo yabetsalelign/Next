@@ -18,12 +18,13 @@ export function Navbar() {
   const pathname = usePathname();
   const { openModal, settings, hydrated } = useApp();
 
-  // Hide navigation entirely during initial onboarding to keep user focused
+  // Hide navigation entirely during initial onboarding
   if (hydrated && !settings.hasCompletedOnboarding) {
     return null;
   }
 
-  const navItems = [
+  // All 6 items on desktop sidebar
+  const desktopNavItems = [
     { label: 'Today', href: '/', icon: CheckCircle2 },
     { label: 'Plan', href: '/plan', icon: Calendar },
     { label: 'Routines', href: '/routines', icon: Sparkles },
@@ -32,12 +33,21 @@ export function Navbar() {
     { label: 'Settings', href: '/settings', icon: SettingsIcon },
   ];
 
+  // Exactly 5 destinations on mobile bottom nav
+  const mobileNavItems = [
+    { label: 'Today', href: '/', icon: CheckCircle2 },
+    { label: 'Plan', href: '/plan', icon: Calendar },
+    { label: 'Routines', href: '/routines', icon: Sparkles },
+    { label: 'Check-in', href: '/check-in', icon: HeartHandshake },
+    { label: 'History', href: '/history', icon: RotateCcw },
+  ];
+
   return (
     <>
-      {/* Desktop Sidebar */}
+      {/* Desktop Sidebar (All destinations visible) */}
       <aside className="hidden md:flex flex-col w-64 border-r border-stone-200/80 dark:border-white/[0.08] bg-surface dark:bg-surface-dark p-6 fixed inset-y-0 left-0 z-30 select-none">
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-9 h-9 rounded-xl bg-amber-500 dark:bg-amber-500 text-stone-950 flex items-center justify-center font-bold text-lg shadow-[0_2px_12px_rgba(229,149,63,0.3)]">
+          <div className="w-9 h-9 rounded-xl bg-amber-500 text-stone-950 flex items-center justify-center font-bold text-lg shadow-[0_2px_12px_rgba(229,149,63,0.3)]">
             N
           </div>
           <div>
@@ -48,6 +58,7 @@ export function Navbar() {
 
         {/* Quick Add Button */}
         <button
+          type="button"
           onClick={() => openModal('create_task')}
           className="w-full flex items-center justify-center gap-2 py-2.5 px-4 mb-6 rounded-xl bg-stone-100 dark:bg-surface-darkElevated hover:bg-stone-200/80 dark:hover:bg-white/[0.08] text-ink-primary dark:text-linen font-medium text-sm transition-colors border border-transparent dark:border-white/[0.06]"
         >
@@ -57,7 +68,7 @@ export function Navbar() {
 
         {/* Navigation Items */}
         <nav className="flex-1 space-y-1">
-          {navItems.map((item) => {
+          {desktopNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
             return (
@@ -80,23 +91,19 @@ export function Navbar() {
         {/* Desktop Footer message */}
         <div className="pt-4 border-t border-stone-200/60 dark:border-white/[0.06]">
           <p className="text-xs text-ink-subtle dark:text-linen-faint leading-relaxed">
-            The minimum counts. You can always stop or keep going.
+            The minimum counts. Returning &gt; streaks.
           </p>
         </div>
       </aside>
 
-      {/* Mobile Bottom Navigation
-          - Encloses BOTH icon and label together inside the active pill
-          - Subtle warm amber tint with zero dangling text
-          - Comfortably sits above system navigation gesture bar
-      */}
+      {/* Mobile Bottom Navigation (Exactly 5 destinations) */}
       <nav 
         aria-label="Mobile Navigation"
-        className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-stone-200/70 bg-surface/95 dark:border-white/[0.08] dark:bg-surface-dark/95 backdrop-blur-xl shadow-[0_-8px_25px_rgba(0,0,0,0.25)]"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-stone-200/80 bg-surface/95 dark:border-white/[0.08] dark:bg-surface-dark/95 backdrop-blur-xl shadow-[0_-8px_25px_rgba(0,0,0,0.25)]"
         style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       >
-        <div className="flex items-stretch justify-around px-2 py-1.5">
-          {navItems.map((item) => {
+        <div className="flex items-stretch justify-around px-1 py-1.5">
+          {mobileNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
             return (
@@ -104,10 +111,10 @@ export function Navbar() {
                 key={item.href}
                 href={item.href}
                 aria-current={isActive ? 'page' : undefined}
-                className="flex-1 flex flex-col items-center justify-center min-h-[54px] px-1 focus:outline-none"
+                className="flex-1 flex flex-col items-center justify-center min-h-[50px] px-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50 rounded-2xl"
               >
                 <div
-                  className={`w-full flex flex-col items-center justify-center py-1.5 px-1 rounded-2xl transition-all duration-200 ${
+                  className={`w-full flex flex-col items-center justify-center py-1.5 px-0.5 rounded-2xl transition-all duration-200 ${
                     isActive
                       ? 'bg-amber-500/15 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 font-semibold shadow-[0_1px_8px_rgba(229,149,63,0.12)]'
                       : 'text-ink-muted dark:text-linen-subtle hover:text-ink-primary dark:hover:text-linen'
@@ -116,7 +123,7 @@ export function Navbar() {
                   <Icon
                     className={`w-[20px] h-[20px] transition-transform ${isActive ? 'scale-105 stroke-[2.2]' : 'stroke-[1.75]'}`}
                   />
-                  <span className={`text-[10px] leading-tight mt-1 tracking-tight truncate max-w-full ${isActive ? 'font-semibold text-amber-700 dark:text-amber-300' : 'font-medium'}`}>
+                  <span className={`text-[11px] leading-tight mt-1 tracking-tight truncate max-w-full text-center ${isActive ? 'font-semibold text-amber-700 dark:text-amber-300' : 'font-medium'}`}>
                     {item.label}
                   </span>
                 </div>

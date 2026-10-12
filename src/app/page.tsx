@@ -9,6 +9,7 @@ import { TodayEmptyState } from '@/components/today/TodayEmptyState';
 import { OnboardingFlow } from '@/components/today/OnboardingFlow';
 import { ChevronDown, ChevronUp, Coffee, Sparkles, Clock, CheckCircle2 } from 'lucide-react';
 
+
 function TaskCategoryIcon({ category, icon }: { category?: string; icon?: string }) {
   if (icon) {
     return <span className="text-sm select-none">{icon}</span>;
@@ -26,7 +27,7 @@ function TaskCategoryIcon({ category, icon }: { category?: string; icon?: string
 }
 
 export default function TodayPage() {
-  const { currentTask, upNextTasks, hydrated, notPlanningToday, settings, openModal } = useApp();
+  const { currentTask, upNextTasks, hydrated, notPlanningToday, settings } = useApp();
   const [showUpcoming, setShowUpcoming] = useState(false);
 
   // If first launch has not been completed, present intentional onboarding
@@ -35,7 +36,7 @@ export default function TodayPage() {
   }
 
   return (
-    <div className="max-w-xl mx-auto animate-fade-in pb-8">
+    <div className="max-w-xl mx-auto animate-fade-in pb-28 md:pb-8">
       {/* Calm Header */}
       <Header />
 
@@ -88,13 +89,12 @@ export default function TodayPage() {
 
           {/* Secondary Features Access: Check in */}
           <div className="pt-2 text-center">
-            <button
-              type="button"
-              onClick={() => openModal('check_in')}
+            <Link
+              href="/check-in"
               className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-muted hover:text-ink-primary dark:text-linen-subtle dark:hover:text-linen transition-colors py-2.5 px-4 rounded-xl hover:bg-stone-100 dark:hover:bg-white/[0.04] min-h-[44px]"
             >
               <span>Check in</span>
-            </button>
+            </Link>
           </div>
         </div>
       )}

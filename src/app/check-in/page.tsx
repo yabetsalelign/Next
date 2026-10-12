@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useApp } from '@/lib/store';
+import { Header } from '@/components/layout/Header';
 import { 
   HeartHandshake, 
   BookOpen, 
@@ -26,16 +27,12 @@ export default function CheckInPage() {
   }, []);
 
   return (
-    <div className="max-w-xl mx-auto space-y-6 animate-fade-in pb-16">
+    <div className="max-w-xl mx-auto space-y-6 animate-fade-in pb-28 md:pb-12">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl sm:text-[1.75rem] font-semibold tracking-tight text-ink-primary dark:text-slate-100">
-          Check In
-        </h1>
-        <p className="mt-1 text-xs sm:text-sm text-ink-muted dark:text-slate-400">
-          Notice how you are right now. No pressure, no obligations, no streaks.
-        </p>
-      </div>
+      <Header
+        title="Check In"
+        subtitle="Notice how you are right now. No pressure, no obligations, no streaks."
+      />
 
       {/* Primary Actions Grid */}
       <div className="space-y-3">
@@ -53,7 +50,7 @@ export default function CheckInPage() {
               <h2 className="text-base font-semibold text-ink-primary dark:text-slate-100">
                 Body & energy check
               </h2>
-              <p className="text-xs text-ink-muted dark:text-slate-400 mt-0.5 truncate">
+              <p className="text-xs text-ink-muted dark:text-slate-400 mt-0.5 leading-relaxed">
                 Physical fatigue, tension, hydration, and gentle advice.
               </p>
             </div>
@@ -75,7 +72,7 @@ export default function CheckInPage() {
               <h2 className="text-base font-semibold text-ink-primary dark:text-slate-100">
                 Quiet quick reflection
               </h2>
-              <p className="text-xs text-ink-muted dark:text-slate-400 mt-0.5 truncate">
+              <p className="text-xs text-ink-muted dark:text-slate-400 mt-0.5 leading-relaxed">
                 What did I accomplish? What felt easier? What do I need tomorrow?
               </p>
             </div>
@@ -104,7 +101,7 @@ export default function CheckInPage() {
                   </span>
                 )}
               </div>
-              <p className="text-xs text-amber-900/80 dark:text-amber-300/80 mt-0.5 truncate">
+              <p className="text-xs text-amber-900/80 dark:text-amber-300/80 mt-0.5 leading-relaxed">
                 {activeReset ? 'View your daily progress and gentle routine' : 'A low-pressure week of basic self-care and renewal'}
               </p>
             </div>

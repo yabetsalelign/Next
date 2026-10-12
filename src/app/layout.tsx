@@ -41,11 +41,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <body className="bg-canvas dark:bg-canvas-dark text-ink-primary dark:text-linen font-sans selection:bg-amber-500/20 selection:text-amber-300">
         <AppProvider>
-          {/* Subtle warm ambient atmospheric glow in dark mode */}
-          <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden" aria-hidden="true">
+          {/* Subtle warm ambient atmospheric glow in dark mode — never intercepts pointer events */}
+          <div className="pointer-events-none select-none" aria-hidden="true" style={{ position: 'fixed', inset: 0, zIndex: -1, overflow: 'hidden' }}>
             <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[650px] h-[500px] bg-[radial-gradient(ellipse_at_top,rgba(229,149,63,0.07),rgba(116,105,182,0.04),transparent_70%)] blur-3xl opacity-90 dark:block hidden" />
           </div>
 

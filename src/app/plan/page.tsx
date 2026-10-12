@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useApp } from '@/lib/store';
+import { Header } from '@/components/layout/Header';
 import { Task } from '@/types';
 import { WELLNESS_TASK_PRESETS } from '@/lib/sampleData';
 import { 
@@ -157,11 +158,11 @@ export default function PlanPage() {
             ) : null}
           </div>
 
-          <h3 className="text-sm sm:text-base font-semibold text-ink-primary dark:text-linen truncate">
+          <h3 className="text-sm sm:text-base font-semibold text-ink-primary dark:text-linen break-words">
             {task.title}
           </h3>
 
-          <p className="text-xs text-ink-muted dark:text-linen-subtle mt-0.5 line-clamp-1">
+          <p className="text-xs text-ink-muted dark:text-linen-subtle mt-0.5 break-words">
             {task.minimum}
           </p>
         </div>
@@ -198,28 +199,24 @@ export default function PlanPage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto space-y-6 animate-fade-in pb-10">
+    <div className="max-w-xl mx-auto space-y-6 animate-fade-in pb-28 md:pb-10">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl sm:text-[1.75rem] font-semibold tracking-tight text-ink-primary dark:text-linen">
-          Plan
-        </h1>
-        <p className="mt-1 text-xs sm:text-sm text-ink-muted dark:text-linen-subtle">
-          Where am I in my day? Flexible sequence, zero guilt.
-        </p>
-      </div>
+      <Header
+        title="Plan"
+        subtitle="Where am I in my day? Flexible sequence, zero guilt."
+      />
 
-      {/* Re-introduced: Schedule True Rest (From Version 1 with Version 3 Warm Dark tokens) */}
+      {/* Rest Recommendations Section */}
       <section className="p-5 rounded-3xl bg-amber-500/10 dark:bg-amber-500/[0.08] border border-amber-500/25 dark:border-amber-500/20 space-y-3 shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Coffee className="w-4 h-4 text-amber-700 dark:text-amber-400" />
+            <Coffee className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0" />
             <h2 className="text-xs font-bold uppercase tracking-wider text-amber-900 dark:text-amber-300">
-              Schedule True Rest
+              Rest Recommendations
             </h2>
           </div>
           <span className="text-[11px] text-amber-800/80 dark:text-amber-400/80 font-medium">
-            Rest is an essential activity
+            Tap to add to schedule
           </span>
         </div>
 
@@ -229,14 +226,17 @@ export default function PlanPage() {
               key={i}
               type="button"
               onClick={() => handleAddRestPreset(r)}
-              className="flex items-center gap-2.5 p-2.5 rounded-2xl bg-surface dark:bg-surface-dark border border-amber-500/20 hover:border-amber-500/40 text-left transition-all active:scale-[0.98] shadow-sm"
+              className="flex items-center gap-2.5 p-2.5 rounded-2xl bg-surface dark:bg-surface-dark border border-amber-500/20 hover:border-amber-500/40 text-left transition-all active:scale-[0.98] shadow-sm group"
             >
-              <span className="text-base select-none">{r.icon}</span>
+              <span className="text-base select-none shrink-0">{r.icon}</span>
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-semibold text-ink-primary dark:text-linen truncate">
                   {r.title}
                 </p>
-                <p className="text-[10px] text-ink-muted dark:text-linen-subtle">~{r.duration} min</p>
+                <div className="flex items-center justify-between text-[10px] text-ink-muted dark:text-linen-subtle mt-0.5">
+                  <span>~{r.duration}m</span>
+                  <span className="text-amber-700 dark:text-amber-400 font-semibold group-hover:underline">+ Add</span>
+                </div>
               </div>
             </button>
           ))}
@@ -257,7 +257,7 @@ export default function PlanPage() {
             onClick={() => setFilter(tab.id as any)}
             className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-semibold text-center transition-all ${
               filter === tab.id
-                ? 'bg-surface dark:bg-surface-dark text-ink-primary dark:text-linen shadow-sm'
+                ? 'bg-amber-500/15 dark:bg-amber-500/20 text-amber-900 dark:text-amber-300 font-bold border border-amber-500/35 shadow-sm'
                 : 'text-ink-muted dark:text-linen-subtle hover:text-ink-primary dark:hover:text-linen'
             }`}
           >
@@ -266,15 +266,33 @@ export default function PlanPage() {
         ))}
       </div>
 
+      {/* Scheduled Tasks Header */}
+      <div className="flex items-center justify-between pt-1">
+        <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
+          Scheduled Tasks {filter !== 'all' ? `• ${filter.toUpperCase()}` : ''}
+        </h2>
+        <span className="text-[11px] text-ink-subtle dark:text-linen-faint">
+          {filteredUncompleted.length} {filteredUncompleted.length === 1 ? 'task' : 'tasks'}
+        </span>
+      </div>
+
       {/* Timeline Sections: NOW, NEXT, LATER */}
       <div className="space-y-5">
         {filteredUncompleted.length === 0 ? (
-          <div className="py-12 text-center space-y-2">
-            <p className="text-sm font-medium text-ink-secondary dark:text-slate-300">
-              No tasks in this view.
+          <div className="py-10 text-center space-y-2 p-6 rounded-3xl bg-surface dark:bg-surface-dark border border-stone-200/80 dark:border-white/[0.08]">
+            <p className="text-sm font-semibold text-ink-primary dark:text-linen">
+              {filter === 'must'
+                ? 'No Must tasks scheduled right now.'
+                : filter === 'care'
+                ? 'No Self-care activities scheduled right now.'
+                : filter === 'rest'
+                ? 'No Rest periods scheduled right now.'
+                : 'No tasks scheduled for today.'}
             </p>
-            <p className="text-xs text-ink-muted dark:text-slate-400">
-              Take your time, or tap below to add something when ready.
+            <p className="text-xs text-ink-muted dark:text-linen-subtle max-w-sm mx-auto leading-relaxed">
+              {filter === 'all'
+                ? 'Take your time. You can choose a rest recommendation above or tap "+ Add something" below when you\'re ready.'
+                : 'You can switch back to "All" to view your full day, or add something below.'}
             </p>
           </div>
         ) : (

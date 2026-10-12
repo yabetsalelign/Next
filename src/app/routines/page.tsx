@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useApp } from '@/lib/store';
+import { Header } from '@/components/layout/Header';
 import { Routine } from '@/types';
 import { 
   Play, 
@@ -42,9 +43,11 @@ function RoutineCard({ routine, onStart }: { routine: Routine; onStart?: () => v
   };
 
   return (
-    <article className="rounded-3xl bg-surface dark:bg-surface-dark border border-slate-200/90 dark:border-slate-800 shadow-sm transition-all overflow-hidden">
+    <article className={`rounded-3xl bg-surface dark:bg-surface-dark border shadow-sm transition-all overflow-hidden ${
+      showSteps ? 'border-amber-500/35 dark:border-amber-500/25 ring-1 ring-amber-500/15' : 'border-slate-200/90 dark:border-slate-800'
+    }`}>
       {/* Collapsed / Summary Row */}
-      <div className="p-5 flex items-center justify-between gap-4">
+      <div className="p-4 sm:p-5 flex items-center justify-between gap-3">
         <div 
           className="flex-1 min-w-0 cursor-pointer select-none"
           onClick={() => setShowSteps(!showSteps)}
@@ -54,18 +57,18 @@ function RoutineCard({ routine, onStart }: { routine: Routine; onStart?: () => v
               {routine.title}
             </h2>
             {isAllDone && (
-              <span className="text-[10px] font-bold text-gentle-green bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">
+              <span className="text-[10px] font-bold text-gentle-green bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full shrink-0">
                 Done ✓
               </span>
             )}
           </div>
-          <p className="text-xs text-ink-muted dark:text-slate-400 mt-1 truncate">
+          <p className="text-xs text-ink-muted dark:text-slate-400 mt-1 leading-relaxed">
             {previewText || routine.description}
           </p>
         </div>
 
-        {/* Quick Start button */}
-        <div className="flex items-center gap-2 shrink-0">
+        {/* Action controls */}
+        <div className="flex items-center gap-1.5 shrink-0">
           <button
             type="button"
             onClick={(e) => {
@@ -73,7 +76,7 @@ function RoutineCard({ routine, onStart }: { routine: Routine; onStart?: () => v
               onStart?.();
               openModal('routine_runner', undefined, routine.id);
             }}
-            className="flex items-center gap-1.5 py-2 px-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs shadow-sm transition-all active:scale-95"
+            className="flex items-center gap-1.5 min-h-[44px] py-2.5 px-3.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs shadow-sm transition-all active:scale-95"
           >
             <Play className="w-3.5 h-3.5" />
             <span>Start</span>
@@ -85,7 +88,7 @@ function RoutineCard({ routine, onStart }: { routine: Routine; onStart?: () => v
               e.stopPropagation();
               setShowSteps(!showSteps);
             }}
-            className="p-2 rounded-xl text-ink-muted hover:text-ink-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="w-11 h-11 flex items-center justify-center rounded-xl text-ink-muted hover:text-ink-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             aria-label={showSteps ? 'Collapse routine' : 'Expand routine'}
           >
             {showSteps ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -241,16 +244,12 @@ export default function RoutinesPage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto space-y-6 animate-fade-in pb-10">
+    <div className="max-w-xl mx-auto space-y-6 animate-fade-in pb-28 md:pb-10">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl sm:text-[1.75rem] font-semibold tracking-tight text-ink-primary dark:text-slate-100">
-          Routines
-        </h1>
-        <p className="mt-1 text-xs sm:text-sm text-ink-muted dark:text-slate-400">
-          Flexible sequences to ease transitions. Complete any one step.
-        </p>
-      </div>
+      <Header
+        title="Routines"
+        subtitle="Flexible sequences to ease transitions. Complete any one step."
+      />
 
       {/* MY ROUTINES */}
       <section className="space-y-3">
