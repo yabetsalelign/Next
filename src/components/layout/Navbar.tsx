@@ -33,7 +33,7 @@ export function Navbar() {
     { label: 'Settings', href: '/settings', icon: SettingsIcon },
   ];
 
-  // Primary 4 destinations on mobile bottom nav; history remains accessible from the Plan view and desktop nav.
+  // Primary 4 destinations on mobile bottom nav; history is accessible from the shared header and desktop nav.
   const mobileNavItems = [
     { label: 'Today', href: '/', icon: CheckCircle2 },
     { label: 'Plan', href: '/plan', icon: Calendar },

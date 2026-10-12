@@ -258,7 +258,6 @@ export default function SettingsPage() {
       <Header
         title="Settings"
         subtitle="Personalize your experience. Changes apply immediately."
-        showSettings={false}
       />
 
       {/* APPEARANCE */}

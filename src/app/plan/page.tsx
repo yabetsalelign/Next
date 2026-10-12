@@ -12,12 +12,11 @@ import {
   Coffee, 
   Check, 
   ArrowUpRight, 
-  Heart,
-  Sparkles,
-  X,
-  ChevronDown,
-  ChevronUp,
-  ChevronRight
+  Heart, 
+  Sparkles, 
+  X, 
+  ChevronDown, 
+  ChevronUp 
 } from 'lucide-react';
 import { sounds } from '@/lib/sounds';
 
@@ -208,19 +207,6 @@ export default function PlanPage() {
         title="Plan"
         subtitle="Where am I in my day? Flexible sequence, zero guilt."
       />
-
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-[11px] font-medium text-amber-800/80 dark:text-amber-300/80">
-          Need a bigger picture?
-        </p>
-        <Link
-          href="/history"
-          className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1.5 text-[11px] font-semibold text-amber-800 dark:text-amber-300 transition-colors hover:bg-amber-500/15"
-        >
-          History & Returns
-          <ChevronRight className="w-3.5 h-3.5" />
-        </Link>
-      </div>
 
       {/* Rest Recommendations Section */}
       <section className="p-5 rounded-3xl bg-amber-500/10 dark:bg-amber-500/[0.08] border border-amber-500/25 dark:border-amber-500/20 space-y-3 shadow-sm">
