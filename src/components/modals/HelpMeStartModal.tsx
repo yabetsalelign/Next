@@ -443,7 +443,7 @@ export function HelpMeStartModal() {
               <span className="text-[11px] font-bold uppercase tracking-wider text-primary">
                 Focus gently
               </span>
-              <h4 className="text-base font-bold text-white mt-1 truncate">
+              <h4 className="text-base font-bold text-white mt-1 break-words">
                 {firstStepText}
               </h4>
             </div>

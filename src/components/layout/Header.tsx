@@ -49,7 +49,7 @@ export function Header({
 
   return (
     <header
-      className={`fixed top-0 inset-x-0 z-50 bg-surface/95 backdrop-blur-lg pt-[var(--sat)] border-b border-outline-variant ${className}`}
+      className={`fixed top-0 inset-x-0 md:left-64 z-50 bg-surface/95 backdrop-blur-lg pt-[var(--sat)] border-b border-outline-variant ${className}`}
     >
       <div className="h-16 px-gutter-mobile flex items-center justify-between max-w-xl mx-auto">
         <div className="flex items-center gap-space-xs">
@@ -90,12 +90,6 @@ export function Header({
             </Link>
           )}
 
-          <div
-            title="Profile"
-            className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high"
-          >
-            <Settings2 size={21} />
-          </div>
         </div>
       </div>
     </header>

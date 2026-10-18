@@ -8,7 +8,7 @@ import { ModalRoot } from '@/components/modals/ModalRoot';
 import { AndroidBackHandler } from '@/components/layout/AndroidBackHandler';
 
 export const metadata: Metadata = {
-  title: 'Next — Next. Not everything.',
+  title: 'Next - one thing at a time',
   description: 'A calm, intuitive personal executive-function tool designed around task initiation, overwhelm reduction, routines, and returning after falling off.',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
@@ -32,8 +32,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: 'cover',
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#F7F5F0' },
-    { media: '(prefers-color-scheme: dark)', color: '#121317' },
+    { media: '(prefers-color-scheme: light)', color: '#F8F6F1' },
+    { media: '(prefers-color-scheme: dark)', color: '#121218' },
   ],
 };
 
@@ -45,17 +45,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700&display=swap"
-          rel="stylesheet"
-        />
-
         {/* Theme and Accent synchronizer */}
         <script
           dangerouslySetInnerHTML={{
@@ -70,7 +59,7 @@ export default function RootLayout({
             <Navbar />
 
             {/* Scrollable Main viewport */}
-            <main className="flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-smooth-touch md:pl-64">
+            <main className="flex-1 min-w-0 min-h-0 overflow-y-auto overscroll-contain scroll-smooth-touch md:pl-64">
               {children}
             </main>
           </div>

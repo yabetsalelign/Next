@@ -1,5 +1,6 @@
 'use client';
 
+import { SymbolIcon } from '@/components/ui/SymbolIcon';
 import React, { useState } from 'react';
 import { useApp } from '@/lib/store';
 
@@ -64,7 +65,7 @@ export function AddRoutineModal() {
             onClick={closeModal}
             className="w-8 h-8 flex items-center justify-center rounded-full text-on-surface-variant hover:text-white transition-colors"
           >
-            <span className="material-symbols-outlined text-[20px]">close</span>
+            <SymbolIcon name="close" className="text-[20px]" />
           </button>
         </header>
 
@@ -83,7 +84,7 @@ export function AddRoutineModal() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Afternoon reset, Reading wind-down..."
-              className="w-full h-12 px-4 py-3 bg-[#24252a] text-sm text-on-surface placeholder:text-outline rounded-xl border border-zinc-700/60 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition duration-150 font-body-md"
+              className="w-full h-12 px-4 py-3 bg-[#24252a] text-sm text-on-surface placeholder:text-on-surface-variant rounded-xl border border-zinc-700/60 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition duration-150 font-body-md"
             />
           </div>
 
@@ -98,7 +99,7 @@ export function AddRoutineModal() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Short note on what this routine is for"
-              className="w-full px-4 py-3 bg-[#24252a] text-sm text-on-surface placeholder:text-outline rounded-xl border border-zinc-700/60 resize-none focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition duration-150 font-body-md"
+              className="w-full px-4 py-3 bg-[#24252a] text-sm text-on-surface placeholder:text-on-surface-variant rounded-xl border border-zinc-700/60 resize-none focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition duration-150 font-body-md"
             />
           </div>
 

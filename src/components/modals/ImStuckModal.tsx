@@ -274,7 +274,7 @@ export function ImStuckModal() {
                       <h4 className="text-sm font-semibold text-ink-primary dark:text-slate-100">
                         {f.title}
                       </h4>
-                      <p className="text-xs text-ink-muted dark:text-slate-400 truncate">
+                      <p className="text-sm text-ink-muted dark:text-slate-400 break-words">
                         {f.subtitle}
                       </p>
                     </div>

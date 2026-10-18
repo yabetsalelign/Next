@@ -130,7 +130,7 @@ export function JournalModal() {
                   {todayEntries.slice(0, 2).map(entry => (
                     <div key={entry.id} className="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-800">
                       <p className="text-[11px] text-ink-muted mb-1 italic">{entry.prompt}</p>
-                      <p className="text-xs text-ink-secondary dark:text-slate-300 line-clamp-2">{entry.response}</p>
+                      <p className="text-sm leading-relaxed text-ink-secondary dark:text-slate-300 break-words">{entry.response}</p>
                     </div>
                   ))}
                 </div>

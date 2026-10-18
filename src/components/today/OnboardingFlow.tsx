@@ -1,5 +1,6 @@
 'use client';
 
+import { SymbolIcon } from '@/components/ui/SymbolIcon';
 import React, { useState } from 'react';
 import { useApp } from '@/lib/store';
 
@@ -96,23 +97,9 @@ export function OnboardingFlow() {
           {/* STEP 1: Philosophy & Welcome */}
           {step === 1 && (
             <div className="flex flex-col animate-fade-in">
-              {/* Serene Vignette */}
-              <div className="w-full mb-space-md rounded-2xl overflow-hidden bg-surface-container-low border border-surface-container-high shadow-sm relative group">
-                <div className="relative w-full h-44 overflow-hidden bg-[#0d0e12] flex items-center justify-center">
-                  <div className="absolute inset-0 bg-gradient-to-tr from-amber-950/40 via-surface-container to-background flex items-center justify-center">
-                    <span className="material-symbols-outlined text-[64px] text-primary-container/40">
-                      nature_people
-                    </span>
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-surface-container-low via-transparent to-transparent opacity-90"></div>
-                </div>
-                <div className="px-space-md py-space-sm flex items-center justify-between text-on-surface-variant bg-surface-container-low">
-                  <span className="font-label-sm text-label-sm flex items-center gap-1.5 text-on-surface">
-                    <span className="material-symbols-outlined text-[16px] text-primary-container">spa</span>
-                    A restorative beginning
-                  </span>
-                  <span className="font-label-sm text-label-sm text-outline">Step 1 of 4</span>
-                </div>
+              <div className="mb-5 flex items-center justify-between border-b border-outline-variant pb-3 text-sm">
+                <span className="font-medium text-primary">Start gently</span>
+                <span className="text-on-surface-variant">Step 1 of 4</span>
               </div>
 
               {/* Narrative */}
@@ -129,7 +116,7 @@ export function OnboardingFlow() {
               <div className="w-full bg-surface-container-low border border-surface-container-high rounded-2xl p-space-md mb-space-lg shadow-sm">
                 <div className="flex items-start gap-space-sm">
                   <div className="w-10 h-10 rounded-full bg-primary-container/15 border border-primary-container/30 flex items-center justify-center shrink-0 text-primary-container mt-0.5">
-                    <span className="material-symbols-outlined text-[20px]">hourglass_bottom</span>
+                    <SymbolIcon name="hourglass_bottom" className="text-[20px]" />
                   </div>
                   <div className="flex flex-col min-w-0">
                     <div className="flex items-center gap-2 mb-1">
@@ -154,7 +141,7 @@ export function OnboardingFlow() {
                 className="w-full py-4 rounded-full bg-primary-container text-on-primary-container font-label-lg text-label-lg font-semibold shadow-lg hover:bg-primary-fixed active:scale-[0.98] transition-all flex items-center justify-center gap-2"
               >
                 <span>Continue</span>
-                <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                <SymbolIcon name="arrow_forward" className="text-[18px]" />
               </button>
             </div>
           )}
@@ -187,7 +174,7 @@ export function OnboardingFlow() {
                 >
                   <div className="flex items-center gap-space-sm">
                     <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-fixed shadow-sm">
-                      <span className="material-symbols-outlined text-[20px]">wb_sunny</span>
+                      <SymbolIcon name="wb_sunny" className="text-[20px]" />
                     </div>
                     <div>
                       <h3 className="font-headline-sm text-headline-sm text-on-surface font-semibold">
@@ -217,7 +204,7 @@ export function OnboardingFlow() {
                 >
                   <div className="flex items-center gap-space-sm">
                     <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-on-secondary shadow-sm">
-                      <span className="material-symbols-outlined text-[20px]">spa</span>
+                      <SymbolIcon name="spa" className="text-[20px]" />
                     </div>
                     <div>
                       <h3 className="font-headline-sm text-headline-sm text-on-surface font-semibold">
@@ -254,7 +241,7 @@ export function OnboardingFlow() {
                   className="flex-1 py-4 rounded-full bg-primary-container text-on-primary-container font-label-lg text-label-lg font-semibold shadow-lg hover:bg-primary-fixed active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                 >
                   <span>Continue</span>
-                  <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                  <SymbolIcon name="arrow_forward" className="text-[18px]" />
                 </button>
               </div>
             </div>
@@ -365,7 +352,7 @@ export function OnboardingFlow() {
                   className="flex-1 py-4 rounded-full bg-primary-container text-on-primary-container font-label-lg text-label-lg font-semibold shadow-lg hover:bg-primary-fixed active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                 >
                   <span>Continue</span>
-                  <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                  <SymbolIcon name="arrow_forward" className="text-[18px]" />
                 </button>
               </div>
             </div>
@@ -399,7 +386,7 @@ export function OnboardingFlow() {
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-space-sm">
                       <div className="w-10 h-10 rounded-full bg-primary-container/20 border border-primary-container/40 flex items-center justify-center text-primary-container shrink-0">
-                        <span className="material-symbols-outlined text-[20px]">edit_note</span>
+                        <SymbolIcon name="edit_note" className="text-[20px]" />
                       </div>
                       <div>
                         <h3 className="font-headline-sm text-headline-sm text-on-surface font-semibold">
@@ -428,10 +415,10 @@ export function OnboardingFlow() {
                       value={taskInput}
                       onChange={(e) => setTaskInput(e.target.value)}
                       placeholder="e.g., Water the kitchen fern, read 3 pages"
-                      className="w-full h-12 px-4 rounded-full bg-surface-container-lowest border border-surface-container-high text-on-surface placeholder:text-outline font-body-sm text-body-sm focus:outline-none focus:border-primary-container transition-all"
+                      className="w-full h-12 px-4 rounded-full bg-surface-container-lowest border border-surface-container-high text-on-surface placeholder:text-on-surface-variant font-body-sm text-body-sm focus:outline-none focus:border-primary-container transition-all"
                     />
                     <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                      <span className="font-label-sm text-label-sm text-outline mr-1">Tender sparks:</span>
+                      <span className="font-label-sm text-label-sm text-on-surface-variant mr-1">Tender sparks:</span>
                       <button
                         type="button"
                         onClick={() => setTaskInput('Stretch for 3 minutes')}
@@ -469,7 +456,7 @@ export function OnboardingFlow() {
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-space-sm">
                       <div className="w-10 h-10 rounded-full bg-secondary-container/20 border border-secondary/40 flex items-center justify-center text-secondary shrink-0">
-                        <span className="material-symbols-outlined text-[20px]">spa</span>
+                        <SymbolIcon name="spa" className="text-[20px]" />
                       </div>
                       <div>
                         <h3 className="font-headline-sm text-headline-sm text-on-surface font-semibold">
@@ -506,7 +493,7 @@ export function OnboardingFlow() {
                   className="flex-1 py-4 rounded-full bg-primary-container text-on-primary-container font-label-lg text-label-lg font-semibold shadow-lg hover:bg-primary-fixed active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                 >
                   <span>Open Next</span>
-                  <span className="material-symbols-outlined text-[18px]">check</span>
+                  <SymbolIcon name="check" className="text-[18px]" />
                 </button>
               </div>
             </div>

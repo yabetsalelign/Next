@@ -1,5 +1,6 @@
 'use client';
 
+import { SymbolIcon } from '@/components/ui/SymbolIcon';
 import React, { useState, useRef } from 'react';
 import { useApp } from '@/lib/store';
 import { Header } from '@/components/layout/Header';
@@ -145,7 +146,7 @@ export default function SettingsPage() {
 
           {/* SECTION 1: APPEARANCE */}
           <section className="flex flex-col space-y-space-sm">
-            <span className="font-label-sm text-label-sm uppercase tracking-wider text-outline px-space-xs font-semibold">
+            <span className="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant px-space-xs font-semibold">
               Appearance
             </span>
             <div className="bg-surface-container-low rounded-2xl p-space-md flex flex-col space-y-space-md border border-surface-container-high/30">
@@ -173,7 +174,7 @@ export default function SettingsPage() {
                       : 'text-on-surface-variant hover:text-on-surface'
                   }`}
                 >
-                  <span className="material-symbols-outlined text-[18px]">dark_mode</span>
+                  <SymbolIcon name="dark_mode" className="text-[18px]" />
                   <span className="font-label-md text-label-md">Dark</span>
                 </button>
                 <button
@@ -185,7 +186,7 @@ export default function SettingsPage() {
                       : 'text-on-surface-variant hover:text-on-surface'
                   }`}
                 >
-                  <span className="material-symbols-outlined text-[18px]">light_mode</span>
+                  <SymbolIcon name="light_mode" className="text-[18px]" />
                   <span className="font-label-md text-label-md">Light</span>
                 </button>
                 <button
@@ -197,7 +198,7 @@ export default function SettingsPage() {
                       : 'text-on-surface-variant hover:text-on-surface'
                   }`}
                 >
-                  <span className="material-symbols-outlined text-[18px]">computer</span>
+                  <SymbolIcon name="computer" className="text-[18px]" />
                   <span className="font-label-md text-label-md">System</span>
                 </button>
               </div>
@@ -220,9 +221,7 @@ export default function SettingsPage() {
                     }`}
                   >
                     {selectedAccent === 'amber' && (
-                      <span className="material-symbols-outlined text-on-primary-container text-[16px] font-bold">
-                        check
-                      </span>
+                      <SymbolIcon name="check" className="text-on-primary-container text-[16px] font-bold" />
                     )}
                   </button>
                   <button
@@ -234,9 +233,7 @@ export default function SettingsPage() {
                     }`}
                   >
                     {selectedAccent === 'mint' && (
-                      <span className="material-symbols-outlined text-on-secondary text-[16px] font-bold">
-                        check
-                      </span>
+                      <SymbolIcon name="check" className="text-on-secondary text-[16px] font-bold" />
                     )}
                   </button>
                 </div>
@@ -246,7 +243,7 @@ export default function SettingsPage() {
 
           {/* SECTION 2: BEHAVIOR & SOUND */}
           <section className="flex flex-col space-y-space-sm">
-            <span className="font-label-sm text-label-sm uppercase tracking-wider text-outline px-space-xs font-semibold">
+            <span className="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant px-space-xs font-semibold">
               Behavior &amp; Sound
             </span>
             <div className="bg-surface-container-low rounded-2xl flex flex-col border border-surface-container-high/30">
@@ -266,7 +263,7 @@ export default function SettingsPage() {
                   className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-variant text-on-surface transition-all active:scale-95"
                 >
                   <span className="font-label-md text-label-md font-medium">{difficultyLabel}</span>
-                  <span className="material-symbols-outlined text-[16px] text-on-surface-variant">chevron_right</span>
+                  <SymbolIcon name="chevron_right" className="text-[16px] text-on-surface-variant" />
                 </button>
               </div>
 
@@ -307,7 +304,7 @@ export default function SettingsPage() {
               <div className="p-space-md flex items-center justify-between gap-space-md">
                 <div className="flex flex-col min-w-0 pr-space-xs">
                   <div className="flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-primary-container text-[20px]">volume_up</span>
+                    <SymbolIcon name="volume_up" className="text-primary-container text-[20px]" />
                     <span className="font-headline-sm text-headline-sm text-on-surface font-medium">
                       Completion audio chime
                     </span>
@@ -339,12 +336,12 @@ export default function SettingsPage() {
 
           {/* SECTION 3: REMINDERS & ALERTS */}
           <section className="flex flex-col space-y-space-sm">
-            <span className="font-label-sm text-label-sm uppercase tracking-wider text-outline px-space-xs font-semibold">
+            <span className="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant px-space-xs font-semibold">
               Reminders &amp; Alerts
             </span>
             <div className="bg-surface-container-low rounded-2xl p-space-md flex flex-col space-y-space-xs border border-surface-container-high/30">
               <div className="flex items-center gap-space-xs text-on-surface">
-                <span className="material-symbols-outlined text-outline text-[20px]">notifications_off</span>
+                <SymbolIcon name="notifications_off" className="text-on-surface-variant text-[20px]" />
                 <span className="font-headline-sm text-headline-sm font-semibold">Quiet by design</span>
               </div>
               <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
@@ -357,7 +354,7 @@ export default function SettingsPage() {
 
           {/* SECTION 4: PRIVACY & LOCAL DATA */}
           <section className="flex flex-col space-y-space-sm">
-            <span className="font-label-sm text-label-sm uppercase tracking-wider text-outline px-space-xs font-semibold">
+            <span className="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant px-space-xs font-semibold">
               Privacy &amp; Local Data
             </span>
 
@@ -383,7 +380,7 @@ export default function SettingsPage() {
                   onClick={handleExportData}
                   className="w-full flex items-center justify-center gap-2 py-3 px-space-md rounded-full bg-surface-container-high hover:bg-surface-variant text-on-surface font-label-lg text-label-lg transition-transform active:scale-98 font-semibold"
                 >
-                  <span className="material-symbols-outlined text-[18px]">download</span>
+                  <SymbolIcon name="download" className="text-[18px]" />
                   <span>Export JSON Backup</span>
                 </button>
                 <button
@@ -391,7 +388,7 @@ export default function SettingsPage() {
                   onClick={() => fileInputRef.current?.click()}
                   className="w-full flex items-center justify-center gap-2 py-3 px-space-md rounded-full bg-transparent hover:bg-surface-container-high text-on-surface font-label-lg text-label-lg transition-colors font-medium border border-surface-container-high"
                 >
-                  <span className="material-symbols-outlined text-[18px]">upload</span>
+                  <SymbolIcon name="upload" className="text-[18px]" />
                   <span>Restore Backup</span>
                 </button>
                 <input
@@ -420,9 +417,7 @@ export default function SettingsPage() {
                     Clear active tasks for today without touching routines or history
                   </span>
                 </div>
-                <span className="material-symbols-outlined text-outline group-hover:text-on-surface text-[20px] shrink-0 transition-colors">
-                  delete_outline
-                </span>
+                <SymbolIcon name="delete_outline" className="text-on-surface-variant group-hover:text-on-surface text-[20px] shrink-0 transition-colors" />
               </button>
 
               <div className="h-px bg-surface-container mx-space-md"></div>
@@ -441,9 +436,7 @@ export default function SettingsPage() {
                     Restore default tasks, sample routines, and fresh onboarding templates
                   </span>
                 </div>
-                <span className="material-symbols-outlined text-outline group-hover:text-on-surface text-[20px] shrink-0 transition-colors">
-                  restart_alt
-                </span>
+                <SymbolIcon name="restart_alt" className="text-on-surface-variant group-hover:text-on-surface text-[20px] shrink-0 transition-colors" />
               </button>
 
               <div className="h-px bg-surface-container mx-space-md"></div>
@@ -462,7 +455,7 @@ export default function SettingsPage() {
                     Permanently erase all local tasks, reflections, routines, and reset to zero
                   </span>
                 </div>
-                <span className="material-symbols-outlined text-error text-[20px] shrink-0">warning</span>
+                <SymbolIcon name="warning" className="text-error text-[20px] shrink-0" />
               </button>
             </div>
           </section>
@@ -472,7 +465,7 @@ export default function SettingsPage() {
       {/* Ambient Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-24 inset-x-6 mx-auto max-w-sm bg-surface-container-highest text-on-surface px-4 py-3 rounded-full shadow-2xl flex items-center justify-center gap-2 transition-all duration-300 z-50 animate-fade-in border border-primary-container/30">
-          <span className="material-symbols-outlined text-primary-container text-[18px]">check_circle</span>
+          <SymbolIcon name="check_circle" className="text-primary-container text-[18px]" />
           <span className="font-body-sm text-body-sm font-medium">{toastMessage}</span>
         </div>
       )}

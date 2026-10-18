@@ -1,4 +1,6 @@
-﻿'use client';
+'use client';
+
+import { SymbolIcon } from '@/components/ui/SymbolIcon';
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -116,12 +118,12 @@ export default function FocusSessionPage() {
               onClick={() => router.back()}
               className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95"
             >
-              <span className="material-symbols-outlined text-[22px]">arrow_back</span>
+              <SymbolIcon name="arrow_back" className="text-[22px]" />
             </button>
             <h1 className="font-headline-sm text-headline-sm text-on-surface font-semibold tracking-tight ml-1">Focus Session</h1>
           </div>
           <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-sm">
-            <span className="material-symbols-outlined text-on-primary text-[18px]">person</span>
+            <SymbolIcon name="person" className="text-on-primary text-[18px]" />
           </div>
         </div>
       </header>
@@ -137,16 +139,14 @@ export default function FocusSessionPage() {
               onClick={handleClose}
               className="w-11 h-11 flex items-center justify-center rounded-full bg-surface-container-low hover:bg-surface-container-high transition-colors active:scale-95"
             >
-              <span className="material-symbols-outlined text-[20px] text-on-surface">close</span>
+              <SymbolIcon name="close" className="text-[20px] text-on-surface" />
             </button>
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-low border border-surface-container-high/50">
               <span className={`w-2 h-2 rounded-full bg-primary-container ${isRunning ? 'animate-pulse' : ''}`}></span>
               <span className="font-label-md text-label-md text-on-surface font-medium">{statusLabel}</span>
             </div>
             <div className="w-11 h-11 flex items-center justify-center">
-              <span className={`material-symbols-outlined text-[20px] ${settings.soundEnabled ? 'text-primary-container' : 'text-on-surface-variant'}`}>
-                {settings.soundEnabled ? 'notifications_active' : 'notifications_paused'}
-              </span>
+              <SymbolIcon name={settings.soundEnabled ? 'notifications_active' : 'notifications_paused'} className={`text-[20px] ${settings.soundEnabled ? 'text-primary-container' : 'text-on-surface-variant'}`} />
             </div>
           </div>
 
@@ -155,14 +155,14 @@ export default function FocusSessionPage() {
             <div className="absolute -right-10 -top-10 w-32 h-32 rounded-full bg-primary-container/10 blur-2xl pointer-events-none"></div>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-1.5 text-primary-fixed-dim">
-                <span className="material-symbols-outlined text-[16px]">all_inclusive</span>
+                <SymbolIcon name="all_inclusive" className="text-[16px]" />
                 <span className="font-label-sm text-label-sm tracking-wider uppercase font-semibold">Active Intention</span>
               </div>
               <span className="px-2.5 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant font-label-sm text-label-sm">Low pressure</span>
             </div>
             <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-semibold tracking-tight">{taskTitle}</h2>
             <div className="mt-2 flex items-start gap-2 bg-surface-container-lowest/80 p-2.5 rounded-xl border border-surface-container-high/30">
-              <span className="material-symbols-outlined text-[18px] text-primary-fixed-dim mt-0.5 shrink-0">subdirectory_arrow_right</span>
+              <SymbolIcon name="subdirectory_arrow_right" className="text-[18px] text-primary-fixed-dim mt-0.5 shrink-0" />
               <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
                 <span className="text-on-surface font-medium">Step 1:</span> {taskMinimum}
               </p>
@@ -191,7 +191,7 @@ export default function FocusSessionPage() {
                   {isFinished ? 'STEP COMPLETE' : isIdle ? 'READY TO START' : `${Math.round(displayDuration / 60)}-MIN FOCUS`}
                 </span>
                 <div className="mt-1 flex items-center gap-1 text-on-surface-variant/80">
-                  <span className="material-symbols-outlined text-[14px]">spa</span>
+                  <SymbolIcon name="spa" className="text-[14px]" />
                   <span className="font-label-sm text-label-sm">{isIdle ? 'Choose a duration' : 'Pure presence'}</span>
                 </div>
               </div>
@@ -234,7 +234,7 @@ export default function FocusSessionPage() {
                 onClick={handleStart}
                 className="w-full h-14 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center gap-2.5 font-label-lg text-label-lg shadow-lg shadow-primary-container/10 active:scale-[0.98] transition-all font-semibold"
               >
-                <span className="material-symbols-outlined text-[24px]">play_arrow</span>
+                <SymbolIcon name="play_arrow" className="text-[24px]" />
                 <span>Start focus</span>
               </button>
             )}
@@ -246,9 +246,7 @@ export default function FocusSessionPage() {
                 onClick={handleTogglePause}
                 className="w-full h-14 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center gap-2.5 font-label-lg text-label-lg shadow-lg shadow-primary-container/10 active:scale-[0.98] transition-all font-semibold"
               >
-                <span className="material-symbols-outlined text-[24px]">
-                  {isRunning ? 'pause' : 'play_arrow'}
-                </span>
+                <SymbolIcon name={isRunning ? 'pause' : 'play_arrow'} className="text-[24px]" />
                 <span>{isRunning ? 'Pause gently' : 'Resume step'}</span>
               </button>
             )}
@@ -260,7 +258,7 @@ export default function FocusSessionPage() {
                 onClick={handleRepeat}
                 className="w-full h-14 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center gap-2.5 font-label-lg text-label-lg active:scale-[0.98] transition-all font-semibold border border-surface-container-highest"
               >
-                <span className="material-symbols-outlined text-[24px]">replay</span>
+                <SymbolIcon name="replay" className="text-[24px]" />
                 <span>Repeat step</span>
               </button>
             )}
@@ -272,16 +270,16 @@ export default function FocusSessionPage() {
                 onClick={handleCompleteSuccess}
                 className="h-12 rounded-full bg-surface-container-high hover:bg-surface-variant text-secondary flex items-center justify-center gap-1.5 px-3 font-label-md text-label-md active:scale-[0.98] transition-all font-medium border border-secondary/20"
               >
-                <span className="material-symbols-outlined text-[18px]">check_circle</span>
-                <span className="truncate">Counts as success!</span>
+                <SymbolIcon name="check_circle" className="text-[18px]" />
+                <span className="break-words text-center">Counts as success</span>
               </button>
               <button
                 type="button"
                 onClick={handlePostpone}
                 className="h-12 rounded-full bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant flex items-center justify-center gap-1.5 px-3 font-label-md text-label-md active:scale-[0.98] transition-all"
               >
-                <span className="material-symbols-outlined text-[18px]">schedule</span>
-                <span className="truncate">Postpone gently</span>
+                <SymbolIcon name="schedule" className="text-[18px]" />
+                <span className="break-words text-center">Postpone gently</span>
               </button>
             </div>
           </div>
@@ -289,7 +287,7 @@ export default function FocusSessionPage() {
           {/* Zero-Guilt Guarantee */}
           <div className="mt-6 p-4 rounded-2xl bg-surface-container-lowest flex items-start gap-3 border border-surface-container-high/40 shadow-sm">
             <div className="w-9 h-9 rounded-full bg-secondary-container/20 text-secondary flex items-center justify-center shrink-0 mt-0.5">
-              <span className="material-symbols-outlined text-[20px]">nature</span>
+              <SymbolIcon name="nature" className="text-[20px]" />
             </div>
             <div className="flex flex-col min-w-0">
               <span className="font-label-md text-label-md text-on-surface font-semibold">Zero Guilt Guarantee</span>

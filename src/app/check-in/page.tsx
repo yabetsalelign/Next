@@ -1,5 +1,6 @@
 'use client';
 
+import { SymbolIcon } from '@/components/ui/SymbolIcon';
 import React, { useState, useEffect } from 'react';
 import { useApp } from '@/lib/store';
 import { Header } from '@/components/layout/Header';
@@ -92,7 +93,7 @@ export default function CheckInPage() {
           {/* SECTION 1: Energy & Pace */}
           <section className="flex flex-col space-y-3">
             <div className="flex items-center justify-between px-1">
-              <span className="font-label-sm text-label-sm tracking-wider uppercase text-outline">
+              <span className="font-label-sm text-label-sm tracking-wider uppercase text-on-surface-variant">
                 Energy &amp; Pace
               </span>
               <span className="font-label-sm text-label-sm text-primary-container font-semibold transition-all">
@@ -119,7 +120,7 @@ export default function CheckInPage() {
                       : 'bg-surface-container-high text-on-surface-variant group-hover:text-on-surface'
                   }`}
                 >
-                  <span className="material-symbols-outlined text-[20px]">dark_mode</span>
+                  <SymbolIcon name="dark_mode" className="text-[20px]" />
                 </div>
                 <span
                   className={`font-label-lg text-label-lg leading-none mb-1 ${
@@ -128,7 +129,7 @@ export default function CheckInPage() {
                 >
                   Low
                 </span>
-                <span className="font-label-sm text-label-sm text-outline">Gentle</span>
+                <span className="font-label-sm text-label-sm text-on-surface-variant">Gentle</span>
               </button>
 
               {/* Option 2: Steady */}
@@ -148,7 +149,7 @@ export default function CheckInPage() {
                       : 'bg-surface-container-high text-on-surface-variant group-hover:text-on-surface'
                   }`}
                 >
-                  <span className="material-symbols-outlined text-[20px]">all_inclusive</span>
+                  <SymbolIcon name="all_inclusive" className="text-[20px]" />
                 </div>
                 <span
                   className={`font-label-lg text-label-lg leading-none mb-1 ${
@@ -177,7 +178,7 @@ export default function CheckInPage() {
                       : 'bg-surface-container-high text-on-surface-variant group-hover:text-on-surface'
                   }`}
                 >
-                  <span className="material-symbols-outlined text-[20px]">bolt</span>
+                  <SymbolIcon name="bolt" className="text-[20px]" />
                 </div>
                 <span
                   className={`font-label-lg text-label-lg leading-none mb-1 ${
@@ -186,7 +187,7 @@ export default function CheckInPage() {
                 >
                   Energized
                 </span>
-                <span className="font-label-sm text-label-sm text-outline">Driven</span>
+                <span className="font-label-sm text-label-sm text-on-surface-variant">Driven</span>
               </button>
             </div>
           </section>
@@ -195,14 +196,14 @@ export default function CheckInPage() {
           <section className="flex flex-col space-y-3">
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
-                <span className="font-label-sm text-label-sm tracking-wider uppercase text-outline">
+                <span className="font-label-sm text-label-sm tracking-wider uppercase text-on-surface-variant">
                   Quiet Reflection
                 </span>
                 <span className="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm">
                   Optional
                 </span>
               </div>
-              <span className="font-label-sm text-label-sm text-outline">A sentence is plenty</span>
+              <span className="font-label-sm text-label-sm text-on-surface-variant">A sentence is plenty</span>
             </div>
 
             <div className="bg-surface-container-low rounded-2xl p-4 flex flex-col space-y-4 shadow-sm border border-surface-container-high/30">
@@ -213,12 +214,12 @@ export default function CheckInPage() {
                   value={reflectionText}
                   onChange={(e) => setReflectionText(e.target.value)}
                   placeholder="What feels easiest to let go of today? (A sentence or a few words is plenty...)"
-                  className="w-full bg-surface-container-lowest text-on-surface placeholder:text-outline font-body-md text-body-md rounded-xl p-3.5 focus:outline-none focus:ring-1 focus:ring-primary-container transition-colors resize-none leading-relaxed border border-surface-container-high/40"
+                  className="w-full bg-surface-container-lowest text-on-surface placeholder:text-on-surface-variant font-body-md text-body-md rounded-xl p-3.5 focus:outline-none focus:ring-1 focus:ring-primary-container transition-colors resize-none leading-relaxed border border-surface-container-high/40"
                 ></textarea>
               </div>
               <div className="flex items-center justify-between pt-1">
-                <div className="flex items-center gap-1.5 text-outline">
-                  <span className="material-symbols-outlined text-[16px]">lock</span>
+                <div className="flex items-center gap-1.5 text-on-surface-variant">
+                  <SymbolIcon name="lock" className="text-[16px]" />
                   <span className="font-label-sm text-label-sm">Private record on device</span>
                 </div>
                 <button
@@ -226,7 +227,7 @@ export default function CheckInPage() {
                   onClick={handleSaveReflection}
                   className="px-4 py-2 rounded-full bg-primary-container text-on-primary-container font-label-lg text-label-lg font-semibold flex items-center gap-1.5 active:scale-95 transition-all shadow-[0_4px_16px_rgba(255,185,99,0.2)] hover:bg-primary-fixed"
                 >
-                  <span className="material-symbols-outlined text-[16px]">check</span>
+                  <SymbolIcon name="check" className="text-[16px]" />
                   <span>Save reflection</span>
                 </button>
               </div>
@@ -236,7 +237,7 @@ export default function CheckInPage() {
           {/* SECTION 3: Wellbeing & Pacing Action Cards */}
           <section className="flex flex-col space-y-3">
             <div className="flex items-center justify-between px-1">
-              <span className="font-label-sm text-label-sm tracking-wider uppercase text-outline">
+              <span className="font-label-sm text-label-sm tracking-wider uppercase text-on-surface-variant">
                 Wellbeing &amp; Pacing
               </span>
             </div>
@@ -246,13 +247,13 @@ export default function CheckInPage() {
               <div className="bg-surface-container-low rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm hover:bg-surface-container transition-colors border border-surface-container-high/30">
                 <div className="flex items-center gap-3.5 min-w-0">
                   <div className="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center flex-shrink-0 text-primary-container">
-                    <span className="material-symbols-outlined text-[20px]">pause_circle</span>
+                    <SymbolIcon name="pause_circle" className="text-[20px]" />
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="font-label-lg text-label-lg text-on-surface font-semibold truncate">
+                    <span className="font-label-lg text-label-lg text-on-surface font-semibold break-words">
                       Taking the day off
                     </span>
-                    <p className="font-body-sm text-body-sm text-outline truncate">
+                    <p className="font-body-sm text-body-sm text-on-surface-variant break-words">
                       Clear today&apos;s active task pressure for genuine rest.
                     </p>
                   </div>
@@ -270,13 +271,13 @@ export default function CheckInPage() {
               <div className="bg-surface-container-low rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm hover:bg-surface-container transition-colors border border-surface-container-high/30">
                 <div className="flex items-center gap-3.5 min-w-0">
                   <div className="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center flex-shrink-0 text-tertiary">
-                    <span className="material-symbols-outlined text-[20px]">auto_awesome</span>
+                    <SymbolIcon name="auto_awesome" className="text-[20px]" />
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="font-label-lg text-label-lg text-on-surface font-semibold truncate">
+                    <span className="font-label-lg text-label-lg text-on-surface font-semibold break-words">
                       7-Day Fresh Start
                     </span>
-                    <p className="font-body-sm text-body-sm text-outline truncate">
+                    <p className="font-body-sm text-body-sm text-on-surface-variant break-words">
                       A low-pressure week of basic self-care and micro-momentum.
                     </p>
                   </div>
@@ -294,13 +295,13 @@ export default function CheckInPage() {
               <div className="bg-surface-container-low rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm hover:bg-surface-container transition-colors border border-surface-container-high/30">
                 <div className="flex items-center gap-3.5 min-w-0">
                   <div className="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center flex-shrink-0 text-secondary">
-                    <span className="material-symbols-outlined text-[20px]">favorite</span>
+                    <SymbolIcon name="favorite" className="text-[20px]" />
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="font-label-lg text-label-lg text-on-surface font-semibold truncate">
+                    <span className="font-label-lg text-label-lg text-on-surface font-semibold break-words">
                       Body &amp; tension check
                     </span>
-                    <p className="font-body-sm text-body-sm text-outline truncate">
+                    <p className="font-body-sm text-body-sm text-on-surface-variant break-words">
                       Screen for physical fatigue, hydration, and friction.
                     </p>
                   </div>
@@ -319,7 +320,7 @@ export default function CheckInPage() {
           {/* SECTION 4: Recent Reflections */}
           <section className="flex flex-col space-y-3">
             <div className="flex items-center justify-between px-1">
-              <span className="font-label-sm text-label-sm tracking-wider uppercase text-outline">
+              <span className="font-label-sm text-label-sm tracking-wider uppercase text-on-surface-variant">
                 Recent Reflections
               </span>
             </div>
@@ -327,7 +328,7 @@ export default function CheckInPage() {
             <div className="flex flex-col space-y-2">
               {journalEntries.length === 0 ? (
                 <div className="bg-surface-container-low rounded-2xl p-4 text-center border border-surface-container-high/30">
-                  <p className="font-body-sm text-body-sm text-outline">
+                  <p className="font-body-sm text-body-sm text-on-surface-variant">
                     No reflections recorded yet. Write a few words above when you feel like it.
                   </p>
                 </div>
@@ -338,10 +339,10 @@ export default function CheckInPage() {
                     className="bg-surface-container-low rounded-2xl p-4 flex flex-col space-y-1.5 shadow-sm border border-surface-container-high/30"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-label-md text-label-md text-outline">
+                      <span className="font-label-md text-label-md text-on-surface-variant">
                         {entry.prompt || 'How does my body feel today?'}
                       </span>
-                      <span className="font-label-sm text-label-sm text-outline-variant">
+                      <span className="font-label-sm text-label-sm text-on-surface-variant">
                         {entry.date}
                       </span>
                     </div>

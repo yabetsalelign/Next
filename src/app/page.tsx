@@ -25,9 +25,9 @@ export default function TodayPage() {
   const hasActiveSession = focusSession.status === 'running' || focusSession.status === 'paused';
 
   return (
-    <div className="min-h-full bg-background text-on-surface flex flex-col">
+      <div className="w-full min-w-0 min-h-full bg-background text-on-surface flex flex-col">
       <Header />
-      <main className="w-full max-w-xl mx-auto flex-1 px-5 pt-[calc(6rem+var(--sat))] pb-40 sm:px-8">
+      <main className="w-full min-w-0 max-w-xl mx-auto flex-1 px-5 pt-[calc(6rem+var(--sat))] pb-40 sm:px-8">
         <div className="space-y-8">
           <section aria-labelledby="today-heading" className="space-y-1">
             <p className="text-sm font-medium text-on-surface-variant">{dateFormatted}</p>

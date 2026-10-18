@@ -1,5 +1,6 @@
 'use client';
 
+import { SymbolIcon } from '@/components/ui/SymbolIcon';
 import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/store';
@@ -233,7 +234,7 @@ export default function PlanPage() {
                         onClick={() => handleToggleTask(activeTask)}
                         className="-ml-2 w-11 h-11 rounded-full bg-surface-container-high hover:bg-secondary/30 flex items-center justify-center text-transparent hover:text-secondary transition-all flex-shrink-0"
                       >
-                        <span className="material-symbols-outlined text-[16px]">check</span>
+                        <SymbolIcon name="check" className="text-[16px]" />
                       </button>
 
                       <div className="flex flex-col min-w-0">
@@ -254,7 +255,7 @@ export default function PlanPage() {
                     </div>
 
                     <span className="px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm flex-shrink-0 flex items-center gap-1">
-                      <span className="material-symbols-outlined text-[13px]">schedule</span>
+                      <SymbolIcon name="schedule" className="text-[13px]" />
                       {activeTask.durationMinutes ? `${activeTask.durationMinutes}m` : '15m'}
                     </span>
                   </div>
@@ -266,7 +267,7 @@ export default function PlanPage() {
                       onClick={() => setIsHelpModalOpen(true)}
                       className="flex-1 h-11 px-4 rounded-full bg-primary-container hover:bg-primary-fixed-dim text-on-primary-fixed font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-md transition-transform active:scale-[0.98] font-semibold"
                     >
-                      <span className="material-symbols-outlined text-[18px]">play_arrow</span>
+                      <SymbolIcon name="play_arrow" className="text-[18px]" />
                       <span>2 min start</span>
                     </button>
                     <button
@@ -274,7 +275,7 @@ export default function PlanPage() {
                       onClick={() => handlePostponeActive(activeTask)}
                       className="h-11 px-4 rounded-full bg-surface-container-high hover:bg-surface-bright text-on-surface-variant hover:text-on-surface font-label-md text-label-md flex items-center justify-center gap-1.5 transition-colors active:scale-[0.98]"
                     >
-                      <span className="material-symbols-outlined text-[16px]">schedule</span>
+                      <SymbolIcon name="schedule" className="text-[16px]" />
                       <span>Postpone gently</span>
                     </button>
                   </div>
@@ -316,7 +317,7 @@ export default function PlanPage() {
                       onClick={() => handleToggleTask(t)}
                       className="-ml-2 w-11 h-11 rounded-full bg-surface-container-high hover:bg-secondary/30 flex items-center justify-center text-transparent hover:text-secondary transition-all flex-shrink-0"
                     >
-                      <span className="material-symbols-outlined text-[16px]">check</span>
+                      <SymbolIcon name="check" className="text-[16px]" />
                     </button>
                     <div className="flex flex-col min-w-0">
                           <span className="font-headline-sm text-body-lg text-on-surface font-medium break-words">
@@ -346,7 +347,7 @@ export default function PlanPage() {
                       onClick={() => setCurrentTask(t.id)}
                       className="px-2.5 py-1 rounded-full bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface-variant font-label-sm text-label-sm flex items-center gap-1 transition-colors active:scale-95"
                     >
-                      <span className="material-symbols-outlined text-[14px]">play_arrow</span>
+                      <SymbolIcon name="play_arrow" className="text-[14px]" />
                       <span>Focus</span>
                     </button>
                   </div>
@@ -359,7 +360,7 @@ export default function PlanPage() {
                 onClick={() => openModal('create_task')}
                 className="w-full py-3 px-space-md rounded-2xl bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-surface-container font-label-md text-label-md flex items-center justify-center gap-2 transition-all shadow-sm border border-surface-container-high/40 active:scale-[0.99]"
               >
-                <span className="material-symbols-outlined text-[18px]">add</span>
+                <SymbolIcon name="add" className="text-[18px]" />
                 <span>Add task to schedule</span>
               </button>
             </div>
@@ -369,12 +370,12 @@ export default function PlanPage() {
           <section className="flex flex-col gap-space-sm">
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary-container text-[18px]">coffee</span>
-                <span className="font-label-sm text-label-sm uppercase tracking-wider text-outline font-semibold">
+                <SymbolIcon name="coffee" className="text-primary-container text-[18px]" />
+                <span className="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">
                   Rest Suggestions
                 </span>
               </div>
-              <span className="font-label-sm text-label-sm text-outline">Optional breaks</span>
+              <span className="font-label-sm text-label-sm text-on-surface-variant">Optional breaks</span>
             </div>
 
             <div className="grid grid-cols-2 gap-space-sm">
@@ -385,19 +386,19 @@ export default function PlanPage() {
                 >
                   <div className="flex flex-col gap-1.5">
                     <div className={`w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center ${item.color}`}>
-                      <span className="material-symbols-outlined text-[18px]">{item.icon}</span>
+                      <SymbolIcon name={item.icon} className="text-[18px]" />
                     </div>
                     <h5 className="font-label-lg text-label-lg text-on-surface leading-tight mt-1">
                       {item.title}
                     </h5>
-                    <span className="font-label-sm text-label-sm text-outline">{item.duration}</span>
+                    <span className="font-label-sm text-label-sm text-on-surface-variant">{item.duration}</span>
                   </div>
                   <button
                     type="button"
                     onClick={() => handleAddRest(item)}
                     className="self-start px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant hover:text-primary font-label-sm text-label-sm flex items-center gap-1 transition-colors active:scale-95"
                   >
-                    <span className="material-symbols-outlined text-[14px]">add</span>
+                    <SymbolIcon name="add" className="text-[14px]" />
                     <span>Add</span>
                   </button>
                 </div>
@@ -419,13 +420,10 @@ export default function PlanPage() {
                     Completed Today ({completedToday.length})
                   </span>
                 </div>
-                <span
-                  className={`material-symbols-outlined text-on-surface-variant text-[20px] transition-transform duration-200 ${
+                <SymbolIcon name="keyboard_arrow_down" className={`text-on-surface-variant text-[20px] transition-transform duration-200 ${
                     showCompleted ? 'rotate-180' : ''
                   }`}
-                >
-                  keyboard_arrow_down
-                </span>
+                 />
               </button>
 
               {showCompleted && (
@@ -446,7 +444,7 @@ export default function PlanPage() {
                             onClick={() => uncompleteTask(t.id)}
                             className="w-5 h-5 rounded-full bg-secondary text-surface-container-lowest flex items-center justify-center flex-shrink-0"
                           >
-                            <span className="material-symbols-outlined text-[13px] font-bold">check</span>
+                            <SymbolIcon name="check" className="text-[13px] font-bold" />
                           </button>
                           <div className="flex flex-col min-w-0">
                             <span className="font-body-md text-body-md text-on-surface line-through decoration-on-surface-variant/50 break-words">
@@ -494,7 +492,7 @@ export default function PlanPage() {
               onClick={() => setIsHelpModalOpen(false)}
               className="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"
             >
-              <span className="material-symbols-outlined text-[18px]">close</span>
+              <SymbolIcon name="close" className="text-[18px]" />
             </button>
           </div>
 
@@ -514,7 +512,7 @@ export default function PlanPage() {
               First step proposal:
             </span>
             <div className="p-3.5 rounded-xl bg-surface-container-low text-on-surface font-headline-sm text-headline-sm font-semibold flex items-center gap-3">
-              <span className="material-symbols-outlined text-primary-container text-[20px]">play_circle</span>
+              <SymbolIcon name="play_circle" className="text-primary-container text-[20px]" />
               <span>{currentProposal}</span>
             </div>
           </div>
@@ -527,7 +525,7 @@ export default function PlanPage() {
               className="w-full h-12 rounded-full bg-primary-container hover:bg-primary-fixed-dim text-on-primary-fixed font-label-lg text-label-lg flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-md font-semibold"
             >
               <span>Start with this</span>
-              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              <SymbolIcon name="arrow_forward" className="text-[18px]" />
             </button>
             <button
               type="button"

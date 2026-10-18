@@ -1,0 +1,115 @@
+import {
+  AlertTriangle,
+  ArrowDownRight,
+  ArrowLeft,
+  ArrowRight,
+  Bell,
+  BellOff,
+  CalendarDays,
+  Check,
+  ChevronDown,
+  ChevronRight,
+  CircleCheck,
+  CircleHelp,
+  CirclePause,
+  CirclePlay,
+  Clock3,
+  Coffee,
+  Download,
+  Footprints,
+  Headphones,
+  Heart,
+  Hourglass,
+  Infinity,
+  Leaf,
+  Lock,
+  Monitor,
+  Moon,
+  Pause,
+  PenLine,
+  Play,
+  Plus,
+  RotateCcw,
+  Settings2,
+  Sprout,
+  Sun,
+  Trash2,
+  Upload,
+  User,
+  Volume2,
+  Wind,
+  X,
+  Zap,
+  type LucideIcon,
+} from 'lucide-react';
+
+const icons: Record<string, LucideIcon> = {
+  add: Plus,
+  add_circle: Plus,
+  air: Wind,
+  all_inclusive: Infinity,
+  arrow_back: ArrowLeft,
+  arrow_forward: ArrowRight,
+  auto_awesome: CalendarDays,
+  bedtime: Moon,
+  bolt: Zap,
+  check: Check,
+  check_circle: CircleCheck,
+  chevron_down: ChevronDown,
+  chevron_right: ChevronRight,
+  close: X,
+  coffee: Coffee,
+  computer: Monitor,
+  dark_mode: Moon,
+  delete_outline: Trash2,
+  directions_walk: Footprints,
+  download: Download,
+  edit_note: PenLine,
+  favorite: Heart,
+  headphones: Headphones,
+  hourglass_bottom: Hourglass,
+  keyboard_arrow_down: ChevronDown,
+  keyboard_arrow_up: ChevronDown,
+  leaf: Leaf,
+  light_mode: Sun,
+  lock: Lock,
+  nature: Sprout,
+  nature_people: Sprout,
+  notifications_active: Bell,
+  notifications_off: BellOff,
+  notifications_paused: BellOff,
+  optional: CircleHelp,
+  pause: Pause,
+  pause_circle: CirclePause,
+  person: User,
+  play_arrow: Play,
+  play_circle: CirclePlay,
+  reorder: CalendarDays,
+  replay: RotateCcw,
+  restart_alt: RotateCcw,
+  schedule: Clock3,
+  spa: Leaf,
+  subdirectory_arrow_right: ArrowDownRight,
+  upload: Upload,
+  volume_up: Volume2,
+  warning: AlertTriangle,
+  wb_sunny: Sun,
+  wb_twilight: Moon,
+};
+
+interface SymbolIconProps {
+  name: string;
+  className?: string;
+  title?: string;
+}
+
+export function SymbolIcon({ name, className = '', title }: SymbolIconProps) {
+  const Icon = icons[name] ?? CircleHelp;
+  const sizeClass = className.match(/text-\[(\d+)px\]/)?.[1];
+  const cleanedClassName = className
+    .replace(/\b\b/g, '')
+    .replace(/\btext-\[\d+px\]/g, '')
+    .trim();
+
+  return <Icon aria-hidden={title ? undefined : true} aria-label={title} role={title ? 'img' : undefined} size={sizeClass ? Number(sizeClass) : 20} className={cleanedClassName || undefined} strokeWidth={1.8} />;
+}
