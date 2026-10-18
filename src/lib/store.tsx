@@ -92,6 +92,7 @@ interface AppContextType {
   deferTask: (taskId: string) => void;
   completeOnboarding: (mode: 'empty' | 'example', goals?: string[], difficulty?: 'gentle' | 'balanced' | 'structured') => void;
   resetToEmptyDay: () => void;
+  clearAllData: () => void;
   recordHelpfulFactor: (factorId: string) => void;
   pendingReturn: boolean;
   acknowledgeReturn: () => void;
@@ -708,7 +709,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const updateSettings = (updates: Partial<UserSettings>) => {
-    setSettings(prev => ({ ...prev, ...updates }));
+    setSettings(prev => {
+      const next = { ...prev, ...updates };
+      if (updates.theme && typeof document !== 'undefined') {
+        const root = document.documentElement;
+        if (updates.theme === 'dark') {
+          root.classList.add('dark');
+        } else if (updates.theme === 'light') {
+          root.classList.remove('dark');
+        } else {
+          const darkPref = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (darkPref) root.classList.add('dark');
+          else root.classList.remove('dark');
+        }
+      }
+      return next;
+    });
   };
 
   const setNotPlanningToday = (val: boolean) => {
@@ -753,6 +769,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const resetToEmptyDay = () => {
     setTasks([]);
     setNotPlanningTodayState(false);
+  };
+
+  const clearAllData = () => {
+    setTasks([]);
+    setRoutines([]);
+    setReturns([]);
+    setHelpfulInsights(INITIAL_HELPFUL_INSIGHTS);
+    setSettings({ ...DEFAULT_SETTINGS, hasCompletedOnboarding: true });
+    setStuckLogs([]);
+    setNotPlanningTodayState(false);
+    setResets([]);
+    setJournalEntries([]);
+    setPendingReturn(false);
+    try {
+      Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
+      localStorage.setItem(STORAGE_KEYS.LAST_ACTIVE_DATE, getLocalDateString());
+      localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify({ ...DEFAULT_SETTINGS, hasCompletedOnboarding: true }));
+    } catch {}
   };
 
   const resetToDemoData = () => {
@@ -934,6 +968,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         deferTask,
         completeOnboarding,
         resetToEmptyDay,
+        clearAllData,
         resetToDemoData,
         recordHelpfulFactor,
         activateFreshStart,

@@ -64,17 +64,14 @@ export default function HistoryPage() {
     });
   }, [returns, todayStr]);
 
-  // Recent return days
   const recentReturns = useMemo(() => {
     return returns.filter(r => r.status === 'returned');
   }, [returns]);
 
-  // Check if there are any genuine insight observations recorded
   const hasRecordedInsights = useMemo(() => {
     return helpfulInsights.some(h => h.count > 0);
   }, [helpfulInsights]);
 
-  // Max count for the "What Helped?" observational bar chart
   const maxInsightCount = useMemo(() => {
     if (helpfulInsights.length === 0) return 1;
     return Math.max(...helpfulInsights.map(h => h.count), 1);
@@ -94,13 +91,13 @@ export default function HistoryPage() {
     <div className="max-w-xl mx-auto space-y-6 animate-fade-in pb-28 md:pb-12">
       {/* Header */}
       <Header
-        title="History & Returns"
-        subtitle="Zero streak pressure. Returning matters more than streaks."
+        title="History & Reflection"
+        subtitle="Returning matters more than unbroken lines."
       />
 
-      {/* Soulful Return Philosophy Banner */}
-      <section className="p-5 sm:p-6 rounded-3xl bg-amber-500/10 dark:bg-amber-500/[0.08] border border-amber-500/25 dark:border-amber-500/20 space-y-2 shadow-sm">
-        <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
+      {/* The Return Philosophy Banner */}
+      <section className="p-4 sm:p-5 rounded-xl bg-amber-500/[0.08] dark:bg-amber-500/[0.08] border border-amber-500/25 space-y-2 shadow-sm">
+        <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300">
           <RotateCcw className="w-4 h-4" />
           <h2 className="text-xs font-bold uppercase tracking-wider">
             The Return Philosophy
@@ -110,23 +107,23 @@ export default function HistoryPage() {
           &ldquo;You paused. Then you came back. That&rsquo;s a return.&rdquo;
         </p>
         <p className="text-xs text-ink-muted dark:text-linen-subtle leading-relaxed">
-          Life naturally moves in cycles. Pausing is normal and guilt-free. Having an easy, low-barrier doorway to step through is what counts.
+          Life naturally moves in cycles. Pausing is normal and guilt-free. We record continuity of presence, never the rigidity of an unbroken line.
         </p>
       </section>
 
-      {/* Summary Metric Cards with Flawless Pluralization */}
-      <section aria-label="Weekly summary counts" className="grid grid-cols-3 gap-2.5 sm:gap-3.5">
-        <div className="p-4 sm:p-5 rounded-3xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] text-center shadow-sm">
-          <p className="text-2xl sm:text-3xl font-bold tracking-tight text-sage-600 dark:text-sage-400">
+      {/* Summary Metric Cards */}
+      <section aria-label="Weekly summary counts" className="grid grid-cols-3 gap-2.5">
+        <div className="p-3.5 sm:p-4 rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] text-center shadow-sm">
+          <p className="text-2xl font-bold tracking-tight text-sage-600 dark:text-sage-400">
             {completedTasks.length}
           </p>
           <p className="text-[11px] font-medium text-ink-muted dark:text-linen-subtle mt-1">
-            {completedTasks.length === 1 ? 'Task completed' : 'Tasks completed'}
+            {completedTasks.length === 1 ? 'Task done' : 'Tasks done'}
           </p>
         </div>
 
-        <div className="p-4 sm:p-5 rounded-3xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] text-center shadow-sm">
-          <p className="text-2xl sm:text-3xl font-bold tracking-tight text-amber-600 dark:text-amber-400">
+        <div className="p-3.5 sm:p-4 rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] text-center shadow-sm">
+          <p className="text-2xl font-bold tracking-tight text-amber-600 dark:text-amber-400">
             {minimumsCount}
           </p>
           <p className="text-[11px] font-medium text-ink-muted dark:text-linen-subtle mt-1">
@@ -134,8 +131,8 @@ export default function HistoryPage() {
           </p>
         </div>
 
-        <div className="p-4 sm:p-5 rounded-3xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] text-center shadow-sm">
-          <p className="text-2xl sm:text-3xl font-bold tracking-tight text-terracotta">
+        <div className="p-3.5 sm:p-4 rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] text-center shadow-sm">
+          <p className="text-2xl font-bold tracking-tight text-terracotta">
             {returnedDays}
           </p>
           <p className="text-[11px] font-medium text-ink-muted dark:text-linen-subtle mt-1">
@@ -144,33 +141,33 @@ export default function HistoryPage() {
         </div>
       </section>
 
-      {/* This Week's Rhythm: Dynamic Local Calendar Week Pill Visualizer */}
-      <section className="p-6 rounded-3xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] shadow-sm space-y-4">
+      {/* Centerpiece: Timeline & Weekly Rhythm */}
+      <section className="p-4 sm:p-5 rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] shadow-sm space-y-3.5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
               This Week&apos;s Rhythm
             </h2>
             <p className="text-[11px] text-ink-subtle dark:text-linen-faint mt-0.5">
-              Momentum without pressure. Every return is marked.
+              Every return is celebrated. No reset streaks.
             </p>
           </div>
 
           {/* High-Contrast Legend */}
           <div className="flex items-center gap-3 text-[11px] font-medium shrink-0">
-            <span className="flex items-center gap-1.5 text-sage-700 dark:text-sage-400">
-              <span className="w-2 h-2 rounded-full bg-sage-500 shadow-[0_0_6px_rgba(78,155,120,0.4)]" /> Done
+            <span className="flex items-center gap-1 text-sage-700 dark:text-sage-400">
+              <span className="w-2 h-2 rounded-full bg-sage-500" /> Done
             </span>
-            <span className="flex items-center gap-1.5 text-ink-muted dark:text-linen-subtle">
+            <span className="flex items-center gap-1 text-ink-muted dark:text-linen-subtle">
               <span className="w-2 h-2 rounded-full bg-stone-300 dark:bg-white/20" /> Pause
             </span>
-            <span className="flex items-center gap-1.5 text-amber-700 dark:text-amber-400">
-              <span className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_6px_rgba(229,149,63,0.4)]" /> Return
+            <span className="flex items-center gap-1 text-amber-700 dark:text-amber-400">
+              <span className="w-2 h-2 rounded-full bg-amber-500" /> Return
             </span>
           </div>
         </div>
 
-        <div className="grid grid-cols-7 gap-1.5 sm:gap-2 pt-1">
+        <div className="grid grid-cols-7 gap-1.5 pt-1">
           {currentWeekDays.map((item) => {
             const isDone = item.status === 'active';
             const isReturn = item.status === 'returned';
@@ -180,30 +177,30 @@ export default function HistoryPage() {
             return (
               <div
                 key={item.dateStr}
-                className={`flex min-h-[86px] w-full flex-col items-center justify-center rounded-2xl border p-2 text-center transition-all sm:p-2.5 ${
-                  item.isToday ? 'ring-2 ring-amber-500/40 ring-offset-1 dark:ring-offset-stone-900' : ''
+                className={`flex min-h-[78px] w-full flex-col items-center justify-center rounded-lg border p-1.5 text-center transition-all ${
+                  item.isToday ? 'ring-2 ring-amber-500/50 ring-offset-1 dark:ring-offset-stone-900' : ''
                 } ${
                   isReturn
-                    ? 'bg-amber-500/15 dark:bg-amber-500/20 border-amber-500/40 text-amber-800 dark:text-amber-300 shadow-[0_2px_10px_rgba(229,149,63,0.12)]'
+                    ? 'bg-amber-500/15 dark:bg-amber-500/20 border-amber-500/40 text-amber-900 dark:text-amber-300'
                     : isDone
-                    ? 'bg-sage-500/15 dark:bg-sage-500/20 border-sage-500/35 text-sage-800 dark:text-sage-300 shadow-[0_2px_10px_rgba(78,155,120,0.12)]'
+                    ? 'bg-sage-500/15 dark:bg-sage-500/20 border-sage-500/35 text-sage-900 dark:text-sage-300'
                     : isUpcoming
                     ? 'bg-stone-50/40 dark:bg-white/[0.01] border-stone-200/40 dark:border-white/[0.03] text-ink-subtle dark:text-linen-faint opacity-50'
                     : 'bg-stone-100/70 dark:bg-white/[0.03] border-stone-200/70 dark:border-white/[0.06] text-ink-muted dark:text-linen-subtle'
                 }`}
               >
-                <span className="text-[10px] sm:text-[11px] font-bold tracking-wider leading-tight">
+                <span className="text-[10px] font-bold tracking-wider leading-tight">
                   {item.dayOfWeek}
                 </span>
 
-                <div className="my-2 flex items-center justify-center w-7 h-7 rounded-xl">
-                  {isDone && <Check className="w-4 h-4 stroke-[2.5]" />}
-                  {isPaused && <Minus className="w-4 h-4 stroke-[2]" />}
-                  {isReturn && <RotateCcw className="w-4 h-4 stroke-[2.2]" />}
+                <div className="my-1.5 flex items-center justify-center w-6 h-6 rounded-md">
+                  {isDone && <Check className="w-3.5 h-3.5 stroke-[2.5]" />}
+                  {isPaused && <Minus className="w-3.5 h-3.5 stroke-[2]" />}
+                  {isReturn && <RotateCcw className="w-3.5 h-3.5 stroke-[2.2]" />}
                   {isUpcoming && <span className="w-1.5 h-1.5 rounded-full bg-stone-300 dark:bg-white/20" />}
                 </div>
 
-                <span className="text-[9px] leading-[1.1] font-semibold tracking-tight break-words">
+                <span className="text-[9px] font-semibold tracking-tight">
                   {isReturn ? 'Return' : isDone ? 'Done' : isUpcoming ? 'Later' : 'Pause'}
                 </span>
               </div>
@@ -212,73 +209,19 @@ export default function HistoryPage() {
         </div>
       </section>
 
-      {/* "What Helped?" Observational Metrics with Horizontal Bars */}
-      <section className="p-6 rounded-3xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] shadow-sm space-y-4">
-        <div>
+      {/* Recent Returns Log */}
+      <section className="p-4 sm:p-5 rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] shadow-sm space-y-3">
+        <div className="flex items-center justify-between">
           <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
-            What Helped?
+            Recent Returns
           </h2>
-          <p className="text-xs text-ink-subtle dark:text-linen-faint mt-0.5">
-            Observations on supportive conditions, never a judgment.
-          </p>
+          <span className="text-xs text-amber-700 dark:text-amber-400 font-medium">
+            Recorded continuity
+          </span>
         </div>
 
-        {!hasRecordedInsights ? (
-          <div className="py-6 px-4 rounded-2xl bg-stone-50/80 dark:bg-white/[0.02] border border-stone-200/60 dark:border-white/[0.04] text-center space-y-1.5">
-            <p className="text-xs font-semibold text-ink-primary dark:text-linen">
-              No observations recorded yet
-            </p>
-            <p className="text-xs text-ink-muted dark:text-linen-subtle max-w-sm mx-auto leading-relaxed">
-              As you use 2-minute mini starts, background audio, or body doubling, supportive conditions will appear here quietly.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-3 pt-1">
-            {helpfulInsights.filter(f => f.count > 0).map((factor) => {
-              const Icon = getInsightIcon(factor.id, factor.label);
-              const percentage = Math.round((factor.count / maxInsightCount) * 100);
-
-              return (
-                <div
-                  key={factor.id}
-                  className="p-3.5 rounded-2xl bg-stone-50/80 dark:bg-white/[0.03] border border-stone-200/60 dark:border-white/[0.06] space-y-2 transition-all hover:border-stone-300 dark:hover:border-white/[0.12]"
-                >
-                  <div className="flex items-center justify-between gap-3 text-xs sm:text-sm">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="w-7 h-7 rounded-xl bg-amber-500/10 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400 flex items-center justify-center shrink-0">
-                        <Icon className="w-4 h-4" />
-                      </div>
-                      <span className="font-medium text-ink-primary dark:text-linen break-words leading-snug">
-                        {factor.label}
-                      </span>
-                    </div>
-                    <span className="text-xs font-bold text-amber-800 dark:text-amber-300 bg-amber-500/15 dark:bg-amber-500/20 px-2.5 py-1 rounded-xl shrink-0">
-                      {factor.count} {factor.count === 1 ? 'time' : 'times'}
-                    </span>
-                  </div>
-
-                  {/* Horizontal Progress Bar */}
-                  <div className="w-full h-1.5 rounded-full bg-stone-200/70 dark:bg-white/[0.08] overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-amber-500 to-amber-400 transition-all duration-500"
-                      style={{ width: `${percentage}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </section>
-
-      {/* Recent Returns Log */}
-      <section className="p-5 sm:p-6 rounded-3xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] shadow-sm space-y-3">
-        <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
-          Recent Returns
-        </h2>
-
         {recentReturns.length === 0 ? (
-          <div className="py-3 px-4 rounded-2xl bg-stone-50/60 dark:bg-white/[0.02] border border-stone-200/50 dark:border-white/[0.04] text-xs text-ink-muted dark:text-linen-subtle text-center">
+          <div className="py-3 px-4 rounded-lg bg-stone-50/60 dark:bg-white/[0.02] border border-stone-200/50 dark:border-white/[0.04] text-xs text-ink-muted dark:text-linen-subtle text-center">
             You are here right now. When you take a pause and step back in, Next marks that gently.
           </div>
         ) : (
@@ -286,7 +229,7 @@ export default function HistoryPage() {
             {recentReturns.map((r, i) => (
               <div
                 key={i}
-                className="flex items-center justify-between p-3.5 rounded-2xl bg-amber-500/[0.06] dark:bg-amber-500/[0.08] border border-amber-500/20 text-xs"
+                className="flex items-center justify-between p-3 rounded-lg bg-amber-500/[0.06] dark:bg-amber-500/[0.08] border border-amber-500/20 text-xs"
               >
                 <div>
                   <span className="font-semibold text-amber-900 dark:text-amber-300 block">
@@ -303,33 +246,90 @@ export default function HistoryPage() {
         )}
       </section>
 
-      {/* Progressive Disclosure Toggle for Detailed Logs */}
-      <div className="pt-2 text-center">
+      {/* "What Helped?" Observational Metrics */}
+      <section className="p-4 sm:p-5 rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] shadow-sm space-y-3">
+        <div>
+          <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
+            Supportive Patterns Noticed
+          </h2>
+          <p className="text-xs text-ink-subtle dark:text-linen-faint mt-0.5">
+            Observations on supportive conditions, never a judgment.
+          </p>
+        </div>
+
+        {!hasRecordedInsights ? (
+          <div className="py-5 px-4 rounded-lg bg-stone-50/80 dark:bg-white/[0.02] border border-stone-200/60 dark:border-white/[0.04] text-center space-y-1">
+            <p className="text-xs font-semibold text-ink-primary dark:text-linen">
+              No conditions logged yet
+            </p>
+            <p className="text-xs text-ink-muted dark:text-linen-subtle max-w-xs mx-auto leading-relaxed">
+              As you use the 2-minute start, body checks, and unstick tools, supportive patterns will appear here.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-2.5 pt-1">
+            {helpfulInsights.filter(f => f.count > 0).map((factor) => {
+              const Icon = getInsightIcon(factor.id, factor.label);
+              const percentage = Math.round((factor.count / maxInsightCount) * 100);
+
+              return (
+                <div
+                  key={factor.id}
+                  className="p-3 rounded-lg bg-stone-50/80 dark:bg-white/[0.03] border border-stone-200/60 dark:border-white/[0.06] space-y-2"
+                >
+                  <div className="flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="w-6 h-6 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 flex items-center justify-center shrink-0">
+                        <Icon className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="font-medium text-ink-primary dark:text-linen truncate">
+                        {factor.label}
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-bold text-amber-800 dark:text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-md shrink-0">
+                      {factor.count} {factor.count === 1 ? 'time' : 'times'}
+                    </span>
+                  </div>
+
+                  <div className="w-full h-1.5 rounded-full bg-stone-200/70 dark:bg-white/[0.08] overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-amber-500 transition-all duration-500"
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* Progressive Disclosure Toggle for Detailed History */}
+      <div className="pt-1 text-center">
         <button
           type="button"
           onClick={() => setShowFullHistory(!showFullHistory)}
-          className="inline-flex items-center gap-1.5 py-3 px-5 rounded-2xl border border-stone-200/90 dark:border-white/[0.08] bg-surface dark:bg-surface-dark text-xs font-semibold text-ink-primary dark:text-linen shadow-sm hover:bg-stone-50 dark:hover:bg-white/[0.04] transition-colors"
+          className="inline-flex items-center gap-1.5 py-2.5 px-4 rounded-xl border border-stone-200/90 dark:border-white/[0.08] bg-surface dark:bg-surface-dark text-xs font-semibold text-ink-primary dark:text-linen shadow-sm hover:bg-stone-50 dark:hover:bg-white/[0.04] transition-colors"
         >
-          <span>{showFullHistory ? 'Hide detailed reflections' : 'View reflections & archives'}</span>
+          <span>{showFullHistory ? 'Hide reflections & archives' : 'View reflections & archives'}</span>
           {showFullHistory ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </button>
       </div>
 
-      {/* Secondary Detailed History (Revealed on tap) */}
+      {/* Secondary Detailed History */}
       {showFullHistory && (
-        <div className="space-y-6 pt-2 animate-fade-in">
-          {/* Journal Reflections if any */}
+        <div className="space-y-4 pt-1 animate-fade-in">
           {journalEntries.length > 0 && (
-            <section className="p-5 rounded-3xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] space-y-3">
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-ink-muted dark:text-linen-subtle" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
+            <section className="p-4 rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] space-y-2.5 shadow-sm">
+              <div className="flex items-center gap-2 text-ink-muted dark:text-linen-subtle">
+                <BookOpen className="w-4 h-4" />
+                <h3 className="text-xs font-bold uppercase tracking-wider">
                   Journal Reflections
                 </h3>
               </div>
-              <div className="space-y-2.5">
+              <div className="space-y-2">
                 {journalEntries.slice(0, 3).map((entry) => (
-                  <div key={entry.id} className="p-3.5 rounded-xl bg-stone-50/70 dark:bg-white/[0.03] border border-stone-200/60 dark:border-white/[0.06] text-xs space-y-1">
+                  <div key={entry.id} className="p-3 rounded-lg bg-stone-50/70 dark:bg-white/[0.03] border border-stone-200/60 dark:border-white/[0.06] text-xs space-y-1">
                     <p className="text-[11px] text-ink-muted dark:text-linen-subtle italic">{entry.prompt}</p>
                     <p className="text-ink-secondary dark:text-linen">{entry.response}</p>
                     <p className="text-[10px] text-ink-subtle dark:text-linen-faint">{entry.date}</p>
@@ -339,18 +339,17 @@ export default function HistoryPage() {
             </section>
           )}
 
-          {/* Archived Resets if any */}
           {resets.filter(r => r.archived).length > 0 && (
-            <section className="p-5 rounded-3xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] space-y-3">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-amber-500" />
+            <section className="p-4 rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] space-y-2.5 shadow-sm">
+              <div className="flex items-center gap-2 text-amber-500">
+                <Sparkles className="w-4 h-4" />
                 <h3 className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
                   Past Resets
                 </h3>
               </div>
               <div className="space-y-2">
                 {resets.filter(r => r.archived).map((reset) => (
-                  <div key={reset.id} className="p-3.5 rounded-xl bg-stone-50 dark:bg-white/[0.03] border border-stone-200/60 dark:border-white/[0.06] text-xs flex items-center justify-between">
+                  <div key={reset.id} className="p-3 rounded-lg bg-stone-50 dark:bg-white/[0.03] border border-stone-200/60 dark:border-white/[0.06] text-xs flex items-center justify-between">
                     <div>
                       <p className="font-semibold text-ink-primary dark:text-linen">{reset.name}</p>
                       <p className="text-[10px] text-ink-muted dark:text-linen-subtle">{reset.startDate} → {reset.endDate}</p>
@@ -362,15 +361,14 @@ export default function HistoryPage() {
             </section>
           )}
 
-          {/* Recent Unstick moments */}
           {stuckLogs.length > 0 && (
-            <section className="p-5 rounded-3xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] space-y-3">
+            <section className="p-4 rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] space-y-2.5 shadow-sm">
               <h3 className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
-                Unstick Moments
+                Resolved Stuck Moments
               </h3>
               <div className="space-y-2 text-xs">
                 {stuckLogs.slice(0, 3).map((log) => (
-                  <div key={log.id} className="p-3.5 rounded-xl bg-stone-50 dark:bg-white/[0.03] border border-stone-200/60 dark:border-white/[0.06] flex items-center justify-between">
+                  <div key={log.id} className="p-3 rounded-lg bg-stone-50 dark:bg-white/[0.03] border border-stone-200/60 dark:border-white/[0.06] flex items-center justify-between">
                     <span>
                       <strong className="text-ink-primary dark:text-linen">{log.taskTitle || 'Task'}:</strong>{' '}
                       <span className="text-ink-muted dark:text-linen-subtle">{log.actionTaken}</span>

@@ -23,15 +23,15 @@
   }
 
   .dark {
-    --canvas-bg: #12131C;
-    --surface-bg: #1A1B26;
-    --surface-elevated: #222332;
-    --surface-muted: #161722;
-    --ink-primary: #F4F1EA; /* Warm soft linen tone */
-    --ink-secondary: #C5C0B6;
-    --ink-muted: #8E887E;
-    --ink-subtle: #5E5850;
-    --accent-amber: #E5953F;
+    --canvas-bg: #121316;
+    --surface-bg: #1B1B1F;
+    --surface-elevated: #1F1F23;
+    --surface-muted: #161719;
+    --ink-primary: #E3E2E6; /* Editorial linen/on-surface */
+    --ink-secondary: #D8C3AE;
+    --ink-muted: #A08E7B;
+    --ink-subtle: #6E6459;
+    --accent-amber: #FFB963;
     --accent-sage: #4E9B78;
   }
 

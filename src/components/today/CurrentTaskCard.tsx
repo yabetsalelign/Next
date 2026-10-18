@@ -7,11 +7,12 @@ import {
   Check, 
   ChevronDown, 
   ChevronUp, 
-  ListTree, 
   Coffee, 
-  Users, 
-  User, 
-  Headphones 
+  Sparkles,
+  Clock,
+  LifeBuoy,
+  Zap,
+  Tag
 } from 'lucide-react';
 import { sounds } from '@/lib/sounds';
 
@@ -20,11 +21,12 @@ interface CurrentTaskCardProps {
 }
 
 export function CurrentTaskCard({ task }: CurrentTaskCardProps) {
-  const { openModal, completeTask, deferTask, toggleStep } = useApp();
+  const { openModal, completeTask, deferTask } = useApp();
   const [showDetails, setShowDetails] = useState(false);
   const [justCompletedMinimum, setJustCompletedMinimum] = useState(false);
 
   const isRest = task.category === 'rest';
+  const isCare = task.category === 'wellness';
 
   const handleDone = () => {
     sounds.playMinimumComplete();
@@ -32,7 +34,7 @@ export function CurrentTaskCard({ task }: CurrentTaskCardProps) {
     setTimeout(() => {
       completeTask(task.id, 'minimum');
       setJustCompletedMinimum(false);
-    }, 1200);
+    }, 600);
   };
 
   const handleLater = () => {
@@ -43,194 +45,149 @@ export function CurrentTaskCard({ task }: CurrentTaskCardProps) {
     openModal('stuck', task.id);
   };
 
-  const getCompanyLabel = () => {
-    switch (task.companyPreference) {
-      case 'someone_nearby':
-        return { label: 'Someone nearby', icon: Users };
-      case 'body_double':
-        return { label: 'Body double', icon: Users };
-      case 'background_company':
-        return { label: 'Background noise / cafe', icon: Headphones };
-      case 'alone':
-        return { label: 'Quiet & alone', icon: User };
-      default:
-        return null;
-    }
-  };
-
-  const company = getCompanyLabel();
   const minimumText = task.minimum || 'Start for 2 minutes and make one small step';
 
   return (
     <article 
       aria-label={`Current task: ${task.title}`}
-      className="relative rounded-3xl border border-stone-200/90 bg-surface p-6 shadow-[0_4px_20px_rgba(0,0,0,0.05)] dark:border-white/[0.08] dark:bg-surface-dark dark:shadow-[0_10px_36px_rgba(0,0,0,0.4)] transition-all duration-300"
+      className="relative rounded-xl border border-stone-200/90 dark:border-white/[0.08] bg-surface dark:bg-surface-dark p-5 sm:p-6 shadow-md transition-all overflow-hidden"
     >
-      {/* Subtle warm halo accent at top of card in dark mode */}
-      <div className="absolute top-0 inset-x-8 h-px bg-gradient-to-r from-transparent via-amber-500/30 dark:via-amber-400/20 to-transparent pointer-events-none" />
+      {/* Subtle warm halo accent at top of card */}
+      <div className="absolute top-0 inset-x-6 h-px bg-gradient-to-r from-transparent via-amber-500/40 dark:via-amber-400/30 to-transparent pointer-events-none" />
 
-      {/* Primary Task Information */}
-      <div className="space-y-3">
-        <div className="flex items-start gap-3">
-          <span className="text-2xl sm:text-3xl select-none pt-0.5 shrink-0" role="img" aria-hidden="true">
-            {task.icon || (isRest ? '☕' : task.category === 'wellness' ? '💧' : '📌')}
-          </span>
-          <h2 className="text-xl sm:text-2xl font-semibold leading-snug tracking-tight text-ink-primary dark:text-linen">
-            {task.title}
-          </h2>
-        </div>
+      {/* Centerpiece Header: NOW Badge + Metadata */}
+      <div className="flex items-center justify-between gap-2 mb-3">
+        <span className="text-amber-700 dark:text-amber-400 font-bold text-xs uppercase tracking-widest flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+          NOW
+        </span>
 
-        {/* Integrated Minimum — NOT a separate card */}
-        <p className="text-base leading-relaxed text-ink-secondary dark:text-linen-muted">
-          {minimumText}
-        </p>
+        <div className="flex items-center gap-1.5 text-xs text-ink-muted dark:text-linen-subtle font-medium">
+          {task.durationMinutes && task.durationMinutes > 0 ? (
+            <span className="px-2 py-0.5 rounded-md bg-stone-100 dark:bg-white/[0.06] text-ink-secondary dark:text-linen">
+              ~{task.durationMinutes} min
+            </span>
+          ) : null}
 
-        {/* Time and category metadata */}
-        {(Boolean(task.durationMinutes && task.durationMinutes > 0) || isRest) && (
-          <div className="flex items-center gap-2 pt-1 text-xs text-ink-muted dark:text-linen-subtle">
-            {task.durationMinutes && task.durationMinutes > 0 ? (
-              <span>About {task.durationMinutes} min</span>
-            ) : null}
-            {task.durationMinutes && task.durationMinutes > 0 && isRest ? (
-              <span>•</span>
-            ) : null}
-            {isRest && (
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/20 text-amber-700 dark:text-amber-400 font-medium">
-                <Coffee className="w-3 h-3" />
-                Rest
-              </span>
-            )}
-          </div>
-        )}
-      </div>
+          {isRest && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-800 dark:text-amber-300 font-semibold">
+              <Coffee className="w-3 h-3" />
+              Rest
+            </span>
+          )}
 
-      {/* Main Action: Help me start */}
-      <div className="mt-6 space-y-4">
-        <button
-          type="button"
-          onClick={(e) => { e.stopPropagation(); openModal('help_start', task.id); }}
-          className="flex w-full items-center justify-center rounded-2xl bg-amber-500 hover:bg-amber-400 active:bg-amber-600 py-3.5 px-5 text-base font-bold text-stone-950 shadow-[0_4px_20px_rgba(229,149,63,0.28)] transition-all active:scale-[0.99]"
-        >
-          Help me start
-        </button>
-
-        {/* Action Row: Done · Later · Stuck */}
-        <div className="flex items-center justify-center gap-2 text-sm font-medium text-ink-secondary dark:text-linen-muted">
-          <button
-            type="button"
-            onClick={handleDone}
-            disabled={justCompletedMinimum}
-            className="py-2.5 px-4 rounded-xl border border-sage-500/30 dark:border-sage-500/40 bg-sage-500/10 dark:bg-sage-500/15 hover:bg-sage-500/20 text-sage-800 dark:text-sage-300 font-semibold transition-colors min-h-[44px]"
-          >
-            Done
-          </button>
-          <span className="text-stone-300 dark:text-white/20 select-none">·</span>
-          <button
-            type="button"
-            onClick={handleLater}
-            className="py-2.5 px-4 rounded-xl hover:bg-stone-100 dark:hover:bg-white/[0.04] text-ink-muted hover:text-ink-primary dark:text-linen-subtle dark:hover:text-linen transition-colors min-h-[44px]"
-          >
-            Later
-          </button>
-          <span className="text-stone-300 dark:text-white/20 select-none">·</span>
-          <button
-            type="button"
-            onClick={handleStuck}
-            className="py-2.5 px-4 rounded-xl hover:bg-stone-100 dark:hover:bg-terracotta/10 text-ink-muted hover:text-terracotta dark:text-linen-subtle dark:hover:text-terracotta transition-colors min-h-[44px]"
-          >
-            Stuck
-          </button>
-        </div>
-
-        {/* Progressive Disclosure: See more (Flat layout, eliminating box-in-a-box) */}
-        <div className="pt-1 text-center">
-          <button
-            type="button"
-            onClick={() => setShowDetails(!showDetails)}
-            className="inline-flex items-center gap-1 text-xs font-medium text-ink-muted hover:text-ink-primary dark:text-linen-subtle dark:hover:text-linen transition-colors"
-          >
-            <span>{showDetails ? 'Hide details' : 'See more'}</span>
-            {showDetails ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-          </button>
-
-          {showDetails && (
-            <div className="mt-4 space-y-3.5 border-t border-stone-200/60 dark:border-white/[0.06] pt-4 text-left text-xs text-ink-muted dark:text-linen-subtle sm:text-sm animate-fade-in">
-              <div className="space-y-1">
-                <span className="font-semibold text-ink-secondary dark:text-linen-muted">Intended:</span>
-                <p className="text-ink-primary dark:text-linen">{task.normal || `${task.durationMinutes} minutes`}</p>
-              </div>
-
-              {task.extra && (
-                <div className="space-y-1">
-                  <span className="font-semibold text-ink-secondary dark:text-linen-muted">Extra:</span>
-                  <p className="text-ink-primary dark:text-linen">{task.extra}</p>
-                </div>
-              )}
-
-              {/* Steps breakdown checklist if present */}
-              {task.steps && task.steps.length > 0 && (
-                <div className="space-y-2 pt-2 border-t border-stone-200/60 dark:border-white/[0.06]">
-                  <span className="font-semibold text-ink-secondary dark:text-linen-muted">Steps:</span>
-                  <div className="space-y-1.5">
-                    {task.steps.map((step) => (
-                      <button
-                        key={step.id}
-                        type="button"
-                        onClick={() => toggleStep(task.id, step.id)}
-                        className="flex items-center gap-2.5 w-full text-left py-1 text-xs hover:text-ink-primary dark:hover:text-linen transition-colors"
-                      >
-                        <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
-                          step.completed
-                            ? 'bg-sage-500 border-sage-500 text-stone-950 font-bold'
-                            : 'border-stone-300 dark:border-white/25 hover:border-amber-400'
-                        }`}>
-                          {step.completed && <Check className="w-3 h-3 stroke-[3]" />}
-                        </div>
-                        <span className={step.completed ? 'line-through text-ink-muted dark:text-linen-faint' : 'text-ink-primary dark:text-linen'}>
-                          {step.title}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {company && (
-                <div className="flex items-center gap-2 pt-2 text-xs text-ink-muted dark:text-linen-subtle">
-                  <company.icon className="w-3.5 h-3.5 text-amber-500/80" />
-                  <span>{company.label}</span>
-                </div>
-              )}
-
-              <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); openModal('breakdown', task.id); }}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300"
-                >
-                  <ListTree className="w-3.5 h-3.5" />
-                  <span>Break into smaller steps</span>
-                </button>
-              </div>
-            </div>
+          {isCare && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-sky-500/15 text-sky-800 dark:text-sky-300 font-semibold">
+              <Sparkles className="w-3 h-3" />
+              Care
+            </span>
           )}
         </div>
       </div>
 
-      {/* Quiet completion overlay */}
-      {justCompletedMinimum && (
-        <div className="absolute inset-0 z-20 rounded-3xl bg-surface/95 dark:bg-surface-dark/95 flex flex-col items-center justify-center p-6 text-center animate-fade-in backdrop-blur-sm">
-          <div className="w-12 h-12 rounded-full bg-sage-500/20 border border-sage-500/30 text-sage-600 dark:text-sage-300 flex items-center justify-center mb-3 shadow-[0_2px_12px_rgba(78,155,120,0.2)]">
-            <Check className="w-6 h-6 stroke-[2.5]" />
-          </div>
-          <h3 className="text-lg font-bold text-ink-primary dark:text-linen">
-            You did the minimum.
-          </h3>
-          <p className="text-sm text-ink-muted dark:text-linen-subtle mt-1">
-            That counts. Every bit of progress matters.
+      {/* Task Title & Context */}
+      <div className="space-y-1 mb-4">
+        <h2 className="text-xl sm:text-2xl font-bold leading-tight tracking-tight text-ink-primary dark:text-linen break-words">
+          {task.title}
+        </h2>
+        {task.category && (
+          <p className="text-xs text-ink-muted dark:text-linen-subtle flex items-center gap-1 pt-0.5">
+            <Tag className="w-3 h-3 opacity-60" />
+            <span className="capitalize">{task.category}</span>
+            {task.priority === 'must' && <span className="font-semibold text-amber-700 dark:text-amber-400">• Must</span>}
           </p>
+        )}
+      </div>
+
+      {/* 2-Minute Minimum Accent Box */}
+      <div className="border-l-2 border-amber-500/80 pl-3.5 py-1.5 my-3 bg-amber-500/[0.06] dark:bg-amber-500/[0.08] rounded-r-lg space-y-0.5">
+        <div className="text-amber-800 dark:text-amber-400 font-bold text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+          <Zap className="w-3.5 h-3.5 fill-current" />
+          <span>The 2-Minute Minimum</span>
         </div>
-      )}
+        <p className="text-ink-primary dark:text-linen text-sm leading-relaxed">
+          {minimumText}
+        </p>
+      </div>
+
+      {/* Action Flow */}
+      <div className="mt-5 space-y-2.5">
+        {/* Primary CTA */}
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); openModal('help_start', task.id); }}
+          className="w-full h-12 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 rounded-xl flex items-center justify-center gap-2 text-stone-950 font-bold text-sm shadow-sm active:scale-[0.99] transition-all"
+        >
+          <Sparkles className="w-4 h-4" />
+          <span>Help me start</span>
+        </button>
+
+        {/* 3-Column Micro-Actions: Done · Later · Stuck */}
+        <div className="grid grid-cols-3 gap-2">
+          <button
+            type="button"
+            onClick={handleDone}
+            disabled={justCompletedMinimum}
+            className="h-10 rounded-lg bg-stone-100 hover:bg-stone-200/80 dark:bg-white/[0.06] dark:hover:bg-white/[0.1] flex items-center justify-center gap-1.5 text-xs font-semibold text-sage-700 dark:text-sage-300 transition-colors"
+          >
+            <Check className="w-4 h-4 stroke-[2.5]" />
+            <span>Done</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleLater}
+            className="h-10 rounded-lg bg-stone-100 hover:bg-stone-200/80 dark:bg-white/[0.06] dark:hover:bg-white/[0.1] flex items-center justify-center gap-1.5 text-xs font-medium text-ink-muted dark:text-linen-subtle hover:text-ink-primary dark:hover:text-linen transition-colors"
+          >
+            <Clock className="w-4 h-4" />
+            <span>Later</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleStuck}
+            className="h-10 rounded-lg bg-stone-100 hover:bg-stone-200/80 dark:bg-white/[0.06] dark:hover:bg-white/[0.1] flex items-center justify-center gap-1.5 text-xs font-medium text-ink-muted dark:text-linen-subtle hover:text-ink-primary dark:hover:text-linen transition-colors"
+          >
+            <LifeBuoy className="w-4 h-4" />
+            <span>I&apos;m stuck</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Progressive Disclosure: Details */}
+      <div className="pt-3 text-center">
+        <button
+          type="button"
+          onClick={() => setShowDetails(!showDetails)}
+          className="inline-flex items-center gap-1 text-xs font-medium text-ink-muted hover:text-ink-primary dark:text-linen-subtle dark:hover:text-linen transition-colors py-1"
+        >
+          <span>{showDetails ? 'Hide details' : 'See details'}</span>
+          {showDetails ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+        </button>
+
+        {showDetails && (
+          <div className="mt-3 space-y-2 border-t border-stone-200/60 dark:border-white/[0.06] pt-3 text-left text-xs text-ink-muted dark:text-linen-subtle animate-fade-in">
+            {task.normal && (
+              <div className="space-y-0.5">
+                <span className="font-semibold text-ink-primary dark:text-linen">Standard goal:</span>
+                <p>{task.normal}</p>
+              </div>
+            )}
+            {task.steps && task.steps.length > 0 && (
+              <div className="space-y-1 pt-1">
+                <span className="font-semibold text-ink-primary dark:text-linen">Sequence steps:</span>
+                <ul className="list-disc list-inside space-y-0.5">
+                  {task.steps.map(s => (
+                    <li key={s.id} className={s.completed ? 'line-through opacity-60' : ''}>
+                      {s.title}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </article>
   );
 }

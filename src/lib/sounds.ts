@@ -96,6 +96,11 @@ class SoundSystem {
       // degrade silently
     }
   }
+
+  // Soft step complete tone
+  playStepComplete() {
+    this.playTick();
+  }
 }
 
 export const sounds = new SoundSystem();

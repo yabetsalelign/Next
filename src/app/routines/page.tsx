@@ -7,14 +7,15 @@ import { Routine } from '@/types';
 import { 
   Play, 
   Check, 
-  RotateCcw,
   Plus, 
   BookOpen, 
   ChevronDown, 
   ChevronUp, 
-  X,
-  MinusCircle,
-  PlusCircle
+  ArrowRight,
+  Sparkles,
+  Sun,
+  Moon,
+  Coffee
 } from 'lucide-react';
 import { sounds } from '@/lib/sounds';
 
@@ -27,224 +28,138 @@ function RoutineCard({
   onStart?: () => void;
   isLibrary?: boolean;
 }) {
-  const { toggleRoutineStep, resetRoutineSteps, openModal, updateRoutine } = useApp();
+  const { toggleRoutineStep, openModal, updateRoutine } = useApp();
   const [showSteps, setShowSteps] = useState(false);
-  const [newStepText, setNewStepText] = useState('');
 
   const completedCount = routine.steps.filter(s => s.completed).length;
   const isAllDone = routine.steps.length > 0 && completedCount === routine.steps.length;
   const isEnabled = routine.enabled !== false;
 
-  // Short preview text of first 3 steps
-  const previewText = routine.steps.slice(0, 3).map(s => s.title).join(' · ');
-
-  const handleAddStep = () => {
-    const text = newStepText.trim();
-    if (!text) return;
-    updateRoutine(routine.id, {
-      steps: [
-        ...routine.steps,
-        { id: `step-${Date.now()}`, title: text, durationMinutes: 5, completed: false }
-      ]
-    });
-    setNewStepText('');
-  };
-
-  const handleToggleActive = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    updateRoutine(routine.id, { enabled: !isEnabled });
-  };
+  const totalMinutes = routine.steps.reduce((acc, s) => acc + (s.durationMinutes || 3), 0);
 
   return (
-    <article className={`rounded-3xl bg-surface dark:bg-surface-dark border shadow-sm transition-all overflow-hidden ${
-      showSteps ? 'border-amber-500/35 dark:border-amber-500/25 ring-1 ring-amber-500/15' : 'border-stone-200/90 dark:border-white/[0.08]'
-    }`}>
-      {/* Collapsed / Summary Row */}
-      <div className="p-4 sm:p-5 flex items-start sm:items-center justify-between gap-3">
-        <div 
-          className="flex-1 min-w-0 cursor-pointer select-none"
-          onClick={() => setShowSteps(!showSteps)}
-        >
-          <div className="flex items-start gap-2.5">
-            <span className="text-xl select-none pt-0.5 shrink-0" role="img" aria-hidden="true">{routine.icon}</span>
-            <div className="min-w-0 flex-1">
-              <h3 className="text-base sm:text-lg font-semibold text-ink-primary dark:text-linen break-words leading-snug">
+    <article className="rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] shadow-sm p-4 sm:p-5 flex flex-col gap-3.5 transition-all hover:border-stone-300 dark:hover:border-white/[0.14] overflow-hidden">
+      {/* Header Row */}
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start gap-3 min-w-0 flex-1">
+          <span className="text-2xl select-none pt-0.5 shrink-0" role="img" aria-hidden="true">
+            {routine.icon || '✨'}
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="text-base font-bold text-ink-primary dark:text-linen leading-snug break-words">
                 {routine.title}
               </h3>
               {isAllDone && (
-                <span className="inline-block mt-1 text-[10px] font-bold text-sage-700 dark:text-sage-300 bg-sage-500/15 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-bold text-sage-700 dark:text-sage-300 bg-sage-500/15 px-2 py-0.5 rounded-md">
                   Done ✓
                 </span>
               )}
-              <p className="text-xs text-ink-muted dark:text-linen-subtle mt-1 leading-relaxed break-words">
-                {previewText || routine.description}
-              </p>
             </div>
-          </div>
-        </div>
-
-        {/* Action controls */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          {isLibrary ? (
-            <button
-              type="button"
-              onClick={handleToggleActive}
-              className={`flex items-center gap-1.5 min-h-[44px] py-2 px-3 rounded-xl font-semibold text-xs transition-all active:scale-95 ${
-                isEnabled
-                  ? 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-500/30'
-                  : 'bg-stone-100 dark:bg-white/[0.06] text-ink-secondary dark:text-linen hover:bg-stone-200'
-              }`}
-            >
-              {isEnabled ? <Check className="w-3.5 h-3.5" /> : <PlusCircle className="w-3.5 h-3.5" />}
-              <span>{isEnabled ? 'Active' : '+ Add'}</span>
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onStart?.();
-                openModal('routine_runner', undefined, routine.id);
-              }}
-              className="flex items-center gap-1.5 min-h-[44px] py-2 px-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-stone-950 font-bold text-xs shadow-sm transition-all active:scale-95"
-            >
-              <Play className="w-3.5 h-3.5 fill-current" />
-              <span>Start</span>
-            </button>
-          )}
-
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowSteps(!showSteps);
-            }}
-            className="w-11 h-11 flex items-center justify-center rounded-xl text-ink-muted hover:text-ink-primary hover:bg-stone-100 dark:hover:bg-white/[0.04] transition-colors"
-            aria-label={showSteps ? 'Collapse routine' : 'Expand routine'}
-          >
-            {showSteps ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-          </button>
-        </div>
-      </div>
-
-      {/* Expanded Content: Inside a routine */}
-      {showSteps && (
-        <div className="px-5 pb-5 pt-1 border-t border-stone-100 dark:border-white/[0.06] space-y-4 animate-fade-in">
-          {/* Steps ordered list */}
-          <div className="space-y-2 pt-2">
-            {routine.steps.map((step, idx) => (
-              <div
-                key={step.id}
-                className="flex items-center justify-between gap-3 py-1.5 text-sm"
-              >
-                <div className="flex items-start gap-2.5 min-w-0 flex-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      sounds.playMinimumComplete();
-                      toggleRoutineStep(routine.id, step.id);
-                    }}
-                    className={`w-5 h-5 mt-0.5 rounded-lg border flex items-center justify-center shrink-0 transition-colors ${
-                      step.completed
-                        ? 'bg-sage-600 text-white border-sage-600'
-                        : 'border-stone-300 dark:border-white/[0.2] hover:border-amber-500'
-                    }`}
-                    aria-label={step.completed ? 'Mark incomplete' : 'Mark complete'}
-                  >
-                    {step.completed && <Check className="w-3.5 h-3.5" />}
-                  </button>
-
-                  <span className={`text-xs sm:text-sm break-words leading-relaxed ${
-                    step.completed 
-                      ? 'line-through text-ink-muted dark:text-linen-subtle' 
-                      : 'text-ink-primary dark:text-linen'
-                  }`}>
-                    <span className="font-medium text-ink-muted mr-1.5">{idx + 1}.</span>
-                    {step.title}
-                  </span>
-                </div>
-
-                <span className="text-[11px] text-ink-subtle dark:text-linen-faint shrink-0">
-                  ~{step.durationMinutes}m
-                </span>
-              </div>
-            ))}
-          </div>
-
-          {/* Minimum rule banner */}
-          <div className="p-3.5 rounded-2xl bg-amber-500/10 dark:bg-amber-500/[0.08] border border-amber-500/20 text-left">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300 block">
-              The Minimum Rule
-            </span>
-            <p className="text-xs text-amber-900 dark:text-amber-200 font-medium mt-0.5">
-              Complete any one step. That counts as running the routine.
+            <p className="text-xs text-ink-muted dark:text-linen-subtle mt-0.5">
+              {routine.steps.length} {routine.steps.length === 1 ? 'step' : 'steps'} • ~{totalMinutes} min • Flexible order
             </p>
           </div>
+        </div>
 
-          {/* Action Row */}
-          <div className="flex items-center gap-2 pt-1">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onStart?.();
-                openModal('routine_runner', undefined, routine.id);
-              }}
-              className="flex-1 flex items-center justify-center gap-2 min-h-[44px] py-3 px-4 rounded-2xl bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-stone-950 font-bold text-xs sm:text-sm shadow-sm transition-all active:scale-95"
-            >
-              <Play className="w-3.5 h-3.5 fill-current" />
-              <span>Start routine</span>
-            </button>
+        {isLibrary && (
+          <button
+            type="button"
+            onClick={() => updateRoutine(routine.id, { enabled: !isEnabled })}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 ${
+              isEnabled
+                ? 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-500/30'
+                : 'bg-stone-100 dark:bg-white/[0.06] text-ink-secondary dark:text-linen'
+            }`}
+          >
+            {isEnabled ? 'Active' : '+ Add'}
+          </button>
+        )}
+      </div>
 
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                resetRoutineSteps(routine.id);
-              }}
-              title="Reset checkmarks"
-              aria-label="Reset routine steps"
-              className="w-11 h-11 flex items-center justify-center rounded-2xl border border-stone-200/90 dark:border-white/[0.08] bg-surface dark:bg-surface-dark text-ink-muted hover:text-ink-primary dark:hover:text-linen hover:bg-stone-50 dark:hover:bg-white/[0.04] transition-all active:scale-95 shrink-0"
-            >
-              <RotateCcw className="w-4 h-4" />
-            </button>
-
-            {/* Toggle active / hide */}
-            <button
-              type="button"
-              onClick={handleToggleActive}
-              title={isEnabled ? 'Hide from My Routines' : 'Add to My Routines'}
-              aria-label={isEnabled ? 'Hide from My Routines' : 'Add to My Routines'}
-              className="w-11 h-11 flex items-center justify-center rounded-2xl border border-stone-200/90 dark:border-white/[0.08] bg-surface dark:bg-surface-dark text-ink-muted hover:text-ink-primary dark:hover:text-linen hover:bg-stone-50 dark:hover:bg-white/[0.04] transition-all active:scale-95 shrink-0"
-            >
-              {isEnabled ? <MinusCircle className="w-4 h-4 text-stone-400" /> : <PlusCircle className="w-4 h-4 text-amber-600 dark:text-amber-400" />}
-            </button>
+      {/* Stepper Pill Track: Intended Flow */}
+      {routine.steps.length > 0 && (
+        <div className="bg-stone-50 dark:bg-white/[0.03] rounded-lg p-3 border border-stone-200/60 dark:border-white/[0.04] space-y-2">
+          <div className="flex items-center justify-between text-[11px] text-ink-muted dark:text-linen-subtle font-medium">
+            <span>Intended Flow</span>
+            <span className="text-amber-700 dark:text-amber-400 font-semibold">Any order ok</span>
           </div>
 
-          {/* Inline Add Step */}
-          <div className="flex items-center gap-2 pt-1">
-            <input
-              type="text"
-              placeholder="Add step to routine..."
-              value={newStepText}
-              onChange={(e) => setNewStepText(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); handleAddStep(); } }}
-              inputMode="text"
-              enterKeyHint="done"
-              className="flex-1 px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-stone-200 dark:border-white/[0.12] bg-surface dark:bg-surface-dark text-ink-primary dark:text-linen placeholder:text-ink-subtle dark:placeholder:text-linen-faint focus:outline-none focus:ring-2 focus:ring-amber-500"
-            />
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleAddStep();
-              }}
-              aria-label="Add step"
-              className="w-10 h-10 flex items-center justify-center rounded-xl bg-stone-100 dark:bg-white/[0.06] text-ink-primary dark:text-linen hover:bg-stone-200/80 dark:hover:bg-white/[0.1] active:scale-95 transition-all shrink-0"
-            >
-              <Plus className="w-3.5 h-3.5" />
-            </button>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {routine.steps.map((step, idx) => (
+              <React.Fragment key={step.id}>
+                <span
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                    step.completed
+                      ? 'bg-sage-500/15 text-sage-800 dark:text-sage-300 line-through'
+                      : 'bg-surface dark:bg-surface-dark border border-stone-200/80 dark:border-white/[0.08] text-ink-primary dark:text-linen'
+                  }`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${step.completed ? 'bg-sage-500' : 'bg-amber-500'}`} />
+                  <span className="truncate max-w-[120px]">{step.title}</span>
+                </span>
+                {idx < routine.steps.length - 1 && (
+                  <span className="text-stone-300 dark:text-white/20 text-xs">→</span>
+                )}
+              </React.Fragment>
+            ))}
           </div>
+        </div>
+      )}
+
+      {/* Action Row */}
+      <div className="flex items-center gap-2 pt-1">
+        <button
+          type="button"
+          onClick={() => {
+            onStart?.();
+            openModal('routine_runner', undefined, routine.id);
+          }}
+          className="flex-1 h-11 rounded-lg bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-stone-950 font-bold text-xs flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] transition-all"
+        >
+          <Play className="w-3.5 h-3.5 fill-current" />
+          <span>Start routine</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setShowSteps(!showSteps)}
+          className="h-11 px-3.5 rounded-lg bg-stone-100 hover:bg-stone-200 dark:bg-white/[0.06] dark:hover:bg-white/[0.1] text-ink-primary dark:text-linen text-xs font-semibold flex items-center gap-1 transition-colors border border-stone-200/60 dark:border-white/[0.04]"
+        >
+          <span>{showSteps ? 'Hide steps' : 'View steps'}</span>
+          {showSteps ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+        </button>
+      </div>
+
+      {/* Expanded Checklist */}
+      {showSteps && (
+        <div className="pt-2 border-t border-stone-200/60 dark:border-white/[0.06] space-y-1.5 animate-fade-in">
+          {routine.steps.map((step) => (
+            <div
+              key={step.id}
+              onClick={() => {
+                sounds.playStepComplete();
+                toggleRoutineStep(routine.id, step.id);
+              }}
+              className="flex items-center justify-between p-2 rounded-lg hover:bg-stone-50 dark:hover:bg-white/[0.02] cursor-pointer text-xs"
+            >
+              <div className="flex items-center gap-2.5 truncate">
+                <span className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-colors ${
+                  step.completed
+                    ? 'bg-sage-500 border-sage-500 text-white'
+                    : 'border-stone-300 dark:border-white/20 bg-surface dark:bg-surface-dark'
+                }`}>
+                  {step.completed && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                </span>
+                <span className={`truncate ${step.completed ? 'line-through text-ink-muted dark:text-linen-subtle' : 'text-ink-primary dark:text-linen font-medium'}`}>
+                  {step.title}
+                </span>
+              </div>
+              <span className="text-[10px] text-ink-subtle dark:text-linen-faint shrink-0">
+                {step.durationMinutes}m
+              </span>
+            </div>
+          ))}
         </div>
       )}
     </article>
@@ -254,95 +169,69 @@ function RoutineCard({
 export default function RoutinesPage() {
   const { routines, openModal } = useApp();
 
-  // Explicit active routines (user chosen or enabled by default)
   const myRoutines = routines.filter(r => r.enabled !== false);
-  const libraryRoutines = routines;
+  const libraryRoutines = routines.filter(r => r.enabled === false);
 
   return (
     <div className="max-w-xl mx-auto space-y-6 animate-fade-in pb-28 md:pb-10">
       {/* Header */}
       <Header
         title="Routines"
-        subtitle="Flexible sequences to ease transitions. Complete any one step."
+        subtitle="Self-paced anchor flows. No alarms, no streaks, no guilt."
       />
 
-      {/* MY ROUTINES */}
-      <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
-            My routines
-          </h2>
-          <span className="text-[11px] text-ink-subtle dark:text-linen-faint">
-            {myRoutines.length} active
-          </span>
-        </div>
-
-        <div className="space-y-3">
-          {myRoutines.length > 0 ? (
-            myRoutines.map((routine) => (
-              <RoutineCard key={routine.id} routine={routine} />
-            ))
-          ) : (
-            <div className="p-6 text-center rounded-3xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] space-y-3">
-              <p className="text-sm font-medium text-ink-primary dark:text-linen">
-                No active routines right now.
-              </p>
-              <p className="text-xs text-ink-muted dark:text-linen-subtle max-w-sm mx-auto leading-relaxed">
-                Routines are low-pressure step sequences to ease transitions. Pick a template from the library or create a small personal sequence.
-              </p>
-              <div className="flex items-center justify-center gap-2 pt-1">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    openModal('routine_library');
-                  }}
-                  className="min-h-[44px] py-2.5 px-4 rounded-xl border border-stone-200 dark:border-white/[0.12] text-xs font-semibold text-ink-primary dark:text-linen hover:bg-stone-50 dark:hover:bg-white/[0.04] active:scale-95 transition-all"
-                >
-                  Browse library
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    openModal('add_routine');
-                  }}
-                  className="min-h-[44px] py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-stone-950 font-bold text-xs shadow-sm active:scale-95 transition-all"
-                >
-                  Create routine
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Action Links: + Add routine & Routine library */}
-      <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
+      {/* Top Action Row */}
+      <div className="flex items-center justify-between pt-1">
+        <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
+          Active Routines
+        </h2>
         <button
           type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            openModal('add_routine');
-          }}
-          className="w-full sm:flex-1 flex items-center justify-center gap-2 min-h-[48px] py-3.5 px-5 rounded-2xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] hover:border-stone-300 dark:hover:border-white/[0.15] hover:bg-stone-50 dark:hover:bg-white/[0.04] text-xs sm:text-sm font-semibold text-ink-primary dark:text-linen shadow-sm transition-all active:scale-95"
+          onClick={() => openModal('add_routine')}
+          className="h-8 px-3 rounded-lg bg-stone-100 hover:bg-stone-200 dark:bg-white/[0.06] dark:hover:bg-white/[0.1] text-ink-primary dark:text-linen text-xs font-semibold flex items-center gap-1.5 transition-colors border border-stone-200/70 dark:border-white/[0.06]"
         >
-          <Plus className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-          <span>Add routine</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            openModal('routine_library');
-          }}
-          className="w-full sm:flex-1 flex items-center justify-center gap-2 min-h-[48px] py-3.5 px-5 rounded-2xl border border-stone-200/80 dark:border-white/[0.08] bg-surface dark:bg-surface-dark text-xs sm:text-sm font-semibold text-ink-secondary dark:text-linen-subtle hover:text-ink-primary dark:hover:text-linen hover:bg-stone-50 dark:hover:bg-white/[0.04] shadow-sm transition-all active:scale-95"
-        >
-          <BookOpen className="w-4 h-4 text-ink-muted dark:text-linen-subtle" />
-          <span>Routine library ({libraryRoutines.length})</span>
+          <Plus className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+          <span>New routine</span>
         </button>
       </div>
+
+      {/* Routine Cards Grid */}
+      <div className="space-y-4">
+        {myRoutines.length === 0 ? (
+          <div className="p-8 rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] text-center space-y-2 shadow-sm">
+            <p className="text-sm font-semibold text-ink-primary dark:text-linen">
+              No active routines yet.
+            </p>
+            <p className="text-xs text-ink-muted dark:text-linen-subtle max-w-xs mx-auto leading-relaxed">
+              Create a custom anchor routine or activate one of the gentle templates below.
+            </p>
+          </div>
+        ) : (
+          myRoutines.map((routine) => (
+            <RoutineCard key={routine.id} routine={routine} />
+          ))
+        )}
+      </div>
+
+      {/* Routine Templates / Exploration Section */}
+      {libraryRoutines.length > 0 && (
+        <section className="space-y-3 pt-4 border-t border-stone-200/60 dark:border-white/[0.06]">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
+              Explore Routine Templates
+            </h2>
+            <span className="text-xs text-ink-subtle dark:text-linen-faint">
+              Tap + Add to activate
+            </span>
+          </div>
+
+          <div className="space-y-3">
+            {libraryRoutines.map((routine) => (
+              <RoutineCard key={routine.id} routine={routine} isLibrary />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
