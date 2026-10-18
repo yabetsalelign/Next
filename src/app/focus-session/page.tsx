@@ -54,15 +54,9 @@ export default function FocusSessionPage() {
   const taskTitle = (isActive ? focusSession.taskTitle : null) || currentTask?.title || 'Gentle Focus';
   const taskMinimum = currentTask?.minimum || 'Take one small step. Any step counts.';
 
-  // Duration pill: only changes local selection when idle. Restarts when active.
+  // The selected duration only applies to a future session.
   const handleSelectDuration = (sec: number) => {
-    if (isIdle) {
-      setSelectedDuration(sec);
-      // DO NOT call startFocusSession here
-    } else {
-      // User tapped a different duration mid-session: restart with new duration
-      startFocusSession(sec, currentTask ? { id: currentTask.id, title: currentTask.title } : undefined);
-    }
+    if (isIdle) setSelectedDuration(sec);
   };
 
   // Explicit Start (idle state only)
@@ -113,7 +107,7 @@ export default function FocusSessionPage() {
   return (
     <div className="min-h-screen bg-background text-on-surface font-body-md text-body-md flex flex-col selection:bg-primary-container selection:text-on-primary-container">
       {/* Top Header */}
-      <header className="fixed top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.12)] border-b border-surface-container-high/30">
+      <header className="fixed top-0 inset-x-0 z-50 bg-surface/95 backdrop-blur-lg pt-[var(--sat)] border-b border-outline-variant">
         <div className="h-16 px-gutter-mobile flex items-center justify-between max-w-xl mx-auto">
           <div className="flex items-center gap-space-xs">
             <button
@@ -132,7 +126,7 @@ export default function FocusSessionPage() {
         </div>
       </header>
 
-      <main className="flex flex-col relative w-full pt-20 pb-safe px-gutter-mobile bg-background flex-1 max-w-xl mx-auto">
+      <main className="flex flex-col relative w-full pt-[calc(5rem+var(--sat))] pb-safe px-gutter-mobile bg-background flex-1 max-w-xl mx-auto">
         <div className="flex flex-col w-full pb-8 select-none">
 
           {/* Sub-header row */}
@@ -177,14 +171,13 @@ export default function FocusSessionPage() {
 
           {/* Circular ring timer */}
           <div className="relative flex flex-col items-center justify-center my-6">
-            <div className="absolute w-64 h-64 rounded-full bg-primary-container/10 blur-3xl pointer-events-none"></div>
             <div className="relative w-64 h-64 flex items-center justify-center">
               <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 240 240">
-                <circle cx="120" cy="120" fill="transparent" r={radius} stroke="#1f1f23" strokeLinecap="round" strokeWidth="10" />
+                <circle cx="120" cy="120" fill="transparent" r={radius} stroke="var(--bg-surface-high)" strokeLinecap="round" strokeWidth="10" />
                 <circle
                   className="transition-all duration-1000 ease-out"
                   cx="120" cy="120" fill="transparent" r={radius}
-                  stroke="#ffb963"
+                  stroke="var(--color-primary)"
                   strokeDasharray={circumference}
                   strokeDashoffset={strokeDashoffset}
                   strokeLinecap="round" strokeWidth="10"
@@ -211,7 +204,7 @@ export default function FocusSessionPage() {
           </div>
 
           {/* Duration pill selectors */}
-          <div className="flex items-center justify-center gap-2 mb-6">
+          {isIdle && <div className="flex items-center justify-center gap-2 mb-6">
             {INTERVALS.map((item) => {
               const active = (isIdle ? selectedDuration : displayDuration) === item.seconds;
               return (
@@ -219,7 +212,7 @@ export default function FocusSessionPage() {
                   key={item.seconds}
                   type="button"
                   onClick={() => handleSelectDuration(item.seconds)}
-                  className={`duration-chip px-3.5 py-1.5 rounded-full font-label-md text-label-md transition-all active:scale-95 ${
+                  className={`duration-chip min-h-11 px-4 py-2 rounded-full font-label-md text-label-md transition-all active:scale-95 ${
                     active
                       ? 'bg-surface-container-high text-primary-fixed-dim shadow-sm border border-primary-container/30'
                       : 'bg-surface-container-low text-on-surface-variant hover:text-on-surface'
@@ -229,7 +222,7 @@ export default function FocusSessionPage() {
                 </button>
               );
             })}
-          </div>
+          </div>}
 
           {/* Primary action buttons — context-aware */}
           <div className="flex flex-col gap-3 px-1 w-full">

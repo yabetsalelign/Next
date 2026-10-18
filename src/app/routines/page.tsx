@@ -27,7 +27,7 @@ export default function RoutinesPage() {
       {/* Header */}
       <Header />
 
-      <main className="flex flex-col relative w-full pt-16 pb-36 px-gutter-mobile bg-background flex-1 max-w-xl mx-auto">
+      <main className="flex flex-col relative w-full pt-[calc(4rem+var(--sat))] pb-36 px-gutter-mobile bg-background flex-1 max-w-xl mx-auto">
         <div className="flex flex-col w-full gap-space-lg select-none">
           {/* Sub-header & Action */}
           <div className="flex items-center justify-between gap-space-sm pt-space-xs">
@@ -35,7 +35,7 @@ export default function RoutinesPage() {
               <span className="font-label-sm text-label-sm text-outline tracking-wider uppercase">
                 Anchors &amp; Rhythms
               </span>
-              <p className="font-body-sm text-body-sm text-on-surface-variant truncate">
+              <p className="font-body-sm text-body-sm text-on-surface-variant break-words">
                 Self-paced anchor flows. No alarms, no streaks, no guilt.
               </p>
             </div>
@@ -50,7 +50,8 @@ export default function RoutinesPage() {
             </button>
           </div>
 
-          {/* Motivational Breathing Gentle Bar */}
+          {activeRoutines.length > 0 && <>
+          {/* Helpful context for routines the user has chosen to create */}
           <div className="flex items-center justify-between px-space-md py-space-sm rounded-xl bg-surface-container-low shadow-sm border border-surface-container-high/40">
             <div className="flex items-center gap-space-sm min-w-0">
               <div className="w-8 h-8 rounded-full bg-primary-container/15 flex items-center justify-center flex-shrink-0 text-primary-container">
@@ -60,7 +61,7 @@ export default function RoutinesPage() {
                 <span className="font-label-md text-label-md text-on-surface font-medium">
                   You are right on time
                 </span>
-                <span className="font-label-sm text-label-sm text-on-surface-variant truncate">
+                <span className="font-label-sm text-label-sm text-on-surface-variant break-words">
                   Anchor whenever you feel ready today
                 </span>
               </div>
@@ -70,7 +71,17 @@ export default function RoutinesPage() {
             </span>
           </div>
 
-          {/* Routines List */}
+          </>}
+
+          {activeRoutines.length === 0 ? (
+            <section className="rounded-3xl border border-outline-variant bg-surface-container-low p-6 sm:p-8">
+              <p className="text-sm font-semibold text-primary mb-2">A little structure, when it helps</p>
+              <h2 className="text-2xl font-semibold tracking-tight">No routines yet.</h2>
+              <p className="mt-2 text-base leading-relaxed text-on-surface-variant">Make a short sequence for something you do often. You can take the steps in your own time.</p>
+              <button type="button" onClick={() => openModal('add_routine')} className="mt-5 min-h-12 px-4 rounded-xl bg-primary text-on-primary font-semibold inline-flex items-center gap-2 hover:opacity-90"><span className="material-symbols-outlined text-[18px]">add</span>Create a routine</button>
+            </section>
+          ) : (
+          /* Routines List */
           <div className="flex flex-col gap-space-md">
             {activeRoutines.map((routine) => {
               const totalMins = routine.steps.reduce(
@@ -91,7 +102,7 @@ export default function RoutinesPage() {
                         <span className="text-[22px]">{routine.icon || '🌅'}</span>
                       </div>
                       <div className="flex flex-col min-w-0">
-                        <h2 className="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">
+                        <h2 className="font-headline-sm text-headline-sm text-on-surface font-semibold break-words">
                           {routine.title}
                         </h2>
                         <p className="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1.5 flex-wrap">
@@ -108,7 +119,7 @@ export default function RoutinesPage() {
                       type="button"
                       aria-label="Routine options"
                       onClick={() => openModal('routine_runner', undefined, routine.id)}
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-outline hover:text-on-surface hover:bg-surface-container transition-colors"
+                      className="w-11 h-11 rounded-xl flex items-center justify-center text-outline hover:text-on-surface hover:bg-surface-container transition-colors"
                     >
                       <span className="material-symbols-outlined text-[20px]">play_arrow</span>
                     </button>
@@ -150,7 +161,7 @@ export default function RoutinesPage() {
                             <span className="material-symbols-outlined text-[13px] font-bold">check</span>
                           </button>
                           <span
-                            className={`font-body-md text-body-md truncate ${
+                            className={`font-body-md text-body-md break-words ${
                               step.completed ? 'line-through text-on-surface-variant' : 'text-on-surface font-medium'
                             }`}
                           >
@@ -177,6 +188,7 @@ export default function RoutinesPage() {
               );
             })}
           </div>
+          )}
         </div>
       </main>
     </div>

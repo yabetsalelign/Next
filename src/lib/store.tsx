@@ -40,11 +40,11 @@ import {
 } from './dateUtils';
 
 export type ModalType =
-  | 'help_start' 
-  | 'stuck' 
-  | 'breakdown' 
-  | 'create_task' 
-  | 'routine_runner' 
+  | 'help_start'
+  | 'stuck'
+  | 'breakdown'
+  | 'create_task'
+  | 'routine_runner'
   | 'body_check'
   | 'fresh_start'
   | 'journal'
@@ -74,7 +74,6 @@ interface AppContextType {
   upNextTasks: Task[];
   activeReset: Reset | null;
   focusSession: FocusSessionState;
-  
   // Actions
   openModal: (modal: ModalType, taskId?: string, routineId?: string) => void;
   closeModal: () => void;
@@ -178,8 +177,8 @@ export function createTasksForResetDay(reset: Reset, dayIndex: number, dateStr: 
 }
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
-  const [routines, setRoutines] = useState<Routine[]>(INITIAL_ROUTINES);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [routines, setRoutines] = useState<Routine[]>([]);
   const [returns, setReturns] = useState<ReturnDay[]>(INITIAL_RETURNS);
   const [helpfulInsights, setHelpfulInsights] = useState<HelpfulInsight[]>(INITIAL_HELPFUL_INSIGHTS);
   const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS);
@@ -240,10 +239,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const storedLastAck = localStorage.getItem(STORAGE_KEYS.LAST_ACK_RETURN_DATE);
 
       const storedTasks = localStorage.getItem(STORAGE_KEYS.TASKS);
-      let parsedTasks: Task[] = storedTasks ? JSON.parse(storedTasks) : INITIAL_TASKS;
+      let parsedTasks: Task[] = storedTasks ? JSON.parse(storedTasks) : [];
 
       const storedRoutines = localStorage.getItem(STORAGE_KEYS.ROUTINES);
-      let parsedRoutines: Routine[] = storedRoutines ? JSON.parse(storedRoutines) : INITIAL_ROUTINES;
+      let parsedRoutines: Routine[] = storedRoutines ? JSON.parse(storedRoutines) : [];
 
       const storedReturns = localStorage.getItem(STORAGE_KEYS.RETURNS);
       let parsedReturns: ReturnDay[] = storedReturns ? JSON.parse(storedReturns) : INITIAL_RETURNS;

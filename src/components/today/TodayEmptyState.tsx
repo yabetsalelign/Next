@@ -1,114 +1,40 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
+import { ArrowRight, Plus } from 'lucide-react';
 import { useApp } from '@/lib/store';
 
 export function TodayEmptyState() {
-  const { openModal, setNotPlanningToday, addTask, tasks, pendingReturn, acknowledgeReturn } = useApp();
+  const router = useRouter();
+  const { openModal, setNotPlanningToday, pendingReturn, acknowledgeReturn, tasks } = useApp();
+  const allDone = tasks.length > 0 && tasks.every((task) => task.completed);
 
-  const handleAddOneThing = () => {
+  const beginPlanning = () => {
     if (pendingReturn) acknowledgeReturn();
     openModal('create_task');
   };
 
-  const handleJustCare = () => {
-    if (pendingReturn) acknowledgeReturn();
-    const existingTitles = tasks.map((t) => t.title.toLowerCase());
-    const careActions = [
-      {
-        title: 'Drink a glass of water',
-        category: 'wellness' as const,
-        icon: '💧',
-        durationMinutes: 2,
-        minimum: 'Take three slow sips of water',
-        normal: 'Drink a full glass of cool water',
-      },
-      {
-        title: 'Rest your eyes & breathe',
-        category: 'rest' as const,
-        icon: 'spa',
-        durationMinutes: 5,
-        minimum: 'Close your eyes for 60 seconds',
-        normal: 'Sit comfortably and take 5 deep breaths',
-      },
-    ];
-
-    careActions.forEach((item) => {
-      if (!existingTitles.includes(item.title.toLowerCase())) {
-        addTask({
-          title: item.title,
-          category: item.category,
-          icon: item.icon,
-          timeCategory: 'now',
-          durationMinutes: item.durationMinutes,
-          priority: 'must',
-          minimum: item.minimum,
-          normal: item.normal,
-          steps: [
-            { id: `care-step-1-${Date.now()}`, title: item.minimum, completed: false, isMinimum: true },
-          ],
-          companyPreference: 'no_preference',
-        });
-      }
-    });
-  };
-
-  const handleLater = () => {
+  const takeRest = () => {
     if (pendingReturn) acknowledgeReturn();
     setNotPlanningToday(true);
   };
 
   return (
-    <section className="my-6 w-full max-w-md mx-auto select-none animate-fade-in" data-purpose="empty-state-card">
-      <div className="bg-surface-container-low border border-surface-container-high rounded-[28px] p-6 sm:p-7 text-center shadow-2xl relative overflow-hidden backdrop-blur-sm">
-        {/* Subtle Glow Highlight at Card Top */}
-        <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-36 h-24 bg-primary-container/10 rounded-full blur-2xl pointer-events-none"></div>
+    <section className="w-full rounded-3xl bg-surface-container-low border border-outline-variant p-6 sm:p-8" aria-labelledby="empty-today-heading">
+      <p className="text-sm font-medium text-primary mb-2">{allDone ? 'That is enough' : pendingReturn ? 'Welcome back' : 'A fresh page'}</p>
+      <h2 id="empty-today-heading" className="text-2xl sm:text-3xl font-semibold tracking-tight">{allDone ? 'You’ve done what you planned.' : pendingReturn ? 'Nothing to catch up on.' : 'What would help right now?'}</h2>
+      <p className="mt-2 text-base leading-relaxed text-on-surface-variant">{allDone ? 'You can stop here, rest, or add something else if it would help.' : 'You don’t need a complete plan. One small thing is enough, and an open day is okay too.'}</p>
 
-        {/* Empty State Headline */}
-        <h2 className="text-2xl font-bold tracking-tight text-on-surface mb-1.5 font-headline-lg-mobile">
-          {pendingReturn ? 'Welcome back.' : 'Nothing planned yet.'}
-        </h2>
-
-        {/* Reassuring Subtext */}
-        <p className="text-sm font-medium text-on-surface-variant mb-1">
-          {pendingReturn ? 'Nothing needs catching up.' : "That's okay."}
-        </p>
-        <p className="text-xs text-outline mb-7">
-          What would help right now?
-        </p>
-
-        {/* Action Buttons Group */}
-        <div className="flex flex-col space-y-3">
-          {/* Primary Amber Action: Add one thing */}
-          <button
-            type="button"
-            onClick={handleAddOneThing}
-            className="w-full py-3.5 px-6 rounded-2xl bg-primary-container hover:bg-primary-fixed text-on-primary-fixed font-semibold text-[15px] shadow-[0_8px_24px_-6px_rgba(255,185,99,0.35)] active:scale-[0.98] transition-all flex items-center justify-center space-x-2"
-          >
-            <span className="material-symbols-outlined text-[18px]">add</span>
-            <span>Add one thing</span>
-          </button>
-
-          {/* Secondary Action: Just care for yourself */}
-          <button
-            type="button"
-            onClick={handleJustCare}
-            className="w-full py-3.5 px-6 rounded-2xl bg-surface-container-high/80 hover:bg-surface-container-high border border-surface-container-highest text-primary-container hover:text-primary font-medium text-[14px] active:scale-[0.98] transition-all flex items-center justify-center gap-1.5"
-          >
-            <span className="material-symbols-outlined text-[16px]">spa</span>
-            <span>Just care for yourself</span>
-          </button>
-
-          {/* Tertiary Action: I'll figure it out later */}
-          <button
-            type="button"
-            onClick={handleLater}
-            className="w-full py-2.5 px-4 text-on-surface-variant hover:text-on-surface text-xs font-medium tracking-normal active:scale-[0.98] transition-colors mt-1"
-          >
-            I&apos;ll figure it out later
-          </button>
-        </div>
+      <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        <button type="button" onClick={beginPlanning} className="min-h-12 px-4 rounded-xl bg-primary text-on-primary font-semibold flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.99]">
+          <Plus size={18} /> Add one thing
+        </button>
+        <button type="button" onClick={() => router.push('/focus-session')} className="min-h-12 px-4 rounded-xl bg-surface-container-high text-on-surface font-medium flex items-center justify-center gap-2 hover:bg-surface-container-highest active:scale-[0.99]">
+          Help me start <ArrowRight size={17} />
+        </button>
       </div>
+      <button type="button" onClick={takeRest} className="mt-4 min-h-11 px-2 text-sm font-medium text-on-surface-variant underline decoration-outline underline-offset-4 hover:text-on-surface">Take the day off</button>
     </section>
   );
 }

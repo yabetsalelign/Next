@@ -39,8 +39,8 @@
     --color-tertiary-container: #D6EDFF;
 
     /* Default Accent: Warm Amber */
-    --color-primary: #E58E26;
-    --color-primary-container: #FFB963;
+    --color-primary: #96511F;
+    --color-primary-container: #E08E45;
     --color-on-primary: #FFFFFF;
     --color-on-primary-container: #2B1700;
 
@@ -59,28 +59,28 @@
   /* Gentle Mint Accent Override */
   :root[data-accent="mint"],
   .dark[data-accent="mint"] {
-    --color-primary: #388E67;
-    --color-primary-container: #4E9B78;
+    --color-primary: #246B4B;
+    --color-primary-container: #69B58A;
     --color-on-primary: #FFFFFF;
-    --color-on-primary-container: #00210C;
-    --accent-amber: #4E9B78;
+    --color-on-primary-container: #10291D;
+    --accent-amber: #69B58A;
   }
 
   .dark {
     /* Dark Theme (Quiet Focus Editorial) */
-    --bg-app: #121317;
-    --bg-surface: #17181C;
-    --bg-surface-low: #1B1C21;
-    --bg-surface-container: #202126;
-    --bg-surface-high: #292A30;
-    --bg-surface-highest: #34353C;
-    --bg-surface-lowest: #0D0E12;
-    --bg-surface-dim: #121317;
-    --bg-surface-bright: #39393D;
+    --bg-app: #121218;
+    --bg-surface: #181820;
+    --bg-surface-low: #1D1D26;
+    --bg-surface-container: #24242E;
+    --bg-surface-high: #2D2D39;
+    --bg-surface-highest: #393946;
+    --bg-surface-lowest: #101016;
+    --bg-surface-dim: #121218;
+    --bg-surface-bright: #41414D;
 
     --text-primary: #E4E2E7;
-    --text-secondary: #A09E97;
-    --text-muted: #6D6B67;
+    --text-secondary: #B8B5AE;
+    --text-muted: #96938D;
     --text-on-surface-variant: #D6C3B2;
 
     --border-outline: #383940;
@@ -93,10 +93,10 @@
     --color-tertiary: #83CFFF;
     --color-tertiary-container: #004C6C;
 
-    --color-primary: #FFB963;
-    --color-primary-container: #FFB963;
-    --color-on-primary: #1A1002;
-    --color-on-primary-container: #472A00;
+    --color-primary: #F0A45E;
+    --color-primary-container: #E08E45;
+    --color-on-primary: #24150B;
+    --color-on-primary-container: #24150B;
 
     /* Legacy compatibility variables */
     --canvas-bg: var(--bg-app);
@@ -108,6 +108,14 @@
     --ink-subtle: #6E6459;
     --accent-amber: #FFB963;
     --accent-sage: #4E9B78;
+  }
+
+  .dark[data-accent="mint"] {
+    --color-primary: #77C99A;
+    --color-primary-container: #69B58A;
+    --color-on-primary: #10291D;
+    --color-on-primary-container: #10291D;
+    --accent-amber: #69B58A;
   }
 
 
@@ -139,6 +147,15 @@
   /* All buttons and links should inherit touch-action */
   button, a, [role="button"] {
     touch-action: manipulation;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+
+  input, textarea, select, button {
+    font: inherit;
   }
 
   /* Better text size on Android — prevent auto-inflate */

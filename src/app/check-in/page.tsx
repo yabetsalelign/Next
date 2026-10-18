@@ -8,7 +8,7 @@ import { sounds } from '@/lib/sounds';
 
 export default function CheckInPage() {
   const { openModal, setNotPlanningToday, journalEntries, addJournalEntry } = useApp();
-  const [energyState, setEnergyState] = useState<'low' | 'steady' | 'energized'>('steady');
+  const [energyState, setEnergyState] = useState<'low' | 'steady' | 'energized' | null>(null);
   const [reflectionText, setReflectionText] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -68,7 +68,7 @@ export default function CheckInPage() {
     triggerToast('Rest day recorded. Rest well.');
   };
 
-  const paceLabel =
+  const paceLabel = !energyState ? 'Choose what feels right' :
     energyState === 'low'
       ? 'Gentle restoration'
       : energyState === 'steady'
@@ -80,7 +80,7 @@ export default function CheckInPage() {
       {/* Header */}
       <Header />
 
-      <main className="flex flex-col relative w-full pt-16 pb-36 px-gutter-mobile bg-background flex-1 max-w-xl mx-auto">
+      <main className="flex flex-col relative w-full pt-[calc(4rem+var(--sat))] pb-36 px-gutter-mobile bg-background flex-1 max-w-xl mx-auto">
         <div className="flex flex-col w-full pb-8 space-y-6 select-none">
           {/* Ambient Intro Note */}
           <div className="flex flex-col px-1 pt-1">
@@ -243,7 +243,7 @@ export default function CheckInPage() {
 
             <div className="flex flex-col space-y-2.5">
               {/* Card 1: Taking the day off */}
-              <div className="bg-surface-container-low rounded-2xl p-4 flex items-center justify-between gap-3 shadow-sm hover:bg-surface-container transition-colors border border-surface-container-high/30">
+              <div className="bg-surface-container-low rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm hover:bg-surface-container transition-colors border border-surface-container-high/30">
                 <div className="flex items-center gap-3.5 min-w-0">
                   <div className="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center flex-shrink-0 text-primary-container">
                     <span className="material-symbols-outlined text-[20px]">pause_circle</span>
@@ -260,14 +260,14 @@ export default function CheckInPage() {
                 <button
                   type="button"
                   onClick={handleTakeDayOff}
-                  className="flex-shrink-0 px-3.5 py-2 rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md font-semibold hover:bg-primary-fixed transition-all active:scale-95 shadow-sm"
+                  className="min-h-11 self-start sm:self-auto flex-shrink-0 px-3.5 py-2 rounded-xl bg-primary-container text-on-primary-container font-label-md text-label-md font-semibold hover:bg-primary-fixed transition-all active:scale-95 shadow-sm"
                 >
                   Take day off
                 </button>
               </div>
 
               {/* Card 2: 7-Day Fresh Start */}
-              <div className="bg-surface-container-low rounded-2xl p-4 flex items-center justify-between gap-3 shadow-sm hover:bg-surface-container transition-colors border border-surface-container-high/30">
+              <div className="bg-surface-container-low rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm hover:bg-surface-container transition-colors border border-surface-container-high/30">
                 <div className="flex items-center gap-3.5 min-w-0">
                   <div className="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center flex-shrink-0 text-tertiary">
                     <span className="material-symbols-outlined text-[20px]">auto_awesome</span>
@@ -284,14 +284,14 @@ export default function CheckInPage() {
                 <button
                   type="button"
                   onClick={() => openModal('fresh_start')}
-                  className="flex-shrink-0 px-4 py-2 rounded-full bg-surface-container-high text-on-surface font-label-md text-label-md font-medium hover:bg-surface-container-highest transition-all active:scale-95"
+                  className="min-h-11 self-start sm:self-auto flex-shrink-0 px-4 py-2 rounded-xl bg-surface-container-high text-on-surface font-label-md text-label-md font-medium hover:bg-surface-container-highest transition-all active:scale-95"
                 >
                   Explore
                 </button>
               </div>
 
               {/* Card 3: Body & tension check */}
-              <div className="bg-surface-container-low rounded-2xl p-4 flex items-center justify-between gap-3 shadow-sm hover:bg-surface-container transition-colors border border-surface-container-high/30">
+              <div className="bg-surface-container-low rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm hover:bg-surface-container transition-colors border border-surface-container-high/30">
                 <div className="flex items-center gap-3.5 min-w-0">
                   <div className="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center flex-shrink-0 text-secondary">
                     <span className="material-symbols-outlined text-[20px]">favorite</span>
@@ -308,7 +308,7 @@ export default function CheckInPage() {
                 <button
                   type="button"
                   onClick={() => openModal('body_check')}
-                  className="flex-shrink-0 px-4 py-2 rounded-full bg-surface-container-high text-on-surface font-label-md text-label-md font-medium hover:bg-surface-container-highest transition-all active:scale-95"
+                  className="min-h-11 self-start sm:self-auto flex-shrink-0 px-4 py-2 rounded-xl bg-surface-container-high text-on-surface font-label-md text-label-md font-medium hover:bg-surface-container-highest transition-all active:scale-95"
                 >
                   Check in
                 </button>

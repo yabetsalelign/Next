@@ -43,7 +43,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
@@ -52,18 +52,14 @@ export default function RootLayout({
           rel="stylesheet"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-          rel="stylesheet"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700&display=swap"
           rel="stylesheet"
         />
 
         {/* Theme and Accent synchronizer */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var s=localStorage.getItem('next_settings_v1');var parsed=s?JSON.parse(s):{};var t=parsed.theme||'dark';var a=parsed.accentPalette||'amber';document.documentElement.setAttribute('data-accent', a);if(t==='light'){document.documentElement.classList.remove('dark');}else if(t==='system'){if(!window.matchMedia('(prefers-color-scheme: dark)').matches){document.documentElement.classList.remove('dark');}else{document.documentElement.classList.add('dark');}}else{document.documentElement.classList.add('dark');}}catch(e){document.documentElement.classList.add('dark');document.documentElement.setAttribute('data-accent','amber');}})();`,
+            __html: `(function(){try{var s=localStorage.getItem('next_settings_v1');var parsed=s?JSON.parse(s):{};var t=parsed.theme||'light';var a=parsed.accentPalette||'amber';document.documentElement.setAttribute('data-accent', a);if(t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');}else{document.documentElement.classList.remove('dark');}}catch(e){document.documentElement.classList.remove('dark');document.documentElement.setAttribute('data-accent','amber');}})();`,
           }}
         />
       </head>

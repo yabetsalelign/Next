@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
+import { ArrowLeft, Settings2 } from 'lucide-react';
 
 export interface HeaderProps {
   title?: string;
@@ -48,7 +49,7 @@ export function Header({
 
   return (
     <header
-      className={`fixed top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.12)] border-b border-surface-container-high/30 select-none ${className}`}
+      className={`fixed top-0 inset-x-0 z-50 bg-surface/95 backdrop-blur-lg pt-[var(--sat)] border-b border-outline-variant ${className}`}
     >
       <div className="h-16 px-gutter-mobile flex items-center justify-between max-w-xl mx-auto">
         <div className="flex items-center gap-space-xs">
@@ -59,12 +60,11 @@ export function Header({
               onClick={onBack ? onBack : () => router.back()}
               className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95"
             >
-              <span className="material-symbols-outlined text-[22px]">arrow_back</span>
+              <ArrowLeft size={21} />
             </button>
           ) : (
             <div className="flex items-center gap-space-sm pl-1">
-              <div className="w-2.5 h-2.5 rounded-full bg-primary-container animate-pulse"></div>
-              <h1 className="font-headline-sm text-headline-sm text-on-surface tracking-tight font-semibold">
+              <h1 className="text-lg text-on-surface tracking-tight font-semibold">
                 {resolvedTitle}
               </h1>
             </div>
@@ -84,19 +84,17 @@ export function Header({
             <Link
               href="/settings"
               aria-label="Settings"
-              className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95"
+              className="w-11 h-11 flex items-center justify-center rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95"
             >
-              <span className="material-symbols-outlined text-[22px]">settings</span>
+              <Settings2 size={21} />
             </Link>
           )}
 
           <div
             title="Profile"
-            className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0 shadow-sm"
+            className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high"
           >
-            <span className="material-symbols-outlined text-on-primary text-[18px]">
-              person
-            </span>
+            <Settings2 size={21} />
           </div>
         </div>
       </div>

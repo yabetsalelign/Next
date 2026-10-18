@@ -38,7 +38,7 @@ export function OnboardingFlow() {
       });
       completeOnboarding('empty', undefined, pace);
     } else {
-      completeOnboarding(firstStepChoice === 'task' ? 'example' : 'empty', undefined, pace);
+      completeOnboarding('empty', undefined, pace);
     }
   };
 

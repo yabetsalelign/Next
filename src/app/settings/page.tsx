@@ -134,7 +134,7 @@ export default function SettingsPage() {
       {/* Header */}
       <Header />
 
-      <main className="flex flex-col relative w-full pt-16 pb-36 px-gutter-mobile bg-background flex-1 max-w-xl mx-auto">
+      <main className="flex flex-col relative w-full pt-[calc(4rem+var(--sat))] pb-36 px-gutter-mobile bg-background flex-1 max-w-xl mx-auto">
         <div className="flex flex-col w-full pb-10 space-y-space-lg select-none">
           {/* Subtitle & Context Note */}
           <div className="px-space-xs pt-1">

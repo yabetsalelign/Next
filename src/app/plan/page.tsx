@@ -109,7 +109,7 @@ export default function PlanPage() {
       {/* Header */}
       <Header />
 
-      <main className="flex flex-col relative w-full pt-16 pb-36 px-gutter-mobile bg-background flex-1 max-w-xl mx-auto">
+      <main className="flex flex-col relative w-full pt-[calc(4rem+var(--sat))] pb-36 px-gutter-mobile bg-background flex-1 max-w-xl mx-auto">
         <div className="flex flex-col w-full gap-space-lg select-none">
           {/* Header Context & Subtitle */}
           <div className="flex flex-col gap-space-xs pt-1">
@@ -231,14 +231,14 @@ export default function PlanPage() {
                         type="button"
                         aria-label="Mark complete"
                         onClick={() => handleToggleTask(activeTask)}
-                        className="mt-0.5 w-6 h-6 rounded-full bg-surface-container-high hover:bg-secondary/30 flex items-center justify-center text-transparent hover:text-secondary transition-all flex-shrink-0"
+                        className="-ml-2 w-11 h-11 rounded-full bg-surface-container-high hover:bg-secondary/30 flex items-center justify-center text-transparent hover:text-secondary transition-all flex-shrink-0"
                       >
                         <span className="material-symbols-outlined text-[16px]">check</span>
                       </button>
 
                       <div className="flex flex-col min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <h2 className="font-headline-sm text-headline-sm text-on-surface tracking-tight font-semibold truncate">
+                          <h2 className="font-headline-sm text-headline-sm text-on-surface tracking-tight font-semibold break-words">
                             {activeTask.title}
                           </h2>
                           <span className="px-2 py-0.5 rounded-full bg-primary-container/20 text-primary-container font-label-sm text-label-sm font-medium capitalize">
@@ -256,49 +256,6 @@ export default function PlanPage() {
                     <span className="px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm flex-shrink-0 flex items-center gap-1">
                       <span className="material-symbols-outlined text-[13px]">schedule</span>
                       {activeTask.durationMinutes ? `${activeTask.durationMinutes}m` : '15m'}
-                    </span>
-                  </div>
-
-                  {/* 2-Minute Warmup Ring & Momentum Meter */}
-                  <div className="bg-surface-container-lowest/70 rounded-xl p-3 flex items-center justify-between gap-3 border border-surface-container-high/30">
-                    <div className="flex items-center gap-3">
-                      <div className="relative w-10 h-10 flex items-center justify-center shrink-0">
-                        <svg className="w-10 h-10 -rotate-90" viewBox="0 0 36 36">
-                          <circle
-                            className="stroke-surface-container-high"
-                            cx="18"
-                            cy="18"
-                            fill="none"
-                            r="14"
-                            strokeWidth="3"
-                          ></circle>
-                          <circle
-                            className="stroke-primary-container"
-                            cx="18"
-                            cy="18"
-                            fill="none"
-                            r="14"
-                            strokeDasharray="88"
-                            strokeDashoffset="36"
-                            strokeLinecap="round"
-                            strokeWidth="3"
-                          ></circle>
-                        </svg>
-                        <span className="material-symbols-outlined text-primary-container text-[16px] absolute">
-                          bolt
-                        </span>
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="font-label-md text-label-md text-on-surface font-medium">
-                          2-minute starting threshold
-                        </span>
-                        <span className="font-label-sm text-label-sm text-on-surface-variant">
-                          Momentum builds naturally after 120s
-                        </span>
-                      </div>
-                    </div>
-                    <span className="font-label-sm text-label-sm text-primary-container font-semibold shrink-0">
-                      1:20 left
                     </span>
                   </div>
 
@@ -357,12 +314,12 @@ export default function PlanPage() {
                       type="button"
                       aria-label="Mark complete"
                       onClick={() => handleToggleTask(t)}
-                      className="w-6 h-6 rounded-full bg-surface-container-high hover:bg-secondary/30 flex items-center justify-center text-transparent hover:text-secondary transition-all flex-shrink-0"
+                      className="-ml-2 w-11 h-11 rounded-full bg-surface-container-high hover:bg-secondary/30 flex items-center justify-center text-transparent hover:text-secondary transition-all flex-shrink-0"
                     >
                       <span className="material-symbols-outlined text-[16px]">check</span>
                     </button>
                     <div className="flex flex-col min-w-0">
-                      <span className="font-headline-sm text-body-lg text-on-surface font-medium truncate">
+                          <span className="font-headline-sm text-body-lg text-on-surface font-medium break-words">
                         {t.title}
                       </span>
                       <div className="flex items-center gap-2 mt-0.5">
@@ -375,7 +332,7 @@ export default function PlanPage() {
                         </span>
                         <span className="text-on-surface-variant text-[11px]">•</span>
                         <span className="font-label-sm text-label-sm text-primary-container">
-                          5 min easy warm
+                          {t.minimum ? 'Small step ready' : 'Choose a small step'}
                         </span>
                       </div>
                     </div>
@@ -492,7 +449,7 @@ export default function PlanPage() {
                             <span className="material-symbols-outlined text-[13px] font-bold">check</span>
                           </button>
                           <div className="flex flex-col min-w-0">
-                            <span className="font-body-md text-body-md text-on-surface line-through decoration-on-surface-variant/50 truncate">
+                            <span className="font-body-md text-body-md text-on-surface line-through decoration-on-surface-variant/50 break-words">
                               {t.title}
                             </span>
                             <span className="font-label-sm text-label-sm text-on-surface-variant">
