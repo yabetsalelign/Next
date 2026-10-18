@@ -98,96 +98,95 @@ export function TaskCreatorModal() {
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-end justify-center pb-[env(safe-area-inset-bottom,0px)] sm:items-center sm:p-4 bg-stone-900/40 dark:bg-black/60 backdrop-blur-[1px] animate-fade-in"
+      className="fixed inset-0 z-50 flex items-end justify-center pb-[env(safe-area-inset-bottom,0px)] sm:items-center sm:p-4 bg-black/60 backdrop-blur-[2px] animate-fade-in"
       role="dialog"
       aria-modal="true"
       aria-labelledby="creator-modal-title"
       onClick={closeModal}
     >
       <div
-        className="modal-sheet relative w-full sm:max-w-lg bg-surface dark:bg-surface-dark border-t sm:border border-stone-200/90 dark:border-white/[0.08] sm:rounded-3xl rounded-t-3xl shadow-2xl overflow-y-auto animate-slide-up flex flex-col"
+        className="modal-sheet relative w-full sm:max-w-[420px] bg-[#1d1e22] border-t sm:border border-white/10 sm:rounded-[28px] rounded-t-[28px] shadow-2xl overflow-hidden animate-slide-up flex flex-col pt-3"
         style={{ maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 0.5rem)' }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Drag handle (mobile) */}
-        <div className="sm:hidden flex justify-center pt-3 pb-1">
-          <div className="w-10 h-1 rounded-full bg-stone-300 dark:bg-white/20" />
-        </div>
+        {/* Grab Handle */}
+        <div className="w-10 h-1 bg-[#47484d] rounded-full mx-auto mb-3" />
 
-        {/* Modal Header */}
-        <div className="flex items-center justify-between px-5 pt-3 sm:pt-5 pb-3 border-b border-stone-100 dark:border-white/[0.06]">
-          <div className="flex items-center gap-2">
-            <Plus className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-            <h2 id="creator-modal-title" className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
-              New Activity • Low Friction
-            </h2>
+        {/* Drawer Subheader & Close */}
+        <div className="flex items-center justify-between px-6 pb-3">
+          <div className="flex items-center space-x-1.5 text-primary font-semibold text-[11px] tracking-wide uppercase">
+            <span>+</span>
+            <span>New Activity</span>
+            <span className="text-[#6d6b67] font-normal">•</span>
+            <span className="text-[#ad9578]">Low Friction</span>
           </div>
           <button
             type="button"
             onClick={closeModal}
-            aria-label="Close"
-            className="p-2 rounded-xl text-ink-muted hover:text-ink-primary dark:hover:text-linen hover:bg-stone-100 dark:hover:bg-white/[0.04] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+            aria-label="Close sheet"
+            className="text-stone-400 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/5"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Form Body */}
-        <form onSubmit={handleSubmit} className="px-5 sm:px-7 py-5 overflow-y-auto space-y-4 flex-1">
-          {/* Main Title Input — The single mandatory requirement */}
-          <div className="space-y-1.5">
+        {/* Form Body Area */}
+        <form onSubmit={handleSubmit} className="px-5 pb-5 overflow-y-auto space-y-3.5 flex-1 scrollbar-none">
+          {/* Title & Input */}
+          <div>
             <label 
               htmlFor="task-title-input" 
-              className="text-xs font-bold uppercase tracking-wider text-ink-primary dark:text-linen"
+              className="block text-[11px] font-bold uppercase tracking-wider text-stone-300 mb-2"
             >
               What do you want to do?
             </label>
-            <input
-              ref={inputRef}
-              id="task-title-input"
-              type="text"
-              required
-              inputMode="text"
-              enterKeyHint="done"
-              placeholder="e.g. Work on project, tidy desk..."
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-3.5 rounded-2xl border border-stone-200 dark:border-white/[0.12] bg-stone-50/60 dark:bg-white/[0.04] text-base text-ink-primary dark:text-linen placeholder:text-ink-subtle dark:placeholder:text-linen-faint focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all font-medium"
-            />
-            <p className="text-[11px] text-ink-subtle dark:text-linen-faint">
+            {/* Active input container with golden amber ring border */}
+            <div className="relative flex items-center w-full bg-[#121317] border-2 border-primary rounded-2xl px-4 py-3 shadow-inner focus-within:ring-2 focus-within:ring-primary/20">
+              <input
+                ref={inputRef}
+                id="task-title-input"
+                type="text"
+                required
+                inputMode="text"
+                enterKeyHint="done"
+                placeholder="e.g. Work on project, tidy desk..."
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full bg-transparent border-0 p-0 text-sm text-stone-100 placeholder-[#5e6066] focus:ring-0 focus:outline-none leading-none tracking-normal font-medium"
+              />
+            </div>
+            {/* Encouraging Helper Copy */}
+            <p className="text-[11px] text-[#71737a] mt-2 px-1 leading-snug">
               Title is all that is required. Sensible defaults handle everything else.
             </p>
           </div>
 
-          {/* Quick Submit & Progressive Disclosure Toggle */}
-          <div className="pt-1 space-y-3">
-            <button
-              type="submit"
-              disabled={!title.trim()}
-              className="w-full py-3.5 px-6 rounded-2xl bg-amber-500 hover:bg-amber-400 active:bg-amber-600 disabled:opacity-40 text-stone-950 font-bold text-sm sm:text-base shadow-[0_2px_14px_rgba(224,142,69,0.28)] transition-all active:scale-[0.99] flex items-center justify-center gap-2"
-            >
-              <Check className="w-4 h-4 stroke-[2.5]" />
-              <span>Add task</span>
-            </button>
+          {/* Primary Action Button: Add Task */}
+          <button
+            type="submit"
+            disabled={!title.trim()}
+            className="w-full h-12 bg-primary hover:bg-primary-container disabled:opacity-40 active:scale-[0.99] transition text-on-primary font-bold text-sm rounded-2xl flex items-center justify-center space-x-2 shadow-md cursor-pointer"
+          >
+            <Check className="w-4 h-4 stroke-[2.6]" />
+            <span>Add task</span>
+          </button>
 
-            <div className="text-center">
-              <button
-                type="button"
-                onClick={() => setShowExtraFields(!showExtraFields)}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 transition-colors py-2 px-3 rounded-xl hover:bg-amber-500/10 min-h-[44px]"
-              >
-                <span>{showExtraFields ? 'Hide details' : 'More options (timing, minimum, priority...)'}</span>
-                {showExtraFields ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-              </button>
-            </div>
-          </div>
+          {/* Expandable Options Trigger */}
+          <button
+            type="button"
+            onClick={() => setShowExtraFields(!showExtraFields)}
+            className="w-full pt-1 pb-1 flex items-center justify-center space-x-1.5 text-primary text-xs font-semibold hover:opacity-90 transition cursor-pointer"
+          >
+            <span>{showExtraFields ? 'Hide extra details' : 'More options (timing, minimum, priority...)'}</span>
+            {showExtraFields ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+          </button>
 
           {/* Expandable Advanced Options Section */}
           {showExtraFields && (
-            <div className="space-y-4 pt-3 border-t border-stone-100 dark:border-white/[0.06] animate-fade-in">
+            <div className="space-y-4 pt-3 border-t border-white/[0.08] animate-fade-in text-left">
               {/* When Selector */}
               <div className="space-y-1.5">
-                <span className="text-xs font-semibold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
                   When?
                 </span>
                 <div className="grid grid-cols-4 gap-2">
@@ -201,10 +200,10 @@ export function TaskCreatorModal() {
                       key={item.id}
                       type="button"
                       onClick={() => setWhen(item.id as TaskTimeCategory)}
-                      className={`py-2 px-2.5 rounded-xl text-xs font-semibold border transition-all text-center min-h-[44px] ${
+                      className={`py-2 px-2.5 rounded-xl text-xs font-semibold border transition-all text-center min-h-[40px] cursor-pointer ${
                         when === item.id
-                          ? 'bg-amber-500/20 border-amber-500/40 text-amber-800 dark:text-amber-300 font-bold shadow-sm'
-                          : 'border-stone-200 dark:border-white/[0.08] text-ink-secondary dark:text-linen-subtle active:bg-stone-100 dark:active:bg-white/[0.04]'
+                          ? 'bg-primary/20 border-primary text-primary font-bold shadow-sm'
+                          : 'border-white/[0.08] bg-[#121317] text-stone-400 hover:text-stone-200'
                       }`}
                     >
                       {item.label}
@@ -215,7 +214,7 @@ export function TaskCreatorModal() {
 
               {/* Priority Selector */}
               <div className="space-y-1.5">
-                <span className="text-xs font-semibold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
                   Priority
                 </span>
                 <div className="grid grid-cols-3 gap-2">
@@ -228,10 +227,10 @@ export function TaskCreatorModal() {
                       key={item.id}
                       type="button"
                       onClick={() => setPriority(item.id as TaskPriority)}
-                      className={`py-2 px-2.5 rounded-xl text-xs font-semibold border transition-all text-center min-h-[44px] ${
+                      className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-all text-center min-h-[40px] cursor-pointer ${
                         priority === item.id
-                          ? 'bg-amber-500/20 border-amber-500/40 text-amber-800 dark:text-amber-300 font-bold shadow-sm'
-                          : 'border-stone-200 dark:border-white/[0.08] text-ink-secondary dark:text-linen-subtle active:bg-stone-100'
+                          ? 'bg-primary/20 border-primary text-primary font-bold shadow-sm'
+                          : 'border-white/[0.08] bg-[#121317] text-stone-400 hover:text-stone-200'
                       }`}
                     >
                       <div>{item.label}</div>
@@ -243,7 +242,7 @@ export function TaskCreatorModal() {
 
               {/* Activity Type Selector */}
               <div className="space-y-1.5">
-                <span className="text-xs font-semibold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
                   Activity Type
                 </span>
                 <div className="grid grid-cols-3 gap-2">
@@ -256,10 +255,10 @@ export function TaskCreatorModal() {
                       key={item.id}
                       type="button"
                       onClick={() => handleCategoryChange(item.id as TaskCategory)}
-                      className={`py-2 px-2.5 rounded-xl text-xs font-semibold border transition-all text-center min-h-[44px] ${
+                      className={`py-2 px-2.5 rounded-xl text-xs font-semibold border transition-all text-center min-h-[40px] cursor-pointer ${
                         category === item.id
-                          ? 'bg-amber-500/20 border-amber-500/40 text-amber-800 dark:text-amber-300 font-bold shadow-sm'
-                          : 'border-stone-200 dark:border-white/[0.08] text-ink-secondary dark:text-linen-subtle'
+                          ? 'bg-primary/20 border-primary text-primary font-bold shadow-sm'
+                          : 'border-white/[0.08] bg-[#121317] text-stone-400 hover:text-stone-200'
                       }`}
                     >
                       {item.label}
@@ -270,7 +269,7 @@ export function TaskCreatorModal() {
 
               {/* Icon Selector */}
               <div className="space-y-1.5">
-                <span className="text-xs font-semibold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
                   Icon
                 </span>
                 <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 scrollbar-none">
@@ -279,10 +278,10 @@ export function TaskCreatorModal() {
                       key={e}
                       type="button"
                       onClick={() => setIcon(e)}
-                      className={`w-10 h-10 rounded-xl text-lg flex items-center justify-center shrink-0 border transition-all ${
+                      className={`w-9 h-9 rounded-xl text-base flex items-center justify-center shrink-0 border transition-all cursor-pointer ${
                         icon === e
-                          ? 'border-amber-500 bg-amber-500/15 scale-105 shadow-sm'
-                          : 'border-stone-200 dark:border-white/[0.08] hover:bg-stone-100 dark:hover:bg-white/[0.04]'
+                          ? 'border-primary bg-primary/20 scale-105 shadow-sm'
+                          : 'border-white/[0.08] bg-[#121317] hover:bg-white/[0.05]'
                       }`}
                       aria-label={`Select icon ${e}`}
                     >
@@ -294,7 +293,7 @@ export function TaskCreatorModal() {
 
               {/* Minimum input */}
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-ink-secondary dark:text-linen-subtle">
+                <label className="text-xs font-semibold text-stone-300">
                   The Minimum (smallest possible version):
                 </label>
                 <input
@@ -302,16 +301,16 @@ export function TaskCreatorModal() {
                   placeholder="e.g. Open file and look at it for 2 minutes"
                   value={minimum}
                   onChange={(e) => setMinimum(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-stone-200 dark:border-white/[0.12] bg-surface dark:bg-surface-dark text-ink-primary dark:text-linen focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-white/[0.12] bg-[#121317] text-stone-100 placeholder-[#5e6066] focus:outline-none focus:ring-1 focus:ring-primary"
                 />
-                <p className="text-[10px] text-amber-700 dark:text-amber-400 font-medium">
+                <p className="text-[10px] text-primary/80 font-medium">
                   The minimum counts as complete. No guilt.
                 </p>
               </div>
 
               {/* Normal & Extra inputs */}
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-ink-secondary dark:text-linen-subtle">
+                <label className="text-xs font-semibold text-stone-300">
                   Normal (intended version):
                 </label>
                 <input
@@ -319,12 +318,12 @@ export function TaskCreatorModal() {
                   placeholder="e.g. Work for 20 minutes"
                   value={normal}
                   onChange={(e) => setNormal(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-stone-200 dark:border-white/[0.12] bg-surface dark:bg-surface-dark text-ink-primary dark:text-linen focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-white/[0.12] bg-[#121317] text-stone-100 placeholder-[#5e6066] focus:outline-none focus:ring-1 focus:ring-primary"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-ink-secondary dark:text-linen-subtle">
+                <label className="text-xs font-semibold text-stone-300">
                   Extra (optional if surplus energy):
                 </label>
                 <input
@@ -332,15 +331,15 @@ export function TaskCreatorModal() {
                   placeholder="e.g. Commit code and write summary"
                   value={extra}
                   onChange={(e) => setExtra(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-stone-200 dark:border-white/[0.12] bg-surface dark:bg-surface-dark text-ink-primary dark:text-linen focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-white/[0.12] bg-[#121317] text-stone-100 placeholder-[#5e6066] focus:outline-none focus:ring-1 focus:ring-primary"
                 />
               </div>
 
               {/* Duration slider */}
               <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-xs font-semibold text-ink-secondary dark:text-linen-subtle">
+                <div className="flex items-center justify-between text-xs font-semibold text-stone-300">
                   <span>Approximate time:</span>
-                  <span className="text-amber-700 dark:text-amber-400 font-bold">{durationMinutes} minutes</span>
+                  <span className="text-primary font-bold">{durationMinutes} minutes</span>
                 </div>
                 <input
                   type="range"
@@ -349,13 +348,13 @@ export function TaskCreatorModal() {
                   step={1}
                   value={durationMinutes}
                   onChange={(e) => setDurationMinutes(Number(e.target.value))}
-                  className="w-full h-2 accent-amber-500 bg-stone-200 dark:bg-white/[0.12] rounded-lg cursor-pointer"
+                  className="w-full h-2 accent-primary bg-white/[0.12] rounded-lg cursor-pointer"
                 />
               </div>
 
               {/* Environment / Company preference */}
               <div className="space-y-1.5">
-                <span className="text-xs font-semibold text-ink-secondary dark:text-linen-subtle">
+                <span className="text-xs font-semibold text-stone-300">
                   Environment preference:
                 </span>
                 <div className="grid grid-cols-2 gap-2">
@@ -370,10 +369,10 @@ export function TaskCreatorModal() {
                       key={item.id}
                       type="button"
                       onClick={() => setCompany(item.id as EnvironmentPreference)}
-                      className={`p-2.5 rounded-xl text-xs font-medium border text-left min-h-[44px] transition-all ${
+                      className={`p-2.5 rounded-xl text-xs font-medium border text-left min-h-[40px] transition-all cursor-pointer ${
                         company === item.id
-                          ? 'bg-amber-500/15 border-amber-500/35 text-amber-900 dark:text-amber-200 font-semibold'
-                          : 'border-stone-200 dark:border-white/[0.08] text-ink-secondary dark:text-linen-subtle active:bg-stone-50'
+                          ? 'bg-primary/15 border-primary text-primary font-semibold'
+                          : 'border-white/[0.08] bg-[#121317] text-stone-400 hover:text-stone-200'
                       }`}
                     >
                       {item.label}

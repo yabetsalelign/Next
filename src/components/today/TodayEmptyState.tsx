@@ -2,58 +2,50 @@
 
 import React from 'react';
 import { useApp } from '@/lib/store';
-import { Plus, Coffee, Heart, RotateCcw } from 'lucide-react';
 
-function WelcomeBackState() {
-  const { openModal, setNotPlanningToday, addTask, tasks, acknowledgeReturn } = useApp();
+export function TodayEmptyState() {
+  const { openModal, setNotPlanningToday, addTask, tasks, pendingReturn, acknowledgeReturn } = useApp();
 
-  const handleOneSmallThing = () => {
-    acknowledgeReturn();
-    addTask({
-      title: 'One small thing',
-      category: 'productive',
-      icon: '🌱',
-      timeCategory: 'now',
-      durationMinutes: 5,
-      priority: 'must',
-      minimum: 'Spend 2 minutes on anything that feels easy',
-      normal: '5 minutes of low-pressure focus',
-      steps: [
-        { id: `wb-min-1`, title: 'Choose one small physical action', completed: false, isMinimum: true },
-        { id: `wb-min-2`, title: 'Do it gently without hurry', completed: false },
-      ],
-      companyPreference: 'no_preference',
-    });
-  };
-
-  const handleNormalDay = () => {
-    setNotPlanningToday(false);
-    acknowledgeReturn();
+  const handleAddOneThing = () => {
+    if (pendingReturn) acknowledgeReturn();
+    openModal('create_task');
   };
 
   const handleJustCare = () => {
-    acknowledgeReturn();
-    const existingTitles = tasks.map(t => t.title.toLowerCase());
-    const minimums = [
-      { title: 'Drink water', icon: '💧', minimum: 'Even just three sips', normal: 'Drink a full glass of water' },
-      { title: 'Brush teeth', icon: '🪥', minimum: 'A quick 30-second brush', normal: 'Brush for 2 minutes' },
-      { title: 'Wash face', icon: '💦', minimum: 'Splash cold water on your face', normal: 'Wash gently with cleanser' },
+    if (pendingReturn) acknowledgeReturn();
+    const existingTitles = tasks.map((t) => t.title.toLowerCase());
+    const careActions = [
+      {
+        title: 'Drink a glass of water',
+        category: 'wellness' as const,
+        icon: '💧',
+        durationMinutes: 2,
+        minimum: 'Take three slow sips of water',
+        normal: 'Drink a full glass of cool water',
+      },
+      {
+        title: 'Rest your eyes & breathe',
+        category: 'rest' as const,
+        icon: 'spa',
+        durationMinutes: 5,
+        minimum: 'Close your eyes for 60 seconds',
+        normal: 'Sit comfortably and take 5 deep breaths',
+      },
     ];
 
-    minimums.forEach((m) => {
-      if (!existingTitles.includes(m.title.toLowerCase())) {
+    careActions.forEach((item) => {
+      if (!existingTitles.includes(item.title.toLowerCase())) {
         addTask({
-          title: m.title,
-          category: 'wellness',
-          icon: m.icon,
+          title: item.title,
+          category: item.category,
+          icon: item.icon,
           timeCategory: 'now',
-          durationMinutes: 3,
+          durationMinutes: item.durationMinutes,
           priority: 'must',
-          minimum: m.minimum,
-          normal: m.normal,
+          minimum: item.minimum,
+          normal: item.normal,
           steps: [
-            { id: `wb-${m.title}-1`, title: m.minimum, completed: false, isMinimum: true },
-            { id: `wb-${m.title}-2`, title: m.normal, completed: false },
+            { id: `care-step-1-${Date.now()}`, title: item.minimum, completed: false, isMinimum: true },
           ],
           companyPreference: 'no_preference',
         });
@@ -61,153 +53,62 @@ function WelcomeBackState() {
     });
   };
 
-  return (
-    <div className="my-6 p-6 sm:p-7 rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] text-center space-y-5 max-w-md mx-auto animate-fade-in shadow-md">
-      <div className="space-y-1.5">
-        <h3 className="text-2xl font-bold tracking-tight text-ink-primary dark:text-linen">
-          Welcome back.
-        </h3>
-        <p className="text-sm text-ink-secondary dark:text-linen-muted">
-          Nothing needs catching up.
-        </p>
-        <p className="text-xs text-ink-muted dark:text-linen-subtle pt-0.5">
-          What&apos;s manageable today?
-        </p>
-      </div>
-
-      <div className="flex flex-col gap-2 pt-1">
-        <button
-          type="button"
-          onClick={handleOneSmallThing}
-          className="w-full py-3 px-4 rounded-lg bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-stone-950 font-bold text-xs sm:text-sm shadow-sm transition-all active:scale-[0.99]"
-        >
-          One small thing
-        </button>
-
-        <button
-          type="button"
-          onClick={handleNormalDay}
-          className="w-full py-2.5 px-4 rounded-lg border border-stone-200 dark:border-white/[0.1] hover:bg-stone-50 dark:hover:bg-white/[0.04] text-ink-primary dark:text-linen font-medium text-xs sm:text-sm transition-colors"
-        >
-          A normal day
-        </button>
-
-        <button
-          type="button"
-          onClick={handleJustCare}
-          className="w-full py-2.5 px-4 rounded-lg border border-terracotta/30 dark:border-terracotta/40 hover:bg-terracotta/10 text-terracotta font-medium text-xs sm:text-sm transition-colors"
-        >
-          Just care
-        </button>
-
-        <button
-          type="button"
-          onClick={() => {
-            setNotPlanningToday(true);
-            acknowledgeReturn();
-          }}
-          className="w-full py-2 px-4 text-xs font-medium text-ink-muted hover:text-ink-secondary dark:text-linen-subtle dark:hover:text-linen transition-colors"
-        >
-          I don&apos;t know yet
-        </button>
-      </div>
-    </div>
-  );
-}
-
-export function TodayEmptyState() {
-  const { openModal, notPlanningToday, setNotPlanningToday, pendingReturn, addTask } = useApp();
-
-  const handleJustCareForSelf = () => {
-    addTask({
-      title: 'Care for yourself',
-      category: 'wellness',
-      icon: '✨',
-      timeCategory: 'now',
-      durationMinutes: 5,
-      priority: 'must',
-      minimum: 'Sit comfortably and drink a sip of water',
-      normal: 'Take 5 gentle minutes for yourself',
-      steps: [
-        { id: `c-1`, title: 'Settle in comfortably', completed: false, isMinimum: true },
-        { id: `c-2`, title: 'Take a slow, gentle exhale', completed: false }
-      ],
-      companyPreference: 'no_preference',
-    });
+  const handleLater = () => {
+    if (pendingReturn) acknowledgeReturn();
+    setNotPlanningToday(true);
   };
 
-  if (notPlanningToday) {
-    return (
-      <div className="my-6 p-6 sm:p-7 rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] text-center space-y-4 max-w-md mx-auto animate-fade-in shadow-md">
-        <div className="w-11 h-11 rounded-lg bg-amber-500/15 border border-amber-500/20 text-amber-600 dark:text-amber-400 mx-auto flex items-center justify-center">
-          <Coffee className="w-5 h-5" />
-        </div>
-        <h3 className="text-xl font-bold text-ink-primary dark:text-linen">
-          Resting today.
-        </h3>
-        <p className="text-xs text-ink-muted dark:text-linen-subtle leading-relaxed">
-          You chose not to plan today. That is completely valid.
-          No obligations or overdue badges will appear.
+  return (
+    <section className="my-6 w-full max-w-md mx-auto select-none animate-fade-in" data-purpose="empty-state-card">
+      <div className="bg-surface-container-low border border-surface-container-high rounded-[28px] p-6 sm:p-7 text-center shadow-2xl relative overflow-hidden backdrop-blur-sm">
+        {/* Subtle Glow Highlight at Card Top */}
+        <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-36 h-24 bg-primary-container/10 rounded-full blur-2xl pointer-events-none"></div>
+
+        {/* Empty State Headline */}
+        <h2 className="text-2xl font-bold tracking-tight text-on-surface mb-1.5 font-headline-lg-mobile">
+          {pendingReturn ? 'Welcome back.' : 'Nothing planned yet.'}
+        </h2>
+
+        {/* Reassuring Subtext */}
+        <p className="text-sm font-medium text-on-surface-variant mb-1">
+          {pendingReturn ? 'Nothing needs catching up.' : "That's okay."}
         </p>
-        <div className="pt-2">
+        <p className="text-xs text-outline mb-7">
+          What would help right now?
+        </p>
+
+        {/* Action Buttons Group */}
+        <div className="flex flex-col space-y-3">
+          {/* Primary Amber Action: Add one thing */}
           <button
             type="button"
-            onClick={() => setNotPlanningToday(false)}
-            className="py-2 px-3.5 rounded-lg text-xs font-semibold text-amber-700 dark:text-amber-400 hover:bg-stone-100 dark:hover:bg-white/[0.04] transition-colors"
+            onClick={handleAddOneThing}
+            className="w-full py-3.5 px-6 rounded-2xl bg-primary-container hover:bg-primary-fixed text-on-primary-fixed font-semibold text-[15px] shadow-[0_8px_24px_-6px_rgba(255,185,99,0.35)] active:scale-[0.98] transition-all flex items-center justify-center space-x-2"
           >
-            Switch back to planning mode
+            <span className="material-symbols-outlined text-[18px]">add</span>
+            <span>Add one thing</span>
+          </button>
+
+          {/* Secondary Action: Just care for yourself */}
+          <button
+            type="button"
+            onClick={handleJustCare}
+            className="w-full py-3.5 px-6 rounded-2xl bg-surface-container-high/80 hover:bg-surface-container-high border border-surface-container-highest text-primary-container hover:text-primary font-medium text-[14px] active:scale-[0.98] transition-all flex items-center justify-center gap-1.5"
+          >
+            <span className="material-symbols-outlined text-[16px]">spa</span>
+            <span>Just care for yourself</span>
+          </button>
+
+          {/* Tertiary Action: I'll figure it out later */}
+          <button
+            type="button"
+            onClick={handleLater}
+            className="w-full py-2.5 px-4 text-on-surface-variant hover:text-on-surface text-xs font-medium tracking-normal active:scale-[0.98] transition-colors mt-1"
+          >
+            I&apos;ll figure it out later
           </button>
         </div>
       </div>
-    );
-  }
-
-  if (pendingReturn) {
-    return <WelcomeBackState />;
-  }
-
-  return (
-    <div className="my-6 p-6 sm:p-7 rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] text-center space-y-5 max-w-md mx-auto shadow-md animate-fade-in">
-      <div className="space-y-1.5">
-        <h3 className="text-2xl font-bold tracking-tight text-ink-primary dark:text-linen">
-          Nothing planned yet.
-        </h3>
-        <p className="text-sm text-ink-secondary dark:text-linen-muted">
-          That&apos;s okay.
-        </p>
-        <p className="text-xs text-ink-muted dark:text-linen-subtle pt-0.5">
-          What would help right now?
-        </p>
-      </div>
-
-      <div className="flex flex-col gap-2 pt-1">
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            openModal('create_task');
-          }}
-          className="w-full h-11 rounded-lg bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-stone-950 font-bold text-xs sm:text-sm shadow-sm transition-all active:scale-95"
-        >
-          Add one thing
-        </button>
-
-        <button
-          type="button"
-          onClick={handleJustCareForSelf}
-          className="w-full py-2.5 px-4 rounded-lg border border-terracotta/30 dark:border-terracotta/40 hover:bg-terracotta/10 text-terracotta font-medium text-xs sm:text-sm transition-colors"
-        >
-          Just care for yourself
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setNotPlanningToday(true)}
-          className="w-full py-2 px-4 text-xs font-medium text-ink-muted hover:text-ink-secondary dark:text-linen-subtle dark:hover:text-linen transition-colors"
-        >
-          I&apos;ll figure it out later
-        </button>
-      </div>
-    </div>
+    </section>
   );
 }

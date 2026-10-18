@@ -16,7 +16,9 @@ import {
   ResetDay,
   ResetDayTask,
   WellnessJournalEntry,
+  FocusSessionState,
 } from '../types';
+import { sounds } from './sounds';
 import {
   INITIAL_TASKS,
   INITIAL_ROUTINES,
@@ -66,13 +68,18 @@ interface AppContextType {
   activeRoutineId: string | null;
   notPlanningToday: boolean;
   currentTask: Task | null;
+  todayTasks: Task[];
+  laterTasks: Task[];
+  unplannedTasks: Task[];
   upNextTasks: Task[];
   activeReset: Reset | null;
+  focusSession: FocusSessionState;
   
   // Actions
   openModal: (modal: ModalType, taskId?: string, routineId?: string) => void;
   closeModal: () => void;
   setCurrentTask: (taskId: string) => void;
+  clearCurrentTask: () => void;
   completeTask: (taskId: string, tier: 'minimum' | 'normal' | 'extra') => void;
   uncompleteTask: (taskId: string) => void;
   addTask: (task: Omit<Task, 'id' | 'orderIndex' | 'completed'>) => Task;
@@ -96,6 +103,13 @@ interface AppContextType {
   recordHelpfulFactor: (factorId: string) => void;
   pendingReturn: boolean;
   acknowledgeReturn: () => void;
+  // Focus Session actions
+  startFocusSession: (durationSeconds: number, task?: { id: string; title: string }) => void;
+  pauseFocusSession: () => void;
+  resumeFocusSession: () => void;
+  stopFocusSession: () => void;
+  completeFocusSession: () => void;
+  resetFocusSession: () => void;
   // Reset actions
   activateFreshStart: () => Reset;
   archiveReset: (resetId: string) => void;
@@ -172,13 +186,51 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [stuckLogs, setStuckLogs] = useState<StuckLog[]>([]);
   const [notPlanningToday, setNotPlanningTodayState] = useState<boolean>(false);
   const [hydrated, setHydrated] = useState<boolean>(false);
+  const [settingsHydrated, setSettingsHydrated] = useState<boolean>(false);
   const [resets, setResets] = useState<Reset[]>(INITIAL_RESETS);
   const [journalEntries, setJournalEntries] = useState<WellnessJournalEntry[]>(INITIAL_JOURNAL_ENTRIES);
+
+  const [focusSession, setFocusSession] = useState<FocusSessionState>({
+    status: 'idle',
+    durationSeconds: 120,
+    remainingSeconds: 120,
+  });
 
   const [pendingReturn, setPendingReturn] = useState<boolean>(false);
   const [activeModal, setActiveModal] = useState<ModalType>(null);
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
   const [activeRoutineId, setActiveRoutineId] = useState<string | null>(null);
+
+  // Centralized Focus Session Timer Loop
+  useEffect(() => {
+    if (focusSession.status !== 'running') return;
+
+    const interval = setInterval(() => {
+      setFocusSession(prev => {
+        if (prev.status !== 'running') return prev;
+        if (prev.remainingSeconds <= 1) {
+          // Complete session once, trigger sounds
+          sounds.playMinimumComplete();
+          if (prev.taskId) {
+            completeTask(prev.taskId, 'minimum');
+          }
+          return {
+            ...prev,
+            status: 'completed',
+            remainingSeconds: 0,
+            lastTickTimestamp: Date.now(),
+          };
+        }
+        return {
+          ...prev,
+          remainingSeconds: prev.remainingSeconds - 1,
+          lastTickTimestamp: Date.now(),
+        };
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [focusSession.status]);
 
   // Safe localStorage hydration with local day rollover handling
   useEffect(() => {
@@ -200,11 +252,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (storedInsights) setHelpfulInsights(JSON.parse(storedInsights));
 
       const storedSettings = localStorage.getItem(STORAGE_KEYS.SETTINGS);
-      let parsedSettings: UserSettings = DEFAULT_SETTINGS;
+      // Always merge onto DEFAULT_SETTINGS so new fields are present for existing users
+      let parsedSettings: UserSettings = { ...DEFAULT_SETTINGS };
       if (storedSettings) {
-        parsedSettings = JSON.parse(storedSettings);
+        try {
+          const stored = JSON.parse(storedSettings);
+          parsedSettings = { ...DEFAULT_SETTINGS, ...stored };
+        } catch {
+          // Corrupted storage — fall back to defaults
+        }
         setSettings(parsedSettings);
       }
+      setSettingsHydrated(true);
 
       const storedStuckLogs = localStorage.getItem(STORAGE_KEYS.STUCK_LOGS);
       if (storedStuckLogs) setStuckLogs(JSON.parse(storedStuckLogs));
@@ -313,6 +372,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {
       console.error('Failed to load data from localStorage:', e);
     } finally {
+      setSettingsHydrated(true);
       setHydrated(true);
     }
   }, []);
@@ -419,41 +479,67 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [tasks, routines, returns, helpfulInsights, settings, stuckLogs, notPlanningToday, hydrated, resets, journalEntries]);
 
-  // Handle dark mode class on document
+  // Handle dark mode and accent on document (guarded by settingsHydrated to eliminate startup flicker)
   useEffect(() => {
-    if (typeof document === 'undefined') return;
+    if (!settingsHydrated || typeof document === 'undefined') return;
     const root = document.documentElement;
-    if (settings.theme === 'dark') {
-      root.classList.add('dark');
-    } else if (settings.theme === 'light') {
-      root.classList.remove('dark');
-    } else {
-      // System
-      const darkPref = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (darkPref) root.classList.add('dark');
-      else root.classList.remove('dark');
-    }
-  }, [settings.theme]);
 
-  // Derived: Current task (Now) and Up Next
-  const { currentTask, upNextTasks } = useMemo(() => {
+    // Accent
+    const accent = settings.accentPalette || 'amber';
+    root.setAttribute('data-accent', accent);
+
+    // Theme application
+    const applyTheme = () => {
+      if (settings.theme === 'dark') {
+        root.classList.add('dark');
+      } else if (settings.theme === 'light') {
+        root.classList.remove('dark');
+      } else {
+        // System
+        const darkPref = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (darkPref) root.classList.add('dark');
+        else root.classList.remove('dark');
+      }
+    };
+
+    applyTheme();
+
+    if (settings.theme === 'system') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handler = () => applyTheme();
+      mediaQuery.addEventListener('change', handler);
+      return () => mediaQuery.removeEventListener('change', handler);
+    }
+  }, [settingsHydrated, settings.theme, settings.accentPalette]);
+
+  // Derived: Current task (Now) strictly explicit, and segmented queues
+  const { currentTask, todayTasks, laterTasks, unplannedTasks, upNextTasks } = useMemo(() => {
     const uncompleted = tasks.filter(t => !t.completed);
-    // Eligible active tasks for Today (explicitly 'now', 'today', or 'scheduled')
-    const todayEligible = uncompleted.filter(
-      t => t.timeCategory === 'now' || t.timeCategory === 'today' || t.timeCategory === 'scheduled'
+
+    // 1. Explicit 'now' task ONLY — never silently auto-promote
+    const nowTask = uncompleted.find(t => t.timeCategory === 'now') || null;
+
+    // 2. Scheduled for today (excluding now)
+    const todayList = uncompleted.filter(t => t.timeCategory === 'today');
+
+    // 3. Later tasks
+    const laterList = uncompleted.filter(t => t.timeCategory === 'later');
+
+    // 4. Unplanned / No time tasks
+    const unplannedList = uncompleted.filter(
+      t => t.timeCategory === 'notime'
     );
 
-    // 1. Explicit 'now' task takes priority
-    let nowTask = uncompleted.find(t => t.timeCategory === 'now') || null;
+    // 5. Up next tasks are remaining today-eligible tasks
+    const upNext = todayList.slice(0, 4);
 
-    // 2. Otherwise pick the first eligible today task
-    if (!nowTask && todayEligible.length > 0) {
-      nowTask = todayEligible[0];
-    }
-
-    // 3. Up next tasks are remaining today-eligible tasks
-    const upNext = todayEligible.filter(t => t.id !== nowTask?.id).slice(0, 4);
-    return { currentTask: nowTask, upNextTasks: upNext };
+    return {
+      currentTask: nowTask,
+      todayTasks: todayList,
+      laterTasks: laterList,
+      unplannedTasks: unplannedList,
+      upNextTasks: upNext,
+    };
   }, [tasks]);
 
   // Derived: Active reset (non-archived)
@@ -461,6 +547,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!settings.activeResetId) return null;
     return resets.find(r => r.id === settings.activeResetId && !r.archived) || null;
   }, [resets, settings.activeResetId]);
+
+  const clearCurrentTask = () => {
+    setTasks(prev =>
+      prev.map(t => (t.timeCategory === 'now' ? { ...t, timeCategory: 'today' as const } : t))
+    );
+  };
 
   const openModal = (modal: ModalType, taskId?: string, routineId?: string) => {
     setActiveModal(modal);
@@ -711,24 +803,90 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const updateSettings = (updates: Partial<UserSettings>) => {
     setSettings(prev => {
       const next = { ...prev, ...updates };
-      if (updates.theme && typeof document !== 'undefined') {
+      if (typeof document !== 'undefined') {
         const root = document.documentElement;
-        if (updates.theme === 'dark') {
-          root.classList.add('dark');
-        } else if (updates.theme === 'light') {
-          root.classList.remove('dark');
-        } else {
-          const darkPref = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          if (darkPref) root.classList.add('dark');
-          else root.classList.remove('dark');
+        if (updates.accentPalette) {
+          root.setAttribute('data-accent', updates.accentPalette);
+        }
+        if (updates.theme) {
+          if (updates.theme === 'dark') {
+            root.classList.add('dark');
+          } else if (updates.theme === 'light') {
+            root.classList.remove('dark');
+          } else {
+            const darkPref = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (darkPref) root.classList.add('dark');
+            else root.classList.remove('dark');
+          }
         }
       }
       return next;
     });
   };
 
+  const startFocusSession = (durationSeconds: number, task?: { id: string; title: string }) => {
+    sounds.playStart();
+    setFocusSession({
+      status: 'running',
+      taskId: task?.id || currentTask?.id,
+      taskTitle: task?.title || currentTask?.title,
+      durationSeconds,
+      remainingSeconds: durationSeconds,
+      lastTickTimestamp: Date.now(),
+    });
+  };
+
+  const pauseFocusSession = () => {
+    setFocusSession(prev => {
+      if (prev.status !== 'running') return prev;
+      return { ...prev, status: 'paused' };
+    });
+  };
+
+  const resumeFocusSession = () => {
+    setFocusSession(prev => {
+      if (prev.status !== 'paused') return prev;
+      return { ...prev, status: 'running', lastTickTimestamp: Date.now() };
+    });
+  };
+
+  const stopFocusSession = () => {
+    setFocusSession({
+      status: 'idle',
+      durationSeconds: 120,
+      remainingSeconds: 120,
+    });
+  };
+
+  const completeFocusSession = () => {
+    setFocusSession(prev => {
+      if (prev.status === 'completed') return prev;
+      if (prev.taskId) {
+        completeTask(prev.taskId, 'minimum');
+      }
+      sounds.playMinimumComplete();
+      return {
+        ...prev,
+        status: 'completed',
+        remainingSeconds: 0,
+      };
+    });
+  };
+
+  const resetFocusSession = () => {
+    setFocusSession({
+      status: 'idle',
+      durationSeconds: 120,
+      remainingSeconds: 120,
+    });
+  };
+
   const setNotPlanningToday = (val: boolean) => {
     setNotPlanningTodayState(val);
+    if (val) {
+      // Taking a day off stops any active focus session cleanly
+      stopFocusSession();
+    }
   };
 
   const recordHelpfulFactor = (factorId: string) => {
@@ -753,11 +911,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     goals?: string[],
     difficulty?: 'gentle' | 'balanced' | 'structured'
   ) => {
-    if (mode === 'empty') {
-      setTasks([]);
-    } else {
-      setTasks(INITIAL_TASKS);
-    }
+    // CRITICAL DATA SAFETY: NEVER overwrite or wipe real user tasks if already present!
+    setTasks(prev => {
+      if (prev.length > 0) return prev; // keep existing tasks intact
+      if (mode === 'example') return INITIAL_TASKS;
+      return [];
+    });
     setSettings(prev => ({
       ...prev,
       hasCompletedOnboarding: true,
@@ -945,11 +1104,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         pendingReturn,
         acknowledgeReturn,
         currentTask,
+        todayTasks,
+        laterTasks,
+        unplannedTasks,
         upNextTasks,
         activeReset,
+        focusSession,
         openModal,
         closeModal,
         setCurrentTask,
+        clearCurrentTask,
         completeTask,
         uncompleteTask,
         addTask,
@@ -971,6 +1135,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         clearAllData,
         resetToDemoData,
         recordHelpfulFactor,
+        startFocusSession,
+        pauseFocusSession,
+        resumeFocusSession,
+        stopFocusSession,
+        completeFocusSession,
+        resetFocusSession,
         activateFreshStart,
         archiveReset,
         completeResetDayTask,

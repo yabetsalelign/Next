@@ -4,36 +4,112 @@
 
 @layer base {
   :root {
-    --canvas-bg: #F7F5F0;
-    --surface-bg: #FFFFFF;
-    --surface-elevated: #FDFBF7;
-    --ink-primary: #1C1917;
-    --ink-secondary: #57534E;
-    --ink-muted: #78716C;
-    --ink-subtle: #A8A29E;
-    --accent-amber: #E5953F;
-    --accent-sage: #4E9B78;
     /* Safe area insets — used throughout the app */
     --sat: env(safe-area-inset-top, 0px);
     --sar: env(safe-area-inset-right, 0px);
     --sab: env(safe-area-inset-bottom, 0px);
     --sal: env(safe-area-inset-left, 0px);
-    /* Bottom nav height — 56px nav + safe area */
     --bottom-nav-h: calc(3.75rem + var(--sab));
+
+    /* Light Theme (Warm, elegant cream & espresso) */
+    --bg-app: #F8F6F1;
+    --bg-surface: #FFFFFF;
+    --bg-surface-low: #F3EFE8;
+    --bg-surface-container: #ECE7DD;
+    --bg-surface-high: #E3DDCF;
+    --bg-surface-highest: #D9D2C2;
+    --bg-surface-lowest: #FFFFFF;
+    --bg-surface-dim: #EDE8DE;
+    --bg-surface-bright: #FFFFFF;
+
+    --text-primary: #1C1917;
+    --text-secondary: #57534E;
+    --text-muted: #78716C;
+    --text-on-surface-variant: #57534E;
+
+    --border-outline: #D6D0C3;
+    --border-outline-variant: #E6E1D5;
+
+    /* Secondary / Tertiary */
+    --color-secondary: #2E8555;
+    --color-secondary-container: #D5F2E2;
+    --color-on-secondary: #FFFFFF;
+    --color-on-secondary-container: #003919;
+    --color-tertiary: #1F73B8;
+    --color-tertiary-container: #D6EDFF;
+
+    /* Default Accent: Warm Amber */
+    --color-primary: #E58E26;
+    --color-primary-container: #FFB963;
+    --color-on-primary: #FFFFFF;
+    --color-on-primary-container: #2B1700;
+
+    /* Legacy compatibility variables */
+    --canvas-bg: var(--bg-app);
+    --surface-bg: var(--bg-surface);
+    --surface-elevated: var(--bg-surface-low);
+    --ink-primary: var(--text-primary);
+    --ink-secondary: var(--text-secondary);
+    --ink-muted: var(--text-muted);
+    --ink-subtle: #A8A29E;
+    --accent-amber: #E5953F;
+    --accent-sage: #4E9B78;
+  }
+
+  /* Gentle Mint Accent Override */
+  :root[data-accent="mint"],
+  .dark[data-accent="mint"] {
+    --color-primary: #388E67;
+    --color-primary-container: #4E9B78;
+    --color-on-primary: #FFFFFF;
+    --color-on-primary-container: #00210C;
+    --accent-amber: #4E9B78;
   }
 
   .dark {
-    --canvas-bg: #121316;
-    --surface-bg: #1B1B1F;
-    --surface-elevated: #1F1F23;
-    --surface-muted: #161719;
-    --ink-primary: #E3E2E6; /* Editorial linen/on-surface */
-    --ink-secondary: #D8C3AE;
-    --ink-muted: #A08E7B;
+    /* Dark Theme (Quiet Focus Editorial) */
+    --bg-app: #121317;
+    --bg-surface: #17181C;
+    --bg-surface-low: #1B1C21;
+    --bg-surface-container: #202126;
+    --bg-surface-high: #292A30;
+    --bg-surface-highest: #34353C;
+    --bg-surface-lowest: #0D0E12;
+    --bg-surface-dim: #121317;
+    --bg-surface-bright: #39393D;
+
+    --text-primary: #E4E2E7;
+    --text-secondary: #A09E97;
+    --text-muted: #6D6B67;
+    --text-on-surface-variant: #D6C3B2;
+
+    --border-outline: #383940;
+    --border-outline-variant: #2A2B32;
+
+    --color-secondary: #4DE082;
+    --color-secondary-container: #00B55D;
+    --color-on-secondary: #003919;
+    --color-on-secondary-container: #00210C;
+    --color-tertiary: #83CFFF;
+    --color-tertiary-container: #004C6C;
+
+    --color-primary: #FFB963;
+    --color-primary-container: #FFB963;
+    --color-on-primary: #1A1002;
+    --color-on-primary-container: #472A00;
+
+    /* Legacy compatibility variables */
+    --canvas-bg: var(--bg-app);
+    --surface-bg: var(--bg-surface);
+    --surface-elevated: var(--bg-surface-low);
+    --ink-primary: var(--text-primary);
+    --ink-secondary: var(--text-secondary);
+    --ink-muted: var(--text-muted);
     --ink-subtle: #6E6459;
     --accent-amber: #FFB963;
     --accent-sage: #4E9B78;
   }
+
 
   html {
     /* Prevent elastic overscroll — feels more native on Android */

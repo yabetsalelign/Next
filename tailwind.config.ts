@@ -10,23 +10,68 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Dynamic design tokens bound to CSS theme variables
+        "background": "var(--bg-app)",
+        "surface": "var(--bg-surface)",
+        "surface-dim": "var(--bg-surface-dim)",
+        "surface-bright": "var(--bg-surface-bright)",
+        "surface-container-lowest": "var(--bg-surface-lowest)",
+        "surface-container-low": "var(--bg-surface-low)",
+        "surface-container": "var(--bg-surface-container)",
+        "surface-container-high": "var(--bg-surface-high)",
+        "surface-container-highest": "var(--bg-surface-highest)",
+        "surface-variant": "var(--bg-surface-high)",
+        "inverse-surface": "var(--text-primary)",
+        "inverse-on-surface": "var(--bg-surface)",
+
+        "on-surface": "var(--text-primary)",
+        "on-surface-variant": "var(--text-secondary)",
+        "on-background": "var(--text-primary)",
+        "outline": "var(--border-outline)",
+        "outline-variant": "var(--border-outline-variant)",
+
+        "primary": "var(--color-primary)",
+        "primary-container": "var(--color-primary-container)",
+        "on-primary": "var(--color-on-primary)",
+        "on-primary-container": "var(--color-on-primary-container)",
+        "primary-fixed": "var(--color-primary)",
+        "primary-fixed-dim": "var(--color-primary)",
+        "on-primary-fixed": "var(--color-on-primary)",
+        "on-primary-fixed-variant": "var(--color-on-primary-container)",
+        "surface-tint": "var(--color-primary)",
+
+        "secondary": "var(--color-secondary)",
+        "secondary-container": "var(--color-secondary-container)",
+        "on-secondary": "var(--color-on-secondary)",
+        "on-secondary-container": "var(--color-on-secondary-container)",
+        "secondary-fixed": "var(--color-secondary)",
+        "secondary-fixed-dim": "var(--color-secondary)",
+        "on-secondary-fixed": "var(--color-on-secondary)",
+        "on-secondary-fixed-variant": "var(--color-on-secondary-container)",
+
+        "tertiary": "var(--color-tertiary)",
+        "tertiary-container": "var(--color-tertiary-container)",
+        "on-tertiary": "#FFFFFF",
+        "on-tertiary-container": "var(--color-tertiary)",
+        "tertiary-fixed": "var(--color-tertiary)",
+        "tertiary-fixed-dim": "var(--color-tertiary)",
+        "on-tertiary-fixed": "#FFFFFF",
+        "on-tertiary-fixed-variant": "var(--color-tertiary)",
+
+        "error": "#FFB4AB",
+        "error-container": "#93000A",
+        "on-error": "#690005",
+        "on-error-container": "#FFDAD6",
+
+        // Retain existing convenience aliases
         canvas: {
           DEFAULT: "#F7F5F0",
-          dark: "#121316", // Editorial dark background from Untitled-1
-        },
-        surface: {
-          DEFAULT: "#FFFFFF",
-          subtle: "#F5F2EB",
-          dark: "#1B1B1F", // Surface container low
-          darkMuted: "#161719",
-          darkElevated: "#1F1F23", // Surface container
-          darkHigh: "#292A2D", // Surface container high
-          darkHighest: "#343538", // Surface container highest
+          dark: "#121317",
         },
         linen: {
-          DEFAULT: "#E3E2E6", // Editorial off-white / on-surface in dark mode
-          muted: "#D8C3AE",   // on-surface-variant
-          subtle: "#A08E7B",  // outline
+          DEFAULT: "#E3E2E6",
+          muted: "#D8C3AE",
+          subtle: "#A08E7B",
           faint: "#6E6459",
         },
         brand: {
@@ -35,7 +80,7 @@ const config: Config = {
           200: "#EBD8B1",
           300: "#DFC187",
           400: "#D4AB5E",
-          500: "#FFB963", // Editorial warm amber gold
+          500: "#FFB963",
           600: "#E59318",
           700: "#8D6020",
           800: "#6B4617",
@@ -47,7 +92,7 @@ const config: Config = {
           200: "#F5DDA9",
           300: "#EFC679",
           400: "#FFC785",
-          500: "#FFB963", // Primary active CTA (Warm Amber Gold from Untitled-1)
+          500: "#FFB963",
           600: "#E59318",
           700: "#CA7927",
           800: "#7E4314",
@@ -59,16 +104,11 @@ const config: Config = {
           200: "#C3DBCF",
           300: "#9CC4B1",
           400: "#75AB92",
-          500: "#4E9B78", // Completed / Done state (Muted Sage Green)
+          500: "#4E9B78",
           600: "#3D8263",
           700: "#2F674E",
           800: "#224C3A",
           900: "#163125",
-        },
-        terracotta: {
-          DEFAULT: "#D96B43",
-          subtle: "#FBECE6",
-          dark: "#7A3118",
         },
         ink: {
           primary: "#1C1917",
@@ -76,28 +116,17 @@ const config: Config = {
           muted: "#78716C",
           subtle: "#A8A29E",
         },
-        gentle: {
-          green: "#4E9B78",
-          greenBg: "#E1EDE6",
-          amber: "#FFB963",
-          amberBg: "#2A2015",
-          coral: "#D96B43",
-          coralBg: "#FBECE6",
-          lavender: "#83CFFF",
-          lavenderBg: "#142838",
-        },
-        'surface-dim': '#121316',
-        'surface-container-low': '#1B1B1F',
-        'surface-container': '#1F1F23',
-        'surface-container-high': '#292A2D',
-        'surface-container-highest': '#343538',
-        'surface-container-lowest': '#0D0E11',
-        'brand-primary': '#FFB963',
-        'brand-secondary': '#4E9B78',
-        'gentle-green': '#4E9B78',
-        'gentle-green-text': '#A7DCBE',
-        'gentle-amber': '#FFB963',
-        'gentle-amber-text': '#FFDDAC',
+      },
+      spacing: {
+        "space-xl": "2.25rem",
+        "space-sm": "0.5rem",
+        "gutter-mobile": "0.75rem",
+        "space-lg": "1.5rem",
+        "margin": "1.5rem",
+        "space-xs": "0.25rem",
+        "gutter": "1rem",
+        "margin-mobile": "1rem",
+        "space-md": "1rem",
       },
       fontFamily: {
         sans: [
@@ -109,6 +138,32 @@ const config: Config = {
           'Roboto',
           'sans-serif',
         ],
+        "label-lg": ["Plus Jakarta Sans", "sans-serif"],
+        "headline-xl-mobile": ["Plus Jakarta Sans", "sans-serif"],
+        "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+        "body-sm": ["Plus Jakarta Sans", "sans-serif"],
+        "label-sm": ["Plus Jakarta Sans", "sans-serif"],
+        "label-md": ["Plus Jakarta Sans", "sans-serif"],
+        "headline-lg-mobile": ["Plus Jakarta Sans", "sans-serif"],
+        "body-lg": ["Plus Jakarta Sans", "sans-serif"],
+        "headline-xl": ["Plus Jakarta Sans", "sans-serif"],
+        "body-md": ["Plus Jakarta Sans", "sans-serif"],
+        "headline-sm": ["Plus Jakarta Sans", "sans-serif"],
+        "headline-lg": ["Plus Jakarta Sans", "sans-serif"],
+      },
+      fontSize: {
+        "label-lg": ["14px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "600" }],
+        "headline-xl-mobile": ["30px", { lineHeight: "38px", letterSpacing: "-0.02em", fontWeight: "600" }],
+        "headline-md": ["20px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }],
+        "body-sm": ["13px", { lineHeight: "20px", fontWeight: "400" }],
+        "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.03em", fontWeight: "500" }],
+        "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "500" }],
+        "headline-lg-mobile": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "600" }],
+        "body-lg": ["16px", { lineHeight: "26px", fontWeight: "400" }],
+        "headline-xl": ["40px", { lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "600" }],
+        "body-md": ["14px", { lineHeight: "22px", fontWeight: "400" }],
+        "headline-sm": ["18px", { lineHeight: "26px", fontWeight: "500" }],
+        "headline-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.015em", fontWeight: "600" }],
       },
       boxShadow: {
         card: "0 2px 8px -2px rgba(0, 0, 0, 0.08), 0 1px 3px -1px rgba(0, 0, 0, 0.05)",
@@ -116,12 +171,16 @@ const config: Config = {
         sheet: "0 -8px 30px rgba(0, 0, 0, 0.2)",
       },
       borderRadius: {
-        // Tightened radii across all screens to ensure disciplined geometry
-        '3xl': '1rem',
-        '4xl': '1.25rem',
+        DEFAULT: "0.25rem",
+        lg: "0.5rem",
+        xl: "0.75rem",
+        "2xl": "1rem",
+        "3xl": "1.5rem",
+        full: "9999px",
       },
     },
   },
   plugins: [],
 };
+
 export default config;

@@ -146,8 +146,20 @@ export interface WellnessJournalEntry {
   resetId?: string;
 }
 
+// --- Focus Session Lifecycle ---
+export interface FocusSessionState {
+  status: 'idle' | 'running' | 'paused' | 'completed';
+  taskId?: string;
+  taskTitle?: string;
+  durationSeconds: number;
+  remainingSeconds: number;
+  lastTickTimestamp?: number;
+}
+
 export interface UserSettings {
   theme: 'light' | 'dark' | 'system';
+  accentPalette?: 'amber' | 'mint';
+  energyLevel?: 'low' | 'steady' | 'energized';
   defaultTimerMinutes: 2 | 5 | 10;
   soundEnabled: boolean;
   reducedMotion: boolean;

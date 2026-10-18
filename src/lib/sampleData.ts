@@ -333,6 +333,8 @@ export const INITIAL_JOURNAL_ENTRIES: WellnessJournalEntry[] = [];
 
 export const DEFAULT_SETTINGS: UserSettings = {
   theme: 'dark',
+  accentPalette: 'amber',
+  energyLevel: 'steady',
   defaultTimerMinutes: 2,
   soundEnabled: true,
   reducedMotion: false,

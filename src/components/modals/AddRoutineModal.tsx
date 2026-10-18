@@ -2,9 +2,8 @@
 
 import React, { useState } from 'react';
 import { useApp } from '@/lib/store';
-import { X, Sparkles } from 'lucide-react';
 
-const ROUTINE_ICONS = ['✨', '🌅', '🌙', '☕', '💧', '🧘', '🚶', '📚', '🧹', '🎧'];
+const ROUTINE_ICONS = ['✨', '🌅', '🌙', '☕', '💧', '🧘', '🚶', '📚'];
 
 export function AddRoutineModal() {
   const { addRoutine, closeModal } = useApp();
@@ -38,84 +37,87 @@ export function AddRoutineModal() {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center pb-[env(safe-area-inset-bottom,0px)] sm:items-center sm:p-4 bg-stone-900/40 dark:bg-black/60 backdrop-blur-[1px] animate-fade-in"
+      className="fixed inset-0 z-50 flex items-end justify-center pb-[env(safe-area-inset-bottom,0px)] sm:items-center sm:p-4 bg-black/60 backdrop-blur-[2px] animate-fade-in"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="add-routine-modal-title"
       onClick={closeModal}
     >
-      <div
-        className="modal-sheet relative w-full sm:max-w-md bg-surface dark:bg-surface-dark border-t sm:border border-stone-200/90 dark:border-white/[0.08] sm:rounded-3xl rounded-t-3xl shadow-2xl p-5 sm:p-6 overflow-y-auto overscroll-contain animate-slide-up space-y-4"
-        style={{ maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 0.5rem)' }}
+      <section
+        className="relative z-20 w-full max-w-lg bg-[#1b1c20] border-t sm:border border-white/10 rounded-t-[28px] sm:rounded-[28px] shadow-2xl px-5 pt-3 pb-8 flex flex-col animate-slide-up"
         onClick={(e) => e.stopPropagation()}
+        data-purpose="new-routine-modal"
       >
-        <div className="sm:hidden flex justify-center -mt-2 pb-1">
-          <div className="w-10 h-1 rounded-full bg-stone-300 dark:bg-white/20" />
+        {/* Drawer Grab Handle */}
+        <div className="w-full flex justify-center py-1">
+          <div aria-hidden="true" className="w-10 h-1 rounded-full bg-zinc-600/70"></div>
         </div>
 
-        <div className="flex items-center justify-between pb-2 border-b border-stone-100 dark:border-white/[0.06]">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-            <h3 id="add-routine-modal-title" className="text-lg font-bold text-ink-primary dark:text-linen">
-              New Routine
-            </h3>
+        {/* Modal Header */}
+        <header className="flex justify-between items-center mt-3 mb-5">
+          <div className="flex items-center space-x-2">
+            <span className="text-[#ffb963] text-lg">✨</span>
+            <h2 className="text-lg font-bold text-on-surface tracking-tight font-headline-sm">New Routine</h2>
           </div>
           <button
             type="button"
+            aria-label="Close dialog"
             onClick={closeModal}
-            aria-label="Close"
-            className="p-2 rounded-xl text-ink-muted hover:text-ink-primary dark:hover:text-linen hover:bg-stone-100 dark:hover:bg-white/[0.04] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+            className="w-8 h-8 flex items-center justify-center rounded-full text-on-surface-variant hover:text-white transition-colors"
           >
-            <X className="w-5 h-5" />
+            <span className="material-symbols-outlined text-[20px]">close</span>
           </button>
-        </div>
+        </header>
 
+        {/* Routine Form Elements */}
         <form onSubmit={handleCreateRoutine} className="space-y-4">
-          <div>
-            <label htmlFor="routine-title-input" className="text-xs font-semibold text-ink-secondary dark:text-linen-subtle block mb-1">
+          {/* SECTION 1: Routine Title */}
+          <div className="space-y-1.5" data-purpose="routine-title-input">
+            <label className="block text-xs font-semibold text-on-surface-variant font-label-md" htmlFor="routine-title">
               Routine Title
             </label>
             <input
-              id="routine-title-input"
+              id="routine-title"
               type="text"
               required
-              placeholder="e.g. Afternoon reset, Reading wind-down..."
+              autoFocus
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3.5 py-3 text-base sm:text-sm rounded-xl border border-stone-200 dark:border-white/[0.12] bg-stone-50/50 dark:bg-white/[0.04] text-ink-primary dark:text-linen placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-amber-500"
+              placeholder="e.g. Afternoon reset, Reading wind-down..."
+              className="w-full h-12 px-4 py-3 bg-[#24252a] text-sm text-on-surface placeholder:text-outline rounded-xl border border-zinc-700/60 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition duration-150 font-body-md"
             />
           </div>
 
-          <div>
-            <label htmlFor="routine-desc-input" className="text-xs font-semibold text-ink-secondary dark:text-linen-subtle block mb-1">
+          {/* SECTION 2: Description */}
+          <div className="space-y-1.5" data-purpose="routine-description-input">
+            <label className="block text-xs font-semibold text-on-surface-variant font-label-md" htmlFor="routine-description">
               Description
             </label>
             <textarea
-              id="routine-desc-input"
+              id="routine-description"
               rows={2}
-              placeholder="Short note on what this routine is for"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3.5 py-2.5 text-base sm:text-sm rounded-xl border border-stone-200 dark:border-white/[0.12] bg-stone-50/50 dark:bg-white/[0.04] text-ink-primary dark:text-linen placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-amber-500 resize-none"
+              placeholder="Short note on what this routine is for"
+              className="w-full px-4 py-3 bg-[#24252a] text-sm text-on-surface placeholder:text-outline rounded-xl border border-zinc-700/60 resize-none focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition duration-150 font-body-md"
             />
           </div>
 
-          <div>
-            <span className="text-xs font-semibold text-ink-secondary dark:text-linen-subtle block mb-1.5">
+          {/* SECTION 3: Icon Picker */}
+          <div className="space-y-1.5" data-purpose="routine-icon-selector">
+            <label className="block text-xs font-semibold text-on-surface-variant font-label-md">
               Icon
-            </span>
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 scrollbar-none">
+            </label>
+            <div className="flex items-center space-x-2.5 overflow-x-auto no-scrollbar py-1">
               {ROUTINE_ICONS.map((emoji) => (
                 <button
                   key={emoji}
                   type="button"
                   onClick={() => setIcon(emoji)}
-                  className={`w-10 h-10 rounded-xl text-lg flex items-center justify-center shrink-0 border transition-all ${
+                  className={`flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center text-lg transition-all ${
                     icon === emoji
-                      ? 'border-amber-500 bg-amber-500/15 scale-105 shadow-sm'
-                      : 'border-stone-200 dark:border-white/[0.08] hover:bg-stone-100 dark:hover:bg-white/[0.04]'
+                      ? 'bg-[#282725] border-2 border-primary-container text-primary-container shadow-sm scale-105'
+                      : 'bg-[#24252a] border border-zinc-700/50 hover:border-zinc-500'
                   }`}
-                  aria-label={`Select icon ${emoji}`}
                 >
                   {emoji}
                 </button>
@@ -123,11 +125,12 @@ export function AddRoutineModal() {
             </div>
           </div>
 
-          <div>
-            <span className="text-xs font-semibold text-ink-secondary dark:text-linen-subtle block mb-1.5">
+          {/* SECTION 4: Time of Day Selector */}
+          <div className="space-y-1.5 pt-1" data-purpose="time-of-day-selector">
+            <label className="block text-xs font-semibold text-on-surface-variant font-label-md">
               Time of Day
-            </span>
-            <div className="grid grid-cols-4 gap-1.5">
+            </label>
+            <div className="grid grid-cols-4 gap-2">
               {[
                 { id: 'morning', label: 'Morning' },
                 { id: 'afternoon', label: 'Midday' },
@@ -138,10 +141,10 @@ export function AddRoutineModal() {
                   key={t.id}
                   type="button"
                   onClick={() => setTimeOfDay(t.id as any)}
-                  className={`py-2 px-1.5 rounded-xl text-xs font-semibold border text-center transition-all min-h-[38px] ${
+                  className={`py-2.5 rounded-xl text-xs font-medium transition-all text-center ${
                     timeOfDay === t.id
-                      ? 'bg-amber-500/20 border-amber-500/40 text-amber-800 dark:text-amber-300 font-bold'
-                      : 'border-stone-200 dark:border-white/[0.08] text-ink-secondary dark:text-linen-subtle'
+                      ? 'bg-[#362b1e] border border-primary-container text-primary-container shadow-inner font-semibold'
+                      : 'bg-[#24252a] border border-zinc-700/50 text-zinc-300 hover:border-zinc-500'
                   }`}
                 >
                   {t.label}
@@ -150,17 +153,18 @@ export function AddRoutineModal() {
             </div>
           </div>
 
-          <div className="pt-2">
+          {/* Primary Action CTA */}
+          <div className="pt-3" data-purpose="create-routine-action">
             <button
               type="submit"
               disabled={!title.trim()}
-              className="w-full py-3.5 px-5 rounded-2xl bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white font-semibold text-sm shadow-sm transition-all active:scale-[0.99] min-h-[44px]"
+              className="w-full py-3.5 px-4 bg-primary-container hover:bg-primary-fixed text-on-primary-fixed font-semibold text-sm rounded-xl transition duration-150 flex items-center justify-center shadow-md active:scale-[0.98] disabled:opacity-40"
             >
               Create routine
             </button>
           </div>
         </form>
-      </div>
+      </section>
     </div>
   );
 }

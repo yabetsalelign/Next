@@ -8,379 +8,326 @@ import {
   getLocalDateString,
   formatDayOfWeek,
   isSameDay,
-  isAfterDay,
 } from '@/lib/dateUtils';
-import { 
-  RotateCcw, 
-  Check, 
-  Minus, 
-  Sparkles, 
-  BookOpen, 
-  ChevronDown, 
-  ChevronUp, 
-  Timer, 
-  Users, 
-  Headphones, 
-  Coffee, 
-  ListTree 
-} from 'lucide-react';
 
 export default function HistoryPage() {
-  const { returns, helpfulInsights, tasks, stuckLogs, resets, journalEntries } = useApp();
-  const [showFullHistory, setShowFullHistory] = useState(false);
+  const { returns, helpfulInsights, tasks, journalEntries } = useApp();
+  const [isArchivesOpen, setIsArchivesOpen] = useState(false);
 
-  const completedTasks = tasks.filter(t => t.completed);
-  const minimumsCount = completedTasks.filter(t => t.completedTier === 'minimum').length;
-  const returnedDays = returns.filter(r => r.status === 'returned').length;
+  const completedTasks = tasks.filter((t) => t.completed);
+  const minimumsCount = completedTasks.filter((t) => t.completedTier === 'minimum').length;
+  const returnedDays = returns.filter((r) => r.status === 'returned').length;
 
   const todayStr = useMemo(() => getLocalDateString(), []);
 
-  // Generate current local calendar week (MON to SUN)
+  // 7-day strip (Mon to Sun)
   const currentWeekDays = useMemo(() => {
     const dates = getCurrentWeekDateStrings();
-    return dates.map(dateStr => {
-      const dayOfWeek = formatDayOfWeek(dateStr);
+    return dates.map((dateStr) => {
+      const dayOfWeek = formatDayOfWeek(dateStr).slice(0, 3);
       const isToday = isSameDay(dateStr, todayStr);
-      const isFuture = isAfterDay(dateStr, todayStr);
-      const record = returns.find(r => r.dateStr === dateStr);
-      
-      let status: 'active' | 'paused' | 'returned' | 'upcoming' = 'paused';
+      const record = returns.find((r) => r.dateStr === dateStr);
+
+      let status: 'done' | 'pause' | 'return' = 'pause';
       if (record?.status === 'returned') {
-        status = 'returned';
-      } else if (record?.status === 'active') {
-        status = 'active';
-      } else if (isFuture) {
-        status = 'upcoming';
+        status = 'return';
+      } else if (record?.status === 'active' || isToday) {
+        status = 'done';
       }
 
       return {
         dateStr,
         dayOfWeek,
         isToday,
-        isFuture,
         status,
-        note: record?.note,
       };
     });
   }, [returns, todayStr]);
 
-  const recentReturns = useMemo(() => {
-    return returns.filter(r => r.status === 'returned');
-  }, [returns]);
-
-  const hasRecordedInsights = useMemo(() => {
-    return helpfulInsights.some(h => h.count > 0);
-  }, [helpfulInsights]);
-
-  const maxInsightCount = useMemo(() => {
-    if (helpfulInsights.length === 0) return 1;
-    return Math.max(...helpfulInsights.map(h => h.count), 1);
-  }, [helpfulInsights]);
-
-  const getInsightIcon = (id: string, label: string) => {
-    const l = label.toLowerCase();
-    if (id === 'h1' || l.includes('minute') || l.includes('start')) return Timer;
-    if (id === 'h2' || l.includes('body double') || l.includes('nearby')) return Users;
-    if (id === 'h3' || l.includes('headphone') || l.includes('noise')) return Headphones;
-    if (id === 'h4' || l.includes('rest')) return Coffee;
-    if (id === 'h5' || l.includes('step') || l.includes('break')) return ListTree;
-    return Sparkles;
-  };
-
   return (
-    <div className="max-w-xl mx-auto space-y-6 animate-fade-in pb-28 md:pb-12">
+    <div className="min-h-screen bg-background text-on-surface font-body-md text-body-md flex flex-col selection:bg-primary-container selection:text-on-primary-container">
       {/* Header */}
-      <Header
-        title="History & Reflection"
-        subtitle="Returning matters more than unbroken lines."
-      />
+      <Header />
 
-      {/* The Return Philosophy Banner */}
-      <section className="p-4 sm:p-5 rounded-xl bg-amber-500/[0.08] dark:bg-amber-500/[0.08] border border-amber-500/25 space-y-2 shadow-sm">
-        <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300">
-          <RotateCcw className="w-4 h-4" />
-          <h2 className="text-xs font-bold uppercase tracking-wider">
-            The Return Philosophy
-          </h2>
-        </div>
-        <p className="text-sm font-semibold text-ink-primary dark:text-linen leading-snug">
-          &ldquo;You paused. Then you came back. That&rsquo;s a return.&rdquo;
-        </p>
-        <p className="text-xs text-ink-muted dark:text-linen-subtle leading-relaxed">
-          Life naturally moves in cycles. Pausing is normal and guilt-free. We record continuity of presence, never the rigidity of an unbroken line.
-        </p>
-      </section>
+      <main className="flex flex-col relative w-full pt-16 pb-36 px-gutter-mobile bg-background flex-1 max-w-xl mx-auto">
+        <div className="flex flex-col w-full pb-8 space-y-4 select-none">
+          {/* Subtitle note just beneath the header slot */}
+          <div className="px-1 pt-1 pb-1">
+            <p className="font-body-sm text-body-sm text-on-surface-variant/80">
+              Returning matters more than unbroken lines.
+            </p>
+          </div>
 
-      {/* Summary Metric Cards */}
-      <section aria-label="Weekly summary counts" className="grid grid-cols-3 gap-2.5">
-        <div className="p-3.5 sm:p-4 rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] text-center shadow-sm">
-          <p className="text-2xl font-bold tracking-tight text-sage-600 dark:text-sage-400">
-            {completedTasks.length}
-          </p>
-          <p className="text-[11px] font-medium text-ink-muted dark:text-linen-subtle mt-1">
-            {completedTasks.length === 1 ? 'Task done' : 'Tasks done'}
-          </p>
-        </div>
-
-        <div className="p-3.5 sm:p-4 rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] text-center shadow-sm">
-          <p className="text-2xl font-bold tracking-tight text-amber-600 dark:text-amber-400">
-            {minimumsCount}
-          </p>
-          <p className="text-[11px] font-medium text-ink-muted dark:text-linen-subtle mt-1">
-            {minimumsCount === 1 ? 'Minimum done' : 'Minimums done'}
-          </p>
-        </div>
-
-        <div className="p-3.5 sm:p-4 rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] text-center shadow-sm">
-          <p className="text-2xl font-bold tracking-tight text-terracotta">
-            {returnedDays}
-          </p>
-          <p className="text-[11px] font-medium text-ink-muted dark:text-linen-subtle mt-1">
-            {returnedDays === 1 ? 'Gentle return' : 'Gentle returns'}
-          </p>
-        </div>
-      </section>
-
-      {/* Centerpiece: Timeline & Weekly Rhythm */}
-      <section className="p-4 sm:p-5 rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] shadow-sm space-y-3.5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
-              This Week&apos;s Rhythm
+          {/* Section 1: The Return Philosophy */}
+          <section className="bg-surface-container-low rounded-2xl p-space-md shadow-sm transition-all hover:bg-surface-container/70 border border-surface-container-high/40">
+            <div className="flex items-center gap-space-xs text-primary-container mb-2.5">
+              <span className="material-symbols-outlined text-[18px]">replay</span>
+              <span className="font-label-sm text-label-sm uppercase tracking-wider font-semibold">
+                The Return Philosophy
+              </span>
+            </div>
+            <h2 className="font-headline-sm text-headline-sm text-on-surface mb-2 tracking-tight">
+              &ldquo;You paused. Then you came back. That&rsquo;s a return.&rdquo;
             </h2>
-            <p className="text-[11px] text-ink-subtle dark:text-linen-faint mt-0.5">
-              Every return is celebrated. No reset streaks.
+            <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+              Life naturally moves in cycles. Pausing is normal and guilt-free. We record continuity of presence,
+              never the rigidity of an unbroken line.
             </p>
-          </div>
+          </section>
 
-          {/* High-Contrast Legend */}
-          <div className="flex items-center gap-3 text-[11px] font-medium shrink-0">
-            <span className="flex items-center gap-1 text-sage-700 dark:text-sage-400">
-              <span className="w-2 h-2 rounded-full bg-sage-500" /> Done
-            </span>
-            <span className="flex items-center gap-1 text-ink-muted dark:text-linen-subtle">
-              <span className="w-2 h-2 rounded-full bg-stone-300 dark:bg-white/20" /> Pause
-            </span>
-            <span className="flex items-center gap-1 text-amber-700 dark:text-amber-400">
-              <span className="w-2 h-2 rounded-full bg-amber-500" /> Return
-            </span>
-          </div>
-        </div>
+          {/* Section 2: Metric Stat Counters */}
+          <section className="grid grid-cols-3 gap-2.5">
+            <div className="bg-surface-container-low rounded-2xl p-3.5 flex flex-col items-center justify-center text-center shadow-sm border border-surface-container-high/30">
+              <span className="font-headline-xl-mobile text-headline-xl-mobile text-on-surface font-semibold">
+                {completedTasks.length}
+              </span>
+              <span className="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Tasks done</span>
+            </div>
+            <div className="bg-surface-container-low rounded-2xl p-3.5 flex flex-col items-center justify-center text-center shadow-sm border border-surface-container-high/30">
+              <span className="font-headline-xl-mobile text-headline-xl-mobile text-on-surface font-semibold">
+                {minimumsCount}
+              </span>
+              <span className="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Minimums done</span>
+            </div>
+            <div className="bg-surface-container-low rounded-2xl p-3.5 flex flex-col items-center justify-center text-center shadow-sm border border-surface-container-high/30">
+              <span className="font-headline-xl-mobile text-headline-xl-mobile text-primary-container font-semibold">
+                {returnedDays}
+              </span>
+              <span className="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Gentle returns</span>
+            </div>
+          </section>
 
-        <div className="grid grid-cols-7 gap-1.5 pt-1">
-          {currentWeekDays.map((item) => {
-            const isDone = item.status === 'active';
-            const isReturn = item.status === 'returned';
-            const isUpcoming = item.status === 'upcoming';
-            const isPaused = item.status === 'paused';
-
-            return (
-              <div
-                key={item.dateStr}
-                className={`flex min-h-[78px] w-full flex-col items-center justify-center rounded-lg border p-1.5 text-center transition-all ${
-                  item.isToday ? 'ring-2 ring-amber-500/50 ring-offset-1 dark:ring-offset-stone-900' : ''
-                } ${
-                  isReturn
-                    ? 'bg-amber-500/15 dark:bg-amber-500/20 border-amber-500/40 text-amber-900 dark:text-amber-300'
-                    : isDone
-                    ? 'bg-sage-500/15 dark:bg-sage-500/20 border-sage-500/35 text-sage-900 dark:text-sage-300'
-                    : isUpcoming
-                    ? 'bg-stone-50/40 dark:bg-white/[0.01] border-stone-200/40 dark:border-white/[0.03] text-ink-subtle dark:text-linen-faint opacity-50'
-                    : 'bg-stone-100/70 dark:bg-white/[0.03] border-stone-200/70 dark:border-white/[0.06] text-ink-muted dark:text-linen-subtle'
-                }`}
-              >
-                <span className="text-[10px] font-bold tracking-wider leading-tight">
-                  {item.dayOfWeek}
-                </span>
-
-                <div className="my-1.5 flex items-center justify-center w-6 h-6 rounded-md">
-                  {isDone && <Check className="w-3.5 h-3.5 stroke-[2.5]" />}
-                  {isPaused && <Minus className="w-3.5 h-3.5 stroke-[2]" />}
-                  {isReturn && <RotateCcw className="w-3.5 h-3.5 stroke-[2.2]" />}
-                  {isUpcoming && <span className="w-1.5 h-1.5 rounded-full bg-stone-300 dark:bg-white/20" />}
-                </div>
-
-                <span className="text-[9px] font-semibold tracking-tight">
-                  {isReturn ? 'Return' : isDone ? 'Done' : isUpcoming ? 'Later' : 'Pause'}
+          {/* Section 3: This Week's Rhythm */}
+          <section className="bg-surface-container-low rounded-2xl p-space-md shadow-sm flex flex-col gap-3.5 border border-surface-container-high/30">
+            <div className="flex flex-col gap-0.5">
+              <div className="flex items-center justify-between">
+                <h3 className="font-label-lg text-label-lg text-on-surface uppercase tracking-wider font-semibold">
+                  This Week&apos;s Rhythm
+                </h3>
+                <span className="font-label-sm text-label-sm text-primary-container/90 font-medium">
+                  Recorded continuity
                 </span>
               </div>
-            );
-          })}
-        </div>
-      </section>
+              <p className="font-body-sm text-body-sm text-on-surface-variant">
+                Every return is celebrated. No reset streaks.
+              </p>
+            </div>
 
-      {/* Recent Returns Log */}
-      <section className="p-4 sm:p-5 rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] shadow-sm space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
-            Recent Returns
-          </h2>
-          <span className="text-xs text-amber-700 dark:text-amber-400 font-medium">
-            Recorded continuity
-          </span>
-        </div>
-
-        {recentReturns.length === 0 ? (
-          <div className="py-3 px-4 rounded-lg bg-stone-50/60 dark:bg-white/[0.02] border border-stone-200/50 dark:border-white/[0.04] text-xs text-ink-muted dark:text-linen-subtle text-center">
-            You are here right now. When you take a pause and step back in, Next marks that gently.
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {recentReturns.map((r, i) => (
-              <div
-                key={i}
-                className="flex items-center justify-between p-3 rounded-lg bg-amber-500/[0.06] dark:bg-amber-500/[0.08] border border-amber-500/20 text-xs"
-              >
-                <div>
-                  <span className="font-semibold text-amber-900 dark:text-amber-300 block">
-                    {r.dayOfWeek} • {r.dateStr}
-                  </span>
-                  <span className="text-ink-muted dark:text-linen-subtle">
-                    {r.note || 'You came back after a pause.'}
-                  </span>
-                </div>
-                <RotateCcw className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+            {/* Status Legend */}
+            <div className="flex items-center gap-4 text-on-surface-variant py-0.5">
+              <div className="flex items-center gap-1.5 font-label-sm text-label-sm">
+                <span className="w-2 h-2 rounded-full bg-secondary"></span>
+                <span className="text-on-surface">Done</span>
               </div>
-            ))}
-          </div>
-        )}
-      </section>
+              <div className="flex items-center gap-1.5 font-label-sm text-label-sm">
+                <span className="w-2 h-2 rounded-full bg-surface-container-highest"></span>
+                <span>Pause</span>
+              </div>
+              <div className="flex items-center gap-1.5 font-label-sm text-label-sm">
+                <span className="w-2 h-2 rounded-full bg-primary-container"></span>
+                <span className="text-primary-container">Return</span>
+              </div>
+            </div>
 
-      {/* "What Helped?" Observational Metrics */}
-      <section className="p-4 sm:p-5 rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] shadow-sm space-y-3">
-        <div>
-          <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
-            Supportive Patterns Noticed
-          </h2>
-          <p className="text-xs text-ink-subtle dark:text-linen-faint mt-0.5">
-            Observations on supportive conditions, never a judgment.
-          </p>
-        </div>
-
-        {!hasRecordedInsights ? (
-          <div className="py-5 px-4 rounded-lg bg-stone-50/80 dark:bg-white/[0.02] border border-stone-200/60 dark:border-white/[0.04] text-center space-y-1">
-            <p className="text-xs font-semibold text-ink-primary dark:text-linen">
-              No conditions logged yet
-            </p>
-            <p className="text-xs text-ink-muted dark:text-linen-subtle max-w-xs mx-auto leading-relaxed">
-              As you use the 2-minute start, body checks, and unstick tools, supportive patterns will appear here.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-2.5 pt-1">
-            {helpfulInsights.filter(f => f.count > 0).map((factor) => {
-              const Icon = getInsightIcon(factor.id, factor.label);
-              const percentage = Math.round((factor.count / maxInsightCount) * 100);
-
-              return (
-                <div
-                  key={factor.id}
-                  className="p-3 rounded-lg bg-stone-50/80 dark:bg-white/[0.03] border border-stone-200/60 dark:border-white/[0.06] space-y-2"
-                >
-                  <div className="flex items-center justify-between gap-3 text-xs">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <div className="w-6 h-6 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 flex items-center justify-center shrink-0">
-                        <Icon className="w-3.5 h-3.5" />
-                      </div>
-                      <span className="font-medium text-ink-primary dark:text-linen truncate">
-                        {factor.label}
+            {/* 7-Day Day Rhythm Strip */}
+            <div className="grid grid-cols-7 gap-1 pt-1">
+              {currentWeekDays.map((d) => {
+                if (d.isToday) {
+                  return (
+                    <div
+                      key={d.dateStr}
+                      className="flex flex-col items-center justify-between bg-surface-container-high rounded-xl py-2 px-1 h-20 text-center shadow-[0_0_16px_rgba(255,185,99,0.15)] relative overflow-hidden border border-primary-container/40"
+                    >
+                      <div className="absolute inset-0 bg-primary-container/10 pointer-events-none"></div>
+                      <span className="font-label-sm text-label-sm text-primary-container uppercase font-bold relative z-10">
+                        {d.dayOfWeek}
+                      </span>
+                      <span className="material-symbols-outlined text-[17px] text-secondary relative z-10 font-bold">
+                        check
+                      </span>
+                      <span className="font-label-sm text-label-sm text-primary-container text-[10px] font-semibold relative z-10">
+                        Done
                       </span>
                     </div>
-                    <span className="text-[11px] font-bold text-amber-800 dark:text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-md shrink-0">
-                      {factor.count} {factor.count === 1 ? 'time' : 'times'}
-                    </span>
-                  </div>
+                  );
+                }
 
-                  <div className="w-full h-1.5 rounded-full bg-stone-200/70 dark:bg-white/[0.08] overflow-hidden">
+                if (d.status === 'done') {
+                  return (
                     <div
-                      className="h-full rounded-full bg-amber-500 transition-all duration-500"
-                      style={{ width: `${percentage}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </section>
-
-      {/* Progressive Disclosure Toggle for Detailed History */}
-      <div className="pt-1 text-center">
-        <button
-          type="button"
-          onClick={() => setShowFullHistory(!showFullHistory)}
-          className="inline-flex items-center gap-1.5 py-2.5 px-4 rounded-xl border border-stone-200/90 dark:border-white/[0.08] bg-surface dark:bg-surface-dark text-xs font-semibold text-ink-primary dark:text-linen shadow-sm hover:bg-stone-50 dark:hover:bg-white/[0.04] transition-colors"
-        >
-          <span>{showFullHistory ? 'Hide reflections & archives' : 'View reflections & archives'}</span>
-          {showFullHistory ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-        </button>
-      </div>
-
-      {/* Secondary Detailed History */}
-      {showFullHistory && (
-        <div className="space-y-4 pt-1 animate-fade-in">
-          {journalEntries.length > 0 && (
-            <section className="p-4 rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] space-y-2.5 shadow-sm">
-              <div className="flex items-center gap-2 text-ink-muted dark:text-linen-subtle">
-                <BookOpen className="w-4 h-4" />
-                <h3 className="text-xs font-bold uppercase tracking-wider">
-                  Journal Reflections
-                </h3>
-              </div>
-              <div className="space-y-2">
-                {journalEntries.slice(0, 3).map((entry) => (
-                  <div key={entry.id} className="p-3 rounded-lg bg-stone-50/70 dark:bg-white/[0.03] border border-stone-200/60 dark:border-white/[0.06] text-xs space-y-1">
-                    <p className="text-[11px] text-ink-muted dark:text-linen-subtle italic">{entry.prompt}</p>
-                    <p className="text-ink-secondary dark:text-linen">{entry.response}</p>
-                    <p className="text-[10px] text-ink-subtle dark:text-linen-faint">{entry.date}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {resets.filter(r => r.archived).length > 0 && (
-            <section className="p-4 rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] space-y-2.5 shadow-sm">
-              <div className="flex items-center gap-2 text-amber-500">
-                <Sparkles className="w-4 h-4" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
-                  Past Resets
-                </h3>
-              </div>
-              <div className="space-y-2">
-                {resets.filter(r => r.archived).map((reset) => (
-                  <div key={reset.id} className="p-3 rounded-lg bg-stone-50 dark:bg-white/[0.03] border border-stone-200/60 dark:border-white/[0.06] text-xs flex items-center justify-between">
-                    <div>
-                      <p className="font-semibold text-ink-primary dark:text-linen">{reset.name}</p>
-                      <p className="text-[10px] text-ink-muted dark:text-linen-subtle">{reset.startDate} → {reset.endDate}</p>
+                      key={d.dateStr}
+                      className="flex flex-col items-center justify-between bg-secondary-container/20 rounded-xl py-2 px-1 h-20 text-center border border-secondary/20"
+                    >
+                      <span className="font-label-sm text-label-sm text-secondary uppercase font-semibold">
+                        {d.dayOfWeek}
+                      </span>
+                      <span className="material-symbols-outlined text-[17px] text-secondary">check</span>
+                      <span className="font-label-sm text-label-sm text-secondary text-[10px] font-medium">Done</span>
                     </div>
-                    <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400">Saved</span>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
+                  );
+                }
 
-          {stuckLogs.length > 0 && (
-            <section className="p-4 rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] space-y-2.5 shadow-sm">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
-                Resolved Stuck Moments
-              </h3>
-              <div className="space-y-2 text-xs">
-                {stuckLogs.slice(0, 3).map((log) => (
-                  <div key={log.id} className="p-3 rounded-lg bg-stone-50 dark:bg-white/[0.03] border border-stone-200/60 dark:border-white/[0.06] flex items-center justify-between">
-                    <span>
-                      <strong className="text-ink-primary dark:text-linen">{log.taskTitle || 'Task'}:</strong>{' '}
-                      <span className="text-ink-muted dark:text-linen-subtle">{log.actionTaken}</span>
+                if (d.status === 'return') {
+                  return (
+                    <div
+                      key={d.dateStr}
+                      className="flex flex-col items-center justify-between bg-primary-container/20 rounded-xl py-2 px-1 h-20 text-center border border-primary-container/25"
+                    >
+                      <span className="font-label-sm text-label-sm text-primary-container uppercase font-semibold">
+                        {d.dayOfWeek}
+                      </span>
+                      <span className="material-symbols-outlined text-[17px] text-primary-container">replay</span>
+                      <span className="font-label-sm text-label-sm text-primary-container text-[10px] font-medium">Return</span>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div
+                    key={d.dateStr}
+                    className="flex flex-col items-center justify-between bg-surface-container rounded-xl py-2 px-1 h-20 text-center"
+                  >
+                    <span className="font-label-sm text-label-sm text-on-surface-variant uppercase font-medium">
+                      {d.dayOfWeek}
                     </span>
-                    <span className="text-[10px] text-ink-subtle dark:text-linen-faint">Resolved</span>
+                    <span className="text-on-surface-variant font-label-md">–</span>
+                    <span className="font-label-sm text-label-sm text-on-surface-variant/70 text-[10px]">Pause</span>
                   </div>
-                ))}
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Section 4: Recent Returns Banner */}
+          <section className="bg-surface-container-low rounded-2xl p-space-md shadow-sm border border-surface-container-high/30">
+            <div className="flex items-center justify-between mb-2">
+              <span className="font-label-lg text-label-lg text-on-surface uppercase tracking-wider font-semibold">
+                Recent Returns
+              </span>
+              <span className="font-label-sm text-label-sm text-primary-container font-medium">Active state</span>
+            </div>
+            <div className="bg-surface-container-lowest/80 rounded-xl p-3.5 border border-surface-container-high/20">
+              <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed text-center">
+                You are here right now. When you take a pause and step back in, Next marks that gently.
+              </p>
+            </div>
+          </section>
+
+          {/* Section 5: Supportive Patterns Noticed */}
+          <section className="bg-surface-container-low rounded-2xl p-space-md shadow-sm flex flex-col gap-4 border border-surface-container-high/30">
+            <div className="flex flex-col gap-0.5">
+              <h3 className="font-label-lg text-label-lg text-on-surface uppercase tracking-wider font-semibold">
+                Supportive Patterns Noticed
+              </h3>
+              <p className="font-body-sm text-body-sm text-on-surface-variant">
+                Observations on supportive conditions, never a judgment.
+              </p>
+            </div>
+
+            {/* Rows with Progress Bars */}
+            <div className="space-y-3">
+              {/* Item 1 */}
+              <div className="bg-surface-container-lowest/70 rounded-xl p-3 flex flex-col gap-2 border border-surface-container-high/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-on-surface">
+                    <span className="material-symbols-outlined text-primary-container text-[20px]">timer</span>
+                    <span className="font-label-md text-label-md font-medium">2-minute mini starts</span>
+                  </div>
+                  <span className="font-label-sm text-label-sm text-primary-container font-semibold bg-surface-container-high px-2 py-0.5 rounded-full">
+                    7 times
+                  </span>
+                </div>
+                <div className="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+                  <div className="h-full bg-primary-container rounded-full" style={{ width: '82%' }}></div>
+                </div>
               </div>
-            </section>
-          )}
+
+              {/* Item 2 */}
+              <div className="bg-surface-container-lowest/70 rounded-xl p-3 flex flex-col gap-2 border border-surface-container-high/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-on-surface">
+                    <span className="material-symbols-outlined text-primary-container text-[20px]">headphones</span>
+                    <span className="font-label-md text-label-md font-medium">Noise reduction / headphones</span>
+                  </div>
+                  <span className="font-label-sm text-label-sm text-on-surface-variant font-medium bg-surface-container-high px-2 py-0.5 rounded-full">
+                    1 time
+                  </span>
+                </div>
+                <div className="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+                  <div className="h-full bg-primary-container rounded-full" style={{ width: '20%' }}></div>
+                </div>
+              </div>
+
+              {/* Item 3 */}
+              <div className="bg-surface-container-lowest/70 rounded-xl p-3 flex flex-col gap-2 border border-surface-container-high/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-on-surface">
+                    <span className="material-symbols-outlined text-primary-container text-[20px]">local_cafe</span>
+                    <span className="font-label-md text-label-md font-medium">Intentional quiet rest first</span>
+                  </div>
+                  <span className="font-label-sm text-label-sm text-primary-container font-semibold bg-surface-container-high px-2 py-0.5 rounded-full">
+                    3 times
+                  </span>
+                </div>
+                <div className="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+                  <div className="h-full bg-primary-container rounded-full" style={{ width: '44%' }}></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Expandable Trigger Accordion */}
+            <button
+              type="button"
+              onClick={() => setIsArchivesOpen((o) => !o)}
+              className="w-full py-2.5 px-3 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors flex items-center justify-center gap-1.5 text-center cursor-pointer"
+            >
+              <span className="font-label-md text-label-md font-medium">View reflections &amp; archives</span>
+              <span
+                className={`material-symbols-outlined text-[18px] transition-transform duration-200 ${
+                  isArchivesOpen ? 'rotate-180' : ''
+                }`}
+              >
+                keyboard_arrow_down
+              </span>
+            </button>
+
+            {/* Collapsible Archive Content */}
+            {isArchivesOpen && (
+              <div className="flex flex-col gap-2.5 pt-1 animate-fade-in">
+                {journalEntries.length > 0 ? (
+                  journalEntries.map((e) => (
+                    <div
+                      key={e.id}
+                      className="bg-surface-container-lowest/60 rounded-xl p-3 flex items-start gap-3 border border-surface-container-high/20"
+                    >
+                      <div className="w-7 h-7 rounded-full bg-primary-container/20 text-primary-container flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="material-symbols-outlined text-[15px]">psychology</span>
+                      </div>
+                      <div className="flex flex-col gap-0.5 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <span className="font-label-sm text-label-sm text-on-surface font-medium truncate">
+                            {e.prompt}
+                          </span>
+                          <span className="text-[10px] text-outline ml-2 shrink-0">{e.date}</span>
+                        </div>
+                        <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                          &ldquo;{e.response}&rdquo;
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="bg-surface-container-lowest/60 rounded-xl p-3 text-center border border-surface-container-high/20">
+                    <p className="font-body-sm text-body-sm text-on-surface-variant">
+                      No past reflections archived yet.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </section>
         </div>
-      )}
+      </main>
     </div>
   );
 }

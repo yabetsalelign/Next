@@ -3,6 +3,7 @@ import Script from 'next/script';
 import './globals.css';
 import { AppProvider } from '@/lib/store';
 import { Navbar } from '@/components/layout/Navbar';
+import { FloatingFocusBanner } from '@/components/layout/FloatingFocusBanner';
 import { ModalRoot } from '@/components/modals/ModalRoot';
 import { AndroidBackHandler } from '@/components/layout/AndroidBackHandler';
 
@@ -29,12 +30,10 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  // Allow pinch-zoom for accessibility — do not set maximumScale: 1
-  // Capacitor handles native zoom prevention at the WebView level
   viewportFit: 'cover',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#F7F5F0' },
-    { media: '(prefers-color-scheme: dark)', color: '#121316' },
+    { media: '(prefers-color-scheme: dark)', color: '#121317' },
   ],
 };
 
@@ -44,57 +43,43 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    // suppressHydrationWarning: the inline theme script mutates className before
-    // React hydrates, causing an intentional server/client mismatch on the html element.
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
-        {/*
-          CRITICAL — Theme initializer: runs synchronously before the browser paints
-          any pixels, so the correct dark/light class is already on <html> when CSS is
-          applied. This eliminates the dark↔light flicker visible on cold launch and
-          every app resume on Android WebView.
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+          rel="stylesheet"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+          rel="stylesheet"
+        />
 
-          Logic (mirrors store.tsx updateSettings):
-            1. Read next_settings_v1 from localStorage.
-            2. If theme === 'light'  → remove 'dark'.
-            3. If theme === 'system' → follow prefers-color-scheme.
-            4. Anything else (incl. 'dark' or missing) → add 'dark' (default).
-
-          This must be a plain synchronous <script> in the <head> — Next.js Script
-          strategies (beforeInteractive, afterInteractive) all defer to after React
-          hydration, which is too late and causes the visible flash.
-        */}
-        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        {/* Theme and Accent synchronizer */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var s=localStorage.getItem('next_settings_v1');var t=s?JSON.parse(s).theme:'dark';if(t==='light'){document.documentElement.classList.remove('dark');}else if(t==='system'){if(!window.matchMedia('(prefers-color-scheme: dark)').matches){document.documentElement.classList.remove('dark');}else{document.documentElement.classList.add('dark');}}else{document.documentElement.classList.add('dark');}}catch(e){document.documentElement.classList.add('dark');}})();`,
+            __html: `(function(){try{var s=localStorage.getItem('next_settings_v1');var parsed=s?JSON.parse(s):{};var t=parsed.theme||'dark';var a=parsed.accentPalette||'amber';document.documentElement.setAttribute('data-accent', a);if(t==='light'){document.documentElement.classList.remove('dark');}else if(t==='system'){if(!window.matchMedia('(prefers-color-scheme: dark)').matches){document.documentElement.classList.remove('dark');}else{document.documentElement.classList.add('dark');}}else{document.documentElement.classList.add('dark');}}catch(e){document.documentElement.classList.add('dark');document.documentElement.setAttribute('data-accent','amber');}})();`,
           }}
         />
       </head>
-      <body className="bg-canvas dark:bg-canvas-dark text-ink-primary dark:text-linen font-sans selection:bg-amber-500/20 selection:text-amber-300">
+      <body className="bg-background text-on-surface font-body-md text-body-md antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen">
         <AppProvider>
-          {/* Subtle warm ambient atmospheric glow in dark mode — never intercepts pointer events */}
-          <div className="pointer-events-none select-none" aria-hidden="true" style={{ position: 'fixed', inset: 0, zIndex: -1, overflow: 'hidden' }}>
-            <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[650px] h-[500px] bg-[radial-gradient(ellipse_at_top,rgba(229,149,63,0.07),rgba(116,105,182,0.04),transparent_70%)] blur-3xl opacity-90 dark:block hidden" />
-          </div>
-
-          {/* Keep the app shell inside the visible viewport; only main content scrolls. */}
-          <div className="flex h-dvh min-h-0 overflow-hidden">
-            {/* Responsive Navigation: Sidebar on desktop, Bottom nav on mobile */}
+          {/* Main App Container */}
+          <div className="flex h-dvh min-h-0 overflow-hidden bg-background">
             <Navbar />
 
-            {/* Main Content Area
-                - md:pl-64 offsets the desktop sidebar
-                - On mobile: full width with horizontal padding
-                - pb-nav ensures content doesn't hide behind the bottom nav on mobile
-                - md:pb-0 removes that on desktop where sidebar is used instead
-            */}
-            <main className="flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-smooth-touch md:pl-64 px-4 sm:px-5 lg:px-8 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] sm:pt-[calc(1.25rem+env(safe-area-inset-top,0px))] pb-[calc(6.5rem+env(safe-area-inset-bottom,0px))] md:pb-10">
+            {/* Scrollable Main viewport */}
+            <main className="flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-smooth-touch md:pl-64">
               {children}
             </main>
           </div>
 
-          {/* Unified Modal Root */}
+          <FloatingFocusBanner />
           <ModalRoot />
           <AndroidBackHandler />
         </AppProvider>
@@ -104,26 +89,14 @@ export default function RootLayout({
           {`
             if ('serviceWorker' in navigator) {
               const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-
               window.addEventListener('load', function() {
                 if (isLocalhost) {
-                  navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                    return Promise.all(registrations.map(function(reg) {
-                      return reg.unregister();
-                    }));
-                  }).catch(function(err) {
-                    console.warn('[SW] Local dev cleanup failed:', err);
-                  });
+                  navigator.serviceWorker.getRegistrations().then(function(regs) {
+                    return Promise.all(regs.map(r => r.unregister()));
+                  }).catch(console.warn);
                   return;
                 }
-
-                navigator.serviceWorker.register('/sw.js')
-                  .then(function(reg) {
-                    console.log('[SW] Registered, scope:', reg.scope);
-                  })
-                  .catch(function(err) {
-                    console.warn('[SW] Registration failed:', err);
-                  });
+                navigator.serviceWorker.register('/sw.js').catch(console.warn);
               });
             }
           `}

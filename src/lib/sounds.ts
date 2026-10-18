@@ -97,6 +97,29 @@ class SoundSystem {
     }
   }
 
+  // Soft tactile tap tone for pills and segmented controls
+  playTap() {
+    try {
+      const ctx = this.getContext();
+      if (!ctx) return;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(600, ctx.currentTime);
+      gain.gain.setValueAtTime(0.02, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.03);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start();
+      osc.stop(ctx.currentTime + 0.03);
+    } catch {
+      // degrade silently
+    }
+  }
+
   // Soft step complete tone
   playStepComplete() {
     this.playTick();

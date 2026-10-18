@@ -4,234 +4,181 @@ import React, { useState } from 'react';
 import { useApp } from '@/lib/store';
 import { Header } from '@/components/layout/Header';
 import { Routine } from '@/types';
-import { 
-  Play, 
-  Check, 
-  Plus, 
-  BookOpen, 
-  ChevronDown, 
-  ChevronUp, 
-  ArrowRight,
-  Sparkles,
-  Sun,
-  Moon,
-  Coffee
-} from 'lucide-react';
 import { sounds } from '@/lib/sounds';
 
-function RoutineCard({ 
-  routine, 
-  onStart, 
-  isLibrary = false 
-}: { 
-  routine: Routine; 
-  onStart?: () => void;
-  isLibrary?: boolean;
-}) {
-  const { toggleRoutineStep, openModal, updateRoutine } = useApp();
-  const [showSteps, setShowSteps] = useState(false);
+export default function RoutinesPage() {
+  const { routines, openModal, toggleRoutineStep } = useApp();
+  const [expandedRoutineId, setExpandedRoutineId] = useState<string | null>(null);
 
-  const completedCount = routine.steps.filter(s => s.completed).length;
-  const isAllDone = routine.steps.length > 0 && completedCount === routine.steps.length;
-  const isEnabled = routine.enabled !== false;
+  const activeRoutines = routines.filter((r) => r.enabled !== false);
 
-  const totalMinutes = routine.steps.reduce((acc, s) => acc + (s.durationMinutes || 3), 0);
+  const totalStepsCompleted = routines.reduce(
+    (acc, r) => acc + r.steps.filter((s) => s.completed).length,
+    0
+  );
+
+  const handleStepToggle = (routineId: string, stepId: string) => {
+    sounds.playMinimumComplete();
+    toggleRoutineStep(routineId, stepId);
+  };
 
   return (
-    <article className="rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] shadow-sm p-4 sm:p-5 flex flex-col gap-3.5 transition-all hover:border-stone-300 dark:hover:border-white/[0.14] overflow-hidden">
-      {/* Header Row */}
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-3 min-w-0 flex-1">
-          <span className="text-2xl select-none pt-0.5 shrink-0" role="img" aria-hidden="true">
-            {routine.icon || '✨'}
-          </span>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-base font-bold text-ink-primary dark:text-linen leading-snug break-words">
-                {routine.title}
-              </h3>
-              {isAllDone && (
-                <span className="text-[10px] font-bold text-sage-700 dark:text-sage-300 bg-sage-500/15 px-2 py-0.5 rounded-md">
-                  Done ✓
-                </span>
-              )}
+    <div className="min-h-screen bg-background text-on-surface font-body-md text-body-md flex flex-col selection:bg-primary-container selection:text-on-primary-container">
+      {/* Header */}
+      <Header />
+
+      <main className="flex flex-col relative w-full pt-16 pb-36 px-gutter-mobile bg-background flex-1 max-w-xl mx-auto">
+        <div className="flex flex-col w-full gap-space-lg select-none">
+          {/* Sub-header & Action */}
+          <div className="flex items-center justify-between gap-space-sm pt-space-xs">
+            <div className="flex flex-col min-w-0">
+              <span className="font-label-sm text-label-sm text-outline tracking-wider uppercase">
+                Anchors &amp; Rhythms
+              </span>
+              <p className="font-body-sm text-body-sm text-on-surface-variant truncate">
+                Self-paced anchor flows. No alarms, no streaks, no guilt.
+              </p>
             </div>
-            <p className="text-xs text-ink-muted dark:text-linen-subtle mt-0.5">
-              {routine.steps.length} {routine.steps.length === 1 ? 'step' : 'steps'} • ~{totalMinutes} min • Flexible order
-            </p>
-          </div>
-        </div>
-
-        {isLibrary && (
-          <button
-            type="button"
-            onClick={() => updateRoutine(routine.id, { enabled: !isEnabled })}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 ${
-              isEnabled
-                ? 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-500/30'
-                : 'bg-stone-100 dark:bg-white/[0.06] text-ink-secondary dark:text-linen'
-            }`}
-          >
-            {isEnabled ? 'Active' : '+ Add'}
-          </button>
-        )}
-      </div>
-
-      {/* Stepper Pill Track: Intended Flow */}
-      {routine.steps.length > 0 && (
-        <div className="bg-stone-50 dark:bg-white/[0.03] rounded-lg p-3 border border-stone-200/60 dark:border-white/[0.04] space-y-2">
-          <div className="flex items-center justify-between text-[11px] text-ink-muted dark:text-linen-subtle font-medium">
-            <span>Intended Flow</span>
-            <span className="text-amber-700 dark:text-amber-400 font-semibold">Any order ok</span>
-          </div>
-
-          <div className="flex items-center gap-1.5 flex-wrap">
-            {routine.steps.map((step, idx) => (
-              <React.Fragment key={step.id}>
-                <span
-                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
-                    step.completed
-                      ? 'bg-sage-500/15 text-sage-800 dark:text-sage-300 line-through'
-                      : 'bg-surface dark:bg-surface-dark border border-stone-200/80 dark:border-white/[0.08] text-ink-primary dark:text-linen'
-                  }`}
-                >
-                  <span className={`w-1.5 h-1.5 rounded-full ${step.completed ? 'bg-sage-500' : 'bg-amber-500'}`} />
-                  <span className="truncate max-w-[120px]">{step.title}</span>
-                </span>
-                {idx < routine.steps.length - 1 && (
-                  <span className="text-stone-300 dark:text-white/20 text-xs">→</span>
-                )}
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Action Row */}
-      <div className="flex items-center gap-2 pt-1">
-        <button
-          type="button"
-          onClick={() => {
-            onStart?.();
-            openModal('routine_runner', undefined, routine.id);
-          }}
-          className="flex-1 h-11 rounded-lg bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-stone-950 font-bold text-xs flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] transition-all"
-        >
-          <Play className="w-3.5 h-3.5 fill-current" />
-          <span>Start routine</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setShowSteps(!showSteps)}
-          className="h-11 px-3.5 rounded-lg bg-stone-100 hover:bg-stone-200 dark:bg-white/[0.06] dark:hover:bg-white/[0.1] text-ink-primary dark:text-linen text-xs font-semibold flex items-center gap-1 transition-colors border border-stone-200/60 dark:border-white/[0.04]"
-        >
-          <span>{showSteps ? 'Hide steps' : 'View steps'}</span>
-          {showSteps ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-        </button>
-      </div>
-
-      {/* Expanded Checklist */}
-      {showSteps && (
-        <div className="pt-2 border-t border-stone-200/60 dark:border-white/[0.06] space-y-1.5 animate-fade-in">
-          {routine.steps.map((step) => (
-            <div
-              key={step.id}
-              onClick={() => {
-                sounds.playStepComplete();
-                toggleRoutineStep(routine.id, step.id);
-              }}
-              className="flex items-center justify-between p-2 rounded-lg hover:bg-stone-50 dark:hover:bg-white/[0.02] cursor-pointer text-xs"
+            <button
+              type="button"
+              onClick={() => openModal('add_routine')}
+              className="flex-shrink-0 inline-flex items-center gap-1.5 px-space-md py-2 rounded-full bg-surface-container-high text-primary hover:bg-surface-container-highest active:scale-95 transition-all shadow-sm font-semibold"
+              id="open-create-modal"
             >
-              <div className="flex items-center gap-2.5 truncate">
-                <span className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-colors ${
-                  step.completed
-                    ? 'bg-sage-500 border-sage-500 text-white'
-                    : 'border-stone-300 dark:border-white/20 bg-surface dark:bg-surface-dark'
-                }`}>
-                  {step.completed && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+              <span className="material-symbols-outlined text-[18px]">add</span>
+              <span className="font-label-md text-label-md">New routine</span>
+            </button>
+          </div>
+
+          {/* Motivational Breathing Gentle Bar */}
+          <div className="flex items-center justify-between px-space-md py-space-sm rounded-xl bg-surface-container-low shadow-sm border border-surface-container-high/40">
+            <div className="flex items-center gap-space-sm min-w-0">
+              <div className="w-8 h-8 rounded-full bg-primary-container/15 flex items-center justify-center flex-shrink-0 text-primary-container">
+                <span className="material-symbols-outlined text-[18px]">spa</span>
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="font-label-md text-label-md text-on-surface font-medium">
+                  You are right on time
                 </span>
-                <span className={`truncate ${step.completed ? 'line-through text-ink-muted dark:text-linen-subtle' : 'text-ink-primary dark:text-linen font-medium'}`}>
-                  {step.title}
+                <span className="font-label-sm text-label-sm text-on-surface-variant truncate">
+                  Anchor whenever you feel ready today
                 </span>
               </div>
-              <span className="text-[10px] text-ink-subtle dark:text-linen-faint shrink-0">
-                {step.durationMinutes}m
-              </span>
             </div>
-          ))}
-        </div>
-      )}
-    </article>
-  );
-}
-
-export default function RoutinesPage() {
-  const { routines, openModal } = useApp();
-
-  const myRoutines = routines.filter(r => r.enabled !== false);
-  const libraryRoutines = routines.filter(r => r.enabled === false);
-
-  return (
-    <div className="max-w-xl mx-auto space-y-6 animate-fade-in pb-28 md:pb-10">
-      {/* Header */}
-      <Header
-        title="Routines"
-        subtitle="Self-paced anchor flows. No alarms, no streaks, no guilt."
-      />
-
-      {/* Top Action Row */}
-      <div className="flex items-center justify-between pt-1">
-        <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
-          Active Routines
-        </h2>
-        <button
-          type="button"
-          onClick={() => openModal('add_routine')}
-          className="h-8 px-3 rounded-lg bg-stone-100 hover:bg-stone-200 dark:bg-white/[0.06] dark:hover:bg-white/[0.1] text-ink-primary dark:text-linen text-xs font-semibold flex items-center gap-1.5 transition-colors border border-stone-200/70 dark:border-white/[0.06]"
-        >
-          <Plus className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-          <span>New routine</span>
-        </button>
-      </div>
-
-      {/* Routine Cards Grid */}
-      <div className="space-y-4">
-        {myRoutines.length === 0 ? (
-          <div className="p-8 rounded-xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] text-center space-y-2 shadow-sm">
-            <p className="text-sm font-semibold text-ink-primary dark:text-linen">
-              No active routines yet.
-            </p>
-            <p className="text-xs text-ink-muted dark:text-linen-subtle max-w-xs mx-auto leading-relaxed">
-              Create a custom anchor routine or activate one of the gentle templates below.
-            </p>
-          </div>
-        ) : (
-          myRoutines.map((routine) => (
-            <RoutineCard key={routine.id} routine={routine} />
-          ))
-        )}
-      </div>
-
-      {/* Routine Templates / Exploration Section */}
-      {libraryRoutines.length > 0 && (
-        <section className="space-y-3 pt-4 border-t border-stone-200/60 dark:border-white/[0.06]">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted dark:text-linen-subtle">
-              Explore Routine Templates
-            </h2>
-            <span className="text-xs text-ink-subtle dark:text-linen-faint">
-              Tap + Add to activate
+            <span className="font-label-sm text-label-sm text-secondary bg-secondary-container/20 px-2.5 py-0.5 rounded-full flex-shrink-0 font-medium">
+              {totalStepsCompleted} steps anchored
             </span>
           </div>
 
-          <div className="space-y-3">
-            {libraryRoutines.map((routine) => (
-              <RoutineCard key={routine.id} routine={routine} isLibrary />
-            ))}
+          {/* Routines List */}
+          <div className="flex flex-col gap-space-md">
+            {activeRoutines.map((routine) => {
+              const totalMins = routine.steps.reduce(
+                (sum, s) => sum + (s.durationMinutes || 5),
+                0
+              );
+              const isExpanded = expandedRoutineId === routine.id;
+
+              return (
+                <div
+                  key={routine.id}
+                  className="bg-surface-container-low rounded-[22px] p-space-md shadow-md flex flex-col gap-space-md transition-all border border-surface-container-high/40"
+                >
+                  {/* Card Top: Icon + Title + Meta */}
+                  <div className="flex items-start justify-between gap-space-sm">
+                    <div className="flex items-center gap-space-md min-w-0">
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600 via-primary-container to-amber-200 flex items-center justify-center shadow-[0_4px_16px_rgba(255,185,99,0.25)] flex-shrink-0 text-on-primary-fixed">
+                        <span className="text-[22px]">{routine.icon || '🌅'}</span>
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <h2 className="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">
+                          {routine.title}
+                        </h2>
+                        <p className="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1.5 flex-wrap">
+                          <span>{routine.steps.length} steps</span>
+                          <span className="w-1 h-1 rounded-full bg-outline-variant"></span>
+                          <span>~{totalMins} min</span>
+                          <span className="w-1 h-1 rounded-full bg-outline-variant"></span>
+                          <span className="text-secondary font-medium">Flexible order</span>
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      aria-label="Routine options"
+                      onClick={() => openModal('routine_runner', undefined, routine.id)}
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-outline hover:text-on-surface hover:bg-surface-container transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-[20px]">play_arrow</span>
+                    </button>
+                  </div>
+
+                  {/* Flow Mode Badge */}
+                  <div className="flex items-center justify-between text-label-sm font-label-sm px-1 text-on-surface-variant">
+                    <span className="flex items-center gap-1.5 text-outline">
+                      <span className="material-symbols-outlined text-[15px]">reorder</span>
+                      Intended gentle sequence
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setExpandedRoutineId(isExpanded ? null : routine.id)}
+                      className="px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors"
+                    >
+                      {isExpanded ? 'Hide steps' : 'View steps'}
+                    </button>
+                  </div>
+
+                  {/* Flow preview steps */}
+                  <div className="flex flex-col gap-1.5 transition-all duration-300">
+                    {routine.steps.slice(0, isExpanded ? routine.steps.length : 3).map((step, idx) => (
+                      <div
+                        key={step.id}
+                        className="bg-surface-container/70 rounded-xl p-3 flex items-center justify-between gap-space-sm"
+                      >
+                        <div className="flex items-center gap-space-sm min-w-0">
+                          <button
+                            type="button"
+                            aria-label={`Toggle ${step.title}`}
+                            onClick={() => handleStepToggle(routine.id, step.id)}
+                            className={`w-5 h-5 rounded-full flex items-center justify-center transition-all flex-shrink-0 ${
+                              step.completed
+                                ? 'bg-secondary text-surface-container-lowest'
+                                : 'bg-surface-container-highest text-transparent hover:text-secondary'
+                            }`}
+                          >
+                            <span className="material-symbols-outlined text-[13px] font-bold">check</span>
+                          </button>
+                          <span
+                            className={`font-body-md text-body-md truncate ${
+                              step.completed ? 'line-through text-on-surface-variant' : 'text-on-surface font-medium'
+                            }`}
+                          >
+                            {step.title}
+                          </span>
+                        </div>
+                        <span className="font-label-sm text-label-sm text-outline flex-shrink-0">
+                          ~{step.durationMinutes || 5}m
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Start Flow Button */}
+                  <button
+                    type="button"
+                    onClick={() => openModal('routine_runner', undefined, routine.id)}
+                    className="w-full py-2.5 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-primary font-label-md text-label-md flex items-center justify-center gap-2 transition-all active:scale-[0.99] font-medium"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">play_circle</span>
+                    <span>Start flow</span>
+                  </button>
+                </div>
+              );
+            })}
           </div>
-        </section>
-      )}
+        </div>
+      </main>
     </div>
   );
 }
