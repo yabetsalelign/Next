@@ -51,6 +51,29 @@ def create_circular_icon(img: Image.Image) -> Image.Image:
     output.paste(img, (0, 0), mask=mask)
     return output
 
+def create_maskable_icon(img: Image.Image) -> Image.Image:
+    # Keep Pip inside Android's central 80% safe zone, with a full-bleed dark background.
+    size = img.size[0]
+    inset = img.resize((round(size * 0.8), round(size * 0.8)), Image.Resampling.LANCZOS)
+    output = Image.new("RGBA", img.size, (17, 17, 22, 255))
+    output.alpha_composite(inset, ((size - inset.width) // 2, (size - inset.height) // 2))
+    return output
+
+def create_adaptive_foreground(img: Image.Image, size: int) -> Image.Image:
+    # Reuse the Pip artwork, remove its dark backdrop, and leave the 10% adaptive-icon inset.
+    inset_size = round(size * 0.8)
+    art = img.resize((inset_size, inset_size), Image.Resampling.LANCZOS)
+    pixels = art.load()
+    for y in range(art.height):
+        for x in range(art.width):
+            r, g, b, _ = pixels[x, y]
+            distance = ((r - 17) ** 2 + (g - 17) ** 2 + (b - 22) ** 2) ** 0.5
+            alpha = max(0, min(255, round((distance - 10) * 6)))
+            pixels[x, y] = (r, g, b, alpha)
+    output = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    output.alpha_composite(art, ((size - inset_size) // 2, (size - inset_size) // 2))
+    return output
+
 def main():
     dark_svg_path = os.path.join(WORKSPACE, "public", "icon-dark.svg")
     with open(dark_svg_path, "r", encoding="utf-8") as f:
@@ -78,34 +101,11 @@ def main():
     img_apple.save(os.path.join(WORKSPACE, "public", "apple-touch-icon.png"), "PNG")
     print("  -> public/apple-touch-icon.png")
 
-    # 3. Maskable icon for PWA: full bleed background (no rounded corners so launcher mask won't expose transparent corners)
-    # In dark_svg, replace rx="128" with rx="0"
-    maskable_svg = dark_svg.replace('rx="128"', 'rx="0"')
-    maskable_png_1024 = os.path.join(WORKSPACE, "temp_maskable_1024.png")
-    render_svg_to_png(maskable_svg, maskable_png_1024, 1024, 1024)
-    maskable_img = Image.open(maskable_png_1024).convert("RGBA")
+    # 3. Maskable icon with Pip inset into the central safe zone.
+    maskable_img = create_maskable_icon(base_img)
     maskable_512 = maskable_img.resize((512, 512), Image.Resampling.LANCZOS)
     maskable_512.save(os.path.join(WORKSPACE, "public", "icon-maskable-512.png"), "PNG")
     print("  -> public/icon-maskable-512.png")
-
-    # 4. Android Adaptive Icon Foreground
-    # Transparent background, only the pillars and cut
-    # Remove the container rect
-    foreground_svg = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
-  <g transform="rotate(-35 256 256)">
-    <!-- Left Pillar (Amber) -->
-    <rect x="156" y="126" width="90" height="260" rx="45" fill="#E08E45"/>
-    
-    <!-- Right Offset Pillar (Amber) -->
-    <rect x="266" y="126" width="90" height="260" rx="45" fill="#E08E45"/>
-    
-    <!-- Negative Space Cut / Interlock Bridge -->
-    <path d="M 156 316 L 356 196" stroke="#121218" stroke-width="24" stroke-linecap="round"/>
-  </g>
-</svg>"""
-    fg_png_1024 = os.path.join(WORKSPACE, "temp_fg_1024.png")
-    render_svg_to_png(foreground_svg, fg_png_1024, 1024, 1024)
-    fg_img = Image.open(fg_png_1024).convert("RGBA")
 
     # Android mipmap densities and dimensions
     android_res_dir = os.path.join(WORKSPACE, "android", "app", "src", "main", "res")
@@ -136,13 +136,13 @@ def main():
         round_img.save(os.path.join(folder, "ic_launcher_round.png"), "PNG")
 
         # ic_launcher_foreground.png (for adaptive icon)
-        adaptive_fg = fg_img.resize((fg_size, fg_size), Image.Resampling.LANCZOS)
+        adaptive_fg = create_adaptive_foreground(base_img, fg_size)
         adaptive_fg.save(os.path.join(folder, "ic_launcher_foreground.png"), "PNG")
 
         print(f"  -> mipmap-{density}: legacy ({leg_size}x{leg_size}), round ({leg_size}x{leg_size}), foreground ({fg_size}x{fg_size})")
 
     # Clean up temp files
-    for tmp in [base_png_1024, maskable_png_1024, fg_png_1024]:
+    for tmp in [base_png_1024]:
         if os.path.exists(tmp):
             os.remove(tmp)
 

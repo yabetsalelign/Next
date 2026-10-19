@@ -131,7 +131,7 @@ export default function PlanPage() {
             <button
               type="button"
               onClick={() => setFilter('all')}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full font-label-md text-label-md font-semibold transition-all active:scale-95 shadow-sm ${
+              className={`min-h-11 flex items-center gap-1.5 px-4 py-2 rounded-full font-label-md text-label-md font-semibold transition-all active:scale-95 shadow-sm ${
                 filter === 'all'
                   ? 'bg-primary-container text-on-primary-container'
                   : 'bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container'
@@ -150,7 +150,7 @@ export default function PlanPage() {
             <button
               type="button"
               onClick={() => setFilter('must')}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full font-label-md text-label-md transition-all active:scale-95 ${
+              className={`min-h-11 flex items-center gap-1.5 px-4 py-2 rounded-full font-label-md text-label-md transition-all active:scale-95 ${
                 filter === 'must'
                   ? 'bg-primary-container text-on-primary-container font-semibold'
                   : 'bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container'
@@ -169,7 +169,7 @@ export default function PlanPage() {
             <button
               type="button"
               onClick={() => setFilter('care')}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full font-label-md text-label-md transition-all active:scale-95 ${
+              className={`min-h-11 flex items-center gap-1.5 px-4 py-2 rounded-full font-label-md text-label-md transition-all active:scale-95 ${
                 filter === 'care'
                   ? 'bg-primary-container text-on-primary-container font-semibold'
                   : 'bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container'
@@ -188,7 +188,7 @@ export default function PlanPage() {
             <button
               type="button"
               onClick={() => setFilter('rest')}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full font-label-md text-label-md transition-all active:scale-95 ${
+              className={`min-h-11 flex items-center gap-1.5 px-4 py-2 rounded-full font-label-md text-label-md transition-all active:scale-95 ${
                 filter === 'rest'
                   ? 'bg-primary-container text-on-primary-container font-semibold'
                   : 'bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container'
@@ -209,20 +209,17 @@ export default function PlanPage() {
           <section className="flex flex-col gap-space-sm">
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-primary-container animate-ping"></span>
+                <span className={`w-2 h-2 rounded-full ${activeTask ? 'bg-primary-container' : 'bg-outline'}`}></span>
                 <span className="font-label-sm text-label-sm uppercase tracking-wider text-primary-container font-bold">
                   Now
                 </span>
               </div>
-              <span className="font-label-sm text-label-sm text-on-surface-variant">Primary focus</span>
+              <span className="font-label-sm text-label-sm text-on-surface-variant">{activeTask ? 'Selected focus' : 'Choose when you’re ready'}</span>
             </div>
 
             {activeTask ? (
-              <div className="relative bg-surface-container-low rounded-2xl p-space-lg shadow-[0_12px_32px_-4px_rgba(0,0,0,0.5)] overflow-hidden border border-surface-container-high/40">
-                {/* Ambient gentle tint glow */}
-                <div className="absolute -top-12 -right-12 w-40 h-40 bg-primary-container/10 rounded-full blur-3xl pointer-events-none"></div>
-                {/* Amber focus vertical bar */}
-                <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-primary-container rounded-r"></div>
+              <div className="relative bg-surface-container rounded-2xl p-space-lg shadow-md overflow-hidden border border-outline">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary-container" aria-hidden="true"></div>
 
                 <div className="flex flex-col gap-space-md pl-1">
                   <div className="flex items-start justify-between gap-space-sm">
@@ -239,7 +236,7 @@ export default function PlanPage() {
 
                       <div className="flex flex-col min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <h2 className="font-headline-sm text-headline-sm text-on-surface tracking-tight font-semibold break-words">
+                          <h2 className="font-headline-sm text-headline-sm text-on-surface tracking-tight font-semibold break-words [overflow-wrap:anywhere]">
                             {activeTask.title}
                           </h2>
                           <span className="px-2 py-0.5 rounded-full bg-primary-container/20 text-primary-container font-label-sm text-label-sm font-medium capitalize">
@@ -282,9 +279,9 @@ export default function PlanPage() {
                 </div>
               </div>
             ) : (
-              <div className="bg-surface-container-low rounded-2xl p-space-lg text-center border border-surface-container-high/30">
+              <div className="bg-surface-container-low rounded-2xl p-space-lg text-center border border-outline-variant">
                 <p className="font-body-sm text-body-sm text-on-surface-variant">
-                  No active task right now. Add one below to begin.
+                  No task is selected for Now. Choose Focus on a task in Next whenever you’re ready.
                 </p>
               </div>
             )}
@@ -308,7 +305,7 @@ export default function PlanPage() {
               {queuedTasks.map((t) => (
                 <div
                   key={t.id}
-                  className="bg-surface-container-low rounded-2xl p-space-md flex items-center justify-between gap-space-sm transition-all hover:bg-surface-container border border-surface-container-high/30"
+                  className="bg-surface-container-low rounded-2xl p-space-md flex items-center justify-between gap-space-sm transition-colors hover:bg-surface-container border border-outline-variant"
                 >
                   <div className="flex items-center gap-space-sm min-w-0 flex-1">
                     <button
@@ -320,10 +317,10 @@ export default function PlanPage() {
                       <SymbolIcon name="check" className="text-[16px]" />
                     </button>
                     <div className="flex flex-col min-w-0">
-                          <span className="font-headline-sm text-body-lg text-on-surface font-medium break-words">
+                          <span className="font-headline-sm text-body-lg text-on-surface font-medium break-words [overflow-wrap:anywhere]">
                         {t.title}
                       </span>
-                      <div className="flex items-center gap-2 mt-0.5">
+                      <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                         <span className="px-2 py-0.5 rounded-full bg-tertiary-container/15 text-tertiary font-label-sm text-label-sm capitalize">
                           {t.category || 'Care'}
                         </span>
@@ -345,7 +342,7 @@ export default function PlanPage() {
                       title="Focus on this task now"
                       aria-label="Focus on this task now"
                       onClick={() => setCurrentTask(t.id)}
-                      className="px-2.5 py-1 rounded-full bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface-variant font-label-sm text-label-sm flex items-center gap-1 transition-colors active:scale-95"
+                      className="min-h-11 px-3 rounded-full bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface-variant font-label-sm text-label-sm flex items-center gap-1 transition-colors active:scale-[0.98]"
                     >
                       <SymbolIcon name="play_arrow" className="text-[14px]" />
                       <span>Focus</span>
@@ -436,13 +433,14 @@ export default function PlanPage() {
                     completedToday.map((t) => (
                       <div
                         key={t.id}
-                        className="bg-surface-container rounded-xl p-3 flex items-center justify-between gap-space-sm"
+                        className="bg-surface-container rounded-xl p-3 flex items-center justify-between gap-space-sm border border-outline-variant animate-fade-in"
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
                           <button
                             type="button"
                             onClick={() => uncompleteTask(t.id)}
-                            className="w-5 h-5 rounded-full bg-secondary text-surface-container-lowest flex items-center justify-center flex-shrink-0"
+                            aria-label={`Mark ${t.title} not complete`}
+                            className="w-11 h-11 rounded-full bg-secondary text-surface-container-lowest flex items-center justify-center flex-shrink-0"
                           >
                             <SymbolIcon name="check" className="text-[13px] font-bold" />
                           </button>

@@ -1,0 +1,124 @@
+{
+  "step1_open": true,
+  "step2_today_screenshot": true,
+  "step3_content_and_controls": {
+    "heading": "Today",
+    "buttons": [
+      "Add a task",
+      "Add one thing",
+      "Help me start",
+      "Take the day off",
+      "Add one thing",
+      "Need help getting started?"
+    ],
+    "links": [
+      {
+        "text": "NextOne thing at a time",
+        "href": "/"
+      },
+      {
+        "text": "Today",
+        "href": "/"
+      },
+      {
+        "text": "Plan",
+        "href": "/plan"
+      },
+      {
+        "text": "Routines",
+        "href": "/routines"
+      },
+      {
+        "text": "Check-in",
+        "href": "/check-in"
+      },
+      {
+        "text": "History",
+        "href": "/history"
+      },
+      {
+        "text": "Settings",
+        "href": "/settings"
+      },
+      {
+        "text": "Today",
+        "href": "/"
+      },
+      {
+        "text": "Plan",
+        "href": "/plan"
+      },
+      {
+        "text": "Routines",
+        "href": "/routines"
+      },
+      {
+        "text": "Check-in",
+        "href": "/check-in"
+      },
+      {
+        "text": "History",
+        "href": "/history"
+      }
+    ],
+    "visibleCards": 3
+  },
+  "step4_navigation": {
+    "/plan": {
+      "h1": "Plan",
+      "screenshotBytes": 54861,
+      "status": "OK"
+    },
+    "/focus-session": {
+      "h1": "Focus Session",
+      "screenshotBytes": 34361,
+      "status": "OK"
+    },
+    "/routines": {
+      "h1": "Routines",
+      "screenshotBytes": 40940,
+      "status": "OK"
+    },
+    "/check-in": {
+      "h1": "Check In",
+      "screenshotBytes": 54581,
+      "status": "OK"
+    },
+    "/history": {
+      "h1": "History",
+      "screenshotBytes": 47521,
+      "status": "OK"
+    },
+    "/settings": {
+      "h1": "Settings",
+      "screenshotBytes": 55787,
+      "status": "OK"
+    }
+  },
+  "step5_viewports": {
+    "mobile": {
+      "viewport": "390x844",
+      "screenshotBytes": 137534
+    },
+    "desktop": {
+      "viewport": "1440x900",
+      "screenshotBytes": 86998
+    }
+  },
+  "step6_console_errors": [],
+  "step7_interaction": {
+    "before": {
+      "currentAccent": "amber",
+      "hasAmberBtn": false,
+      "hasMintBtn": false
+    },
+    "action": {
+      "clickedText": "Dark",
+      "success": true
+    },
+    "after": {
+      "accent": "amber",
+      "isDark": true
+    }
+  }
+}

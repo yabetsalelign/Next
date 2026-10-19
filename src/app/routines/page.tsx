@@ -43,7 +43,7 @@ export default function RoutinesPage() {
             <button
               type="button"
               onClick={() => openModal('add_routine')}
-              className="flex-shrink-0 inline-flex items-center gap-1.5 px-space-md py-2 rounded-full bg-surface-container-high text-primary hover:bg-surface-container-highest active:scale-95 transition-all shadow-sm font-semibold"
+              className="min-h-11 flex-shrink-0 inline-flex items-center gap-1.5 px-space-md py-2 rounded-full bg-surface-container-high text-primary hover:bg-surface-container-highest active:scale-95 transition-all shadow-sm font-semibold"
               id="open-create-modal"
             >
               <SymbolIcon name="add" className="text-[18px]" />
@@ -135,7 +135,7 @@ export default function RoutinesPage() {
                     <button
                       type="button"
                       onClick={() => setExpandedRoutineId(isExpanded ? null : routine.id)}
-                      className="px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors"
+                      className="min-h-11 px-3 rounded-full bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors"
                     >
                       {isExpanded ? 'Hide steps' : 'View steps'}
                     </button>
@@ -146,17 +146,17 @@ export default function RoutinesPage() {
                     {routine.steps.slice(0, isExpanded ? routine.steps.length : 3).map((step, idx) => (
                       <div
                         key={step.id}
-                        className="bg-surface-container/70 rounded-xl p-3 flex items-center justify-between gap-space-sm"
+                        className="bg-surface-container/70 rounded-xl p-3 flex items-center justify-between gap-space-sm border border-outline-variant"
                       >
                         <div className="flex items-center gap-space-sm min-w-0">
                           <button
                             type="button"
                             aria-label={`Toggle ${step.title}`}
                             onClick={() => handleStepToggle(routine.id, step.id)}
-                            className={`w-5 h-5 rounded-full flex items-center justify-center transition-all flex-shrink-0 ${
+                            className={`w-11 h-11 rounded-full flex items-center justify-center transition-all flex-shrink-0 border ${
                               step.completed
-                                ? 'bg-secondary text-surface-container-lowest'
-                                : 'bg-surface-container-highest text-transparent hover:text-secondary'
+                                ? 'bg-secondary text-surface-container-lowest border-secondary'
+                                : 'bg-surface-container-highest text-transparent hover:text-secondary border-outline'
                             }`}
                           >
                             <SymbolIcon name="check" className="text-[13px] font-bold" />

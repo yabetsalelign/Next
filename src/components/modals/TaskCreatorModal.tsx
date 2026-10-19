@@ -26,6 +26,7 @@ export function TaskCreatorModal() {
   const [showExtraFields, setShowExtraFields] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const submittingRef = useRef(false);
 
   const EMOJI_OPTIONS = ['📌', '💻', '💧', '🪥', '🍳', '☕', '🧹', '🚶', '✨', '📖'];
 
@@ -74,7 +75,8 @@ export function TaskCreatorModal() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const cleanTitle = title.trim();
-    if (!cleanTitle) return;
+    if (!cleanTitle || submittingRef.current) return;
+    submittingRef.current = true;
 
     const chosenIcon = icon === '📌' ? detectIcon(cleanTitle, category) : icon;
     const defaultMin = cleanTitle.length > 20 

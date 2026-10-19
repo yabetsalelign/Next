@@ -1,7 +1,7 @@
 'use client';
 
 import { SymbolIcon } from '@/components/ui/SymbolIcon';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useApp } from '@/lib/store';
 
 const ROUTINE_ICONS = ['✨', '🌅', '🌙', '☕', '💧', '🧘', '🚶', '📚'];
@@ -12,10 +12,12 @@ export function AddRoutineModal() {
   const [description, setDescription] = useState('');
   const [icon, setIcon] = useState('✨');
   const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening' | 'anytime'>('anytime');
+  const submittingRef = useRef(false);
 
   const handleCreateRoutine = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) return;
+    if (!title.trim() || submittingRef.current) return;
+    submittingRef.current = true;
 
     addRoutine({
       title: title.trim(),

@@ -24,7 +24,7 @@ export function TodayEmptyState() {
     <section className="w-full min-w-0 max-w-full rounded-3xl bg-surface-container-low border border-outline-variant p-6 sm:p-8" aria-labelledby="empty-today-heading">
       <p className="text-sm font-medium text-primary mb-2">{allDone ? 'That is enough' : pendingReturn ? 'Welcome back' : 'A fresh page'}</p>
       <h2 id="empty-today-heading" className="text-2xl sm:text-3xl font-semibold tracking-tight break-words">{allDone ? 'You’ve done what you planned.' : pendingReturn ? 'Nothing to catch up on.' : 'What would help right now?'}</h2>
-      <p className="mt-2 text-base leading-relaxed text-on-surface-variant break-words">{allDone ? 'You can stop here, rest, or add something else if it would help.' : 'You don’t need a complete plan. One small thing is enough, and an open day is okay too.'}</p>
+      <p className="mt-2 text-base leading-relaxed text-on-surface-variant break-words">{allDone ? 'You can stop here, rest, or add something else if it would help.' : pendingReturn ? 'There is nothing to catch up on. Choose one small thing for today, or leave the day open.' : 'You do not need a complete plan. One small thing is enough, and an open day is okay too.'}</p>
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
         <button type="button" onClick={beginPlanning} className="w-full min-w-0 min-h-12 px-4 rounded-xl bg-primary text-on-primary font-semibold flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.99]">

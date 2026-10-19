@@ -66,7 +66,7 @@ export function Header({
           ) : (
             <div className="flex items-center gap-space-sm pl-1">
               {pathname === '/' && (
-                <Image src="/next-mascot.svg" alt="" width={28} height={28} priority unoptimized className="rounded-lg" />
+                <Image src="/next-mascot.svg" alt="" width={32} height={32} priority unoptimized className="rounded-lg ring-1 ring-outline-variant" />
               )}
               <h1 className="text-lg text-on-surface tracking-tight font-semibold">
                 {resolvedTitle}

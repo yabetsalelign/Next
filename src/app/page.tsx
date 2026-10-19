@@ -89,7 +89,7 @@ export default function TodayPage() {
                       <button type="button" aria-label={`Complete ${task.title}`} onClick={() => completeTask(task.id, 'minimum')} className="w-11 h-11 -ml-1 shrink-0 rounded-full grid place-items-center text-on-surface-variant hover:bg-surface-container-high hover:text-secondary">
                         <Circle size={21} strokeWidth={1.7} />
                       </button>
-                      <button type="button" onClick={() => setCurrentTask(task.id)} className="flex-1 min-w-0 text-left rounded-lg py-1">
+                      <button type="button" aria-label={`Make ${task.title} the current focus task`} onClick={() => setCurrentTask(task.id)} className="flex-1 min-w-0 text-left rounded-lg py-1">
                         <span className="block font-medium leading-snug break-words">{task.title}</span>
                         <span className="block text-sm text-on-surface-variant mt-1">{task.durationMinutes ? `${task.durationMinutes} min` : 'No time estimate'}{task.category ? ` · ${task.category}` : ''}</span>
                       </button>

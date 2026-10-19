@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
+import React, { createContext, useContext, useEffect, useState, useMemo, useRef } from 'react';
 import {
   Task,
   TaskTimeCategory,
@@ -177,6 +177,7 @@ export function createTasksForResetDay(reset: Reset, dayIndex: number, dateStr: 
 }
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
+  const completionInFlight = useRef(new Set<string>());
   const [tasks, setTasks] = useState<Task[]>([]);
   const [routines, setRoutines] = useState<Routine[]>([]);
   const [returns, setReturns] = useState<ReturnDay[]>(INITIAL_RETURNS);
@@ -586,6 +587,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const completeTask = (taskId: string, tier: 'minimum' | 'normal' | 'extra') => {
+    if (tasks.some(task => task.id === taskId && task.completed) || completionInFlight.current.has(taskId)) return;
+    completionInFlight.current.add(taskId);
+    window.setTimeout(() => completionInFlight.current.delete(taskId), 0);
+
     const todayStr = getLocalDateString();
     let completedTask: Task | undefined;
 
