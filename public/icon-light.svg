@@ -1,15 +1,70 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
-  <!-- Container: Warm Oat Base -->
-  <rect width="512" height="512" rx="128" fill="#F7F5F0"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Background: Deep warm midnight espresso canvas -->
+    <linearGradient id="mascotBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1f1e24"/>
+      <stop offset="100%" stop-color="#111116"/>
+    </linearGradient>
 
-  <g transform="rotate(-35 256 256)">
-    <!-- Left Pillar (Dark Charcoal) -->
-    <rect x="156" y="126" width="90" height="260" rx="45" fill="#121218"/>
-    
-    <!-- Right Offset Pillar (Dark Charcoal) -->
-    <rect x="266" y="126" width="90" height="260" rx="45" fill="#121218"/>
-    
-    <!-- Negative Space Cut / Interlock Bridge -->
-    <path d="M 156 316 L 356 196" stroke="#F7F5F0" stroke-width="24" stroke-linecap="round"/>
+    <!-- Character Body Gradient: Rich Duolingo-like vibrant volume -->
+    <linearGradient id="bodyGrad" x1="20%" y1="10%" x2="80%" y2="90%">
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="45%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+
+    <!-- Belly patch subtle warmth -->
+    <radialGradient id="bellyGlow" cx="50%" cy="65%" r="45%">
+      <stop offset="0%" stop-color="#fef08a" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Mascot drop shadow -->
+    <filter id="charShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="20" stdDeviation="22" flood-color="#000000" flood-opacity="0.65"/>
+    </filter>
+  </defs>
+
+  <!-- iOS squircle base -->
+  <rect x="0" y="0" width="512" height="512" rx="118" fill="url(#mascotBg)"/>
+
+  <!-- Character Mascot: "Pip" - The zero-pressure focus buddy (Duolingo style) -->
+  <g filter="url(#charShadow)">
+    <!-- Organic plump body -->
+    <path d="M 256 96 C 362 96 414 170 414 274 C 414 378 348 418 256 418 C 164 418 98 378 98 274 C 98 170 150 96 256 96 Z"
+          fill="url(#bodyGrad)"/>
+
+    <!-- Subtle soft belly highlight -->
+    <path d="M 256 180 C 330 180 370 230 370 300 C 370 370 320 398 256 398 C 192 398 142 370 142 300 C 142 230 182 180 256 180 Z"
+          fill="url(#bellyGlow)"/>
+
+    <!-- Sprout / Antenna / 'Next' momentum leaf on head (representing growth & return) -->
+    <path d="M 256 96 C 256 50 286 36 308 42 C 322 46 318 72 292 78 C 274 82 264 92 256 96 Z"
+          fill="#fde047"/>
+
+    <!-- Left Eye (Big, friendly, soulful Duolingo style) -->
+    <ellipse cx="204" cy="242" rx="34" ry="42" fill="#ffffff"/>
+    <ellipse cx="212" cy="240" rx="22" ry="28" fill="#1e1b18"/>
+    <!-- Catchlight sparkle -->
+    <circle cx="218" cy="228" r="8" fill="#ffffff"/>
+    <circle cx="204" cy="254" r="3.5" fill="#ffffff"/>
+
+    <!-- Right Eye (Slight playful wink/happy squint or open alert) -->
+    <ellipse cx="308" cy="242" rx="34" ry="42" fill="#ffffff"/>
+    <ellipse cx="316" cy="240" rx="22" ry="28" fill="#1e1b18"/>
+    <!-- Catchlight sparkle -->
+    <circle cx="322" cy="228" r="8" fill="#ffffff"/>
+    <circle cx="308" cy="254" r="3.5" fill="#ffffff"/>
+
+    <!-- Cheerful rosy cheeks -->
+    <ellipse cx="152" cy="290" rx="18" ry="12" fill="#ea580c" opacity="0.35"/>
+    <ellipse cx="360" cy="290" rx="18" ry="12" fill="#ea580c" opacity="0.35"/>
+
+    <!-- Gentle, content smile -->
+    <path d="M 234 294 Q 256 314 278 294"
+          fill="none"
+          stroke="#1e1b18"
+          stroke-width="7"
+          stroke-linecap="round"/>
   </g>
 </svg>

@@ -6,7 +6,12 @@ import { TaskTimeCategory, EnvironmentPreference, TaskCategory, TaskPriority } f
 import { X, Plus, ChevronDown, ChevronUp, Sparkles, Check } from 'lucide-react';
 
 export function TaskCreatorModal() {
-  const { closeModal, addTask } = useApp();
+  const { closeModal, addTask, settings } = useApp();
+  const paceLabel = settings.startingDifficulty === 'structured'
+    ? 'Focused'
+    : settings.startingDifficulty === 'balanced'
+      ? 'Steady'
+      : 'Gentle';
 
   const [title, setTitle] = useState('');
   const [when, setWhen] = useState<TaskTimeCategory>('today');
@@ -105,26 +110,26 @@ export function TaskCreatorModal() {
       onClick={closeModal}
     >
       <div
-        className="modal-sheet relative w-full sm:max-w-[420px] bg-[#1d1e22] border-t sm:border border-white/10 sm:rounded-[28px] rounded-t-[28px] shadow-2xl overflow-hidden animate-slide-up flex flex-col pt-3"
+        className="modal-sheet relative w-full sm:max-w-[420px] bg-surface-container-low border-t sm:border border-outline-variant sm:rounded-[28px] rounded-t-[28px] shadow-2xl overflow-hidden animate-slide-up flex flex-col pt-3"
         style={{ maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 0.5rem)' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Grab Handle */}
-        <div className="w-10 h-1 bg-[#47484d] rounded-full mx-auto mb-3" />
+        <div className="w-10 h-1 bg-surface-container-highest rounded-full mx-auto mb-3" />
 
         {/* Drawer Subheader & Close */}
         <div className="flex items-center justify-between px-6 pb-3">
           <div className="flex items-center space-x-1.5 text-primary font-semibold text-[11px] tracking-wide uppercase">
             <span>+</span>
             <span>New Activity</span>
-            <span className="text-[#6d6b67] font-normal">•</span>
-            <span className="text-[#ad9578]">Low Friction</span>
+            <span className="text-on-surface-variant font-normal">•</span>
+            <span className="text-primary">{paceLabel} pace</span>
           </div>
           <button
             type="button"
             onClick={closeModal}
             aria-label="Close sheet"
-            className="text-stone-400 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/5"
+            className="text-on-surface-variant hover:text-on-surface transition-colors p-1 rounded-lg hover:bg-surface-container-high"
           >
             <X className="w-4 h-4" />
           </button>
@@ -136,12 +141,12 @@ export function TaskCreatorModal() {
           <div>
             <label 
               htmlFor="task-title-input" 
-              className="block text-[11px] font-bold uppercase tracking-wider text-stone-300 mb-2"
+              className="block text-[11px] font-bold uppercase tracking-wider text-on-surface mb-2"
             >
               What do you want to do?
             </label>
             {/* Active input container with golden amber ring border */}
-            <div className="relative flex items-center w-full bg-[#121317] border-2 border-primary rounded-2xl px-4 py-3 shadow-inner focus-within:ring-2 focus-within:ring-primary/20">
+            <div className="relative flex items-center w-full bg-surface-container-lowest border-2 border-primary rounded-2xl px-4 py-3 shadow-inner focus-within:ring-2 focus-within:ring-primary/20">
               <input
                 ref={inputRef}
                 id="task-title-input"
@@ -152,11 +157,11 @@ export function TaskCreatorModal() {
                 placeholder="e.g. Work on project, tidy desk..."
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-transparent border-0 p-0 text-sm text-stone-100 placeholder-[#5e6066] focus:ring-0 focus:outline-none leading-none tracking-normal font-medium"
+                className="w-full bg-transparent border-0 p-0 text-sm text-on-surface placeholder:text-on-surface-variant focus:ring-0 focus:outline-none leading-none tracking-normal font-medium"
               />
             </div>
             {/* Encouraging Helper Copy */}
-            <p className="text-[11px] text-[#71737a] mt-2 px-1 leading-snug">
+            <p className="text-[11px] text-on-surface-variant mt-2 px-1 leading-snug">
               Title is all that is required. Sensible defaults handle everything else.
             </p>
           </div>
@@ -183,10 +188,10 @@ export function TaskCreatorModal() {
 
           {/* Expandable Advanced Options Section */}
           {showExtraFields && (
-            <div className="space-y-4 pt-3 border-t border-white/[0.08] animate-fade-in text-left">
+            <div className="space-y-4 pt-3 border-t border-outline-variant animate-fade-in text-left">
               {/* When Selector */}
               <div className="space-y-1.5">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
                   When?
                 </span>
                 <div className="grid grid-cols-4 gap-2">
@@ -203,7 +208,7 @@ export function TaskCreatorModal() {
                       className={`py-2 px-2.5 rounded-xl text-xs font-semibold border transition-all text-center min-h-[40px] cursor-pointer ${
                         when === item.id
                           ? 'bg-primary/20 border-primary text-primary font-bold shadow-sm'
-                          : 'border-white/[0.08] bg-[#121317] text-stone-400 hover:text-stone-200'
+                          : 'border-outline-variant bg-surface-container-lowest text-on-surface-variant hover:text-on-surface'
                       }`}
                     >
                       {item.label}
@@ -214,7 +219,7 @@ export function TaskCreatorModal() {
 
               {/* Priority Selector */}
               <div className="space-y-1.5">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
                   Priority
                 </span>
                 <div className="grid grid-cols-3 gap-2">
@@ -230,7 +235,7 @@ export function TaskCreatorModal() {
                       className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-all text-center min-h-[40px] cursor-pointer ${
                         priority === item.id
                           ? 'bg-primary/20 border-primary text-primary font-bold shadow-sm'
-                          : 'border-white/[0.08] bg-[#121317] text-stone-400 hover:text-stone-200'
+                          : 'border-outline-variant bg-surface-container-lowest text-on-surface-variant hover:text-on-surface'
                       }`}
                     >
                       <div>{item.label}</div>
@@ -242,7 +247,7 @@ export function TaskCreatorModal() {
 
               {/* Activity Type Selector */}
               <div className="space-y-1.5">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
                   Activity Type
                 </span>
                 <div className="grid grid-cols-3 gap-2">
@@ -258,7 +263,7 @@ export function TaskCreatorModal() {
                       className={`py-2 px-2.5 rounded-xl text-xs font-semibold border transition-all text-center min-h-[40px] cursor-pointer ${
                         category === item.id
                           ? 'bg-primary/20 border-primary text-primary font-bold shadow-sm'
-                          : 'border-white/[0.08] bg-[#121317] text-stone-400 hover:text-stone-200'
+                          : 'border-outline-variant bg-surface-container-lowest text-on-surface-variant hover:text-on-surface'
                       }`}
                     >
                       {item.label}
@@ -269,7 +274,7 @@ export function TaskCreatorModal() {
 
               {/* Icon Selector */}
               <div className="space-y-1.5">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
                   Icon
                 </span>
                 <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 scrollbar-none">
@@ -281,7 +286,7 @@ export function TaskCreatorModal() {
                       className={`w-9 h-9 rounded-xl text-base flex items-center justify-center shrink-0 border transition-all cursor-pointer ${
                         icon === e
                           ? 'border-primary bg-primary/20 scale-105 shadow-sm'
-                          : 'border-white/[0.08] bg-[#121317] hover:bg-white/[0.05]'
+                          : 'border-outline-variant bg-surface-container-lowest hover:bg-surface-container-high'
                       }`}
                       aria-label={`Select icon ${e}`}
                     >
@@ -293,7 +298,7 @@ export function TaskCreatorModal() {
 
               {/* Minimum input */}
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-stone-300">
+                <label className="text-xs font-semibold text-on-surface">
                   The Minimum (smallest possible version):
                 </label>
                 <input
@@ -301,7 +306,7 @@ export function TaskCreatorModal() {
                   placeholder="e.g. Open file and look at it for 2 minutes"
                   value={minimum}
                   onChange={(e) => setMinimum(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-white/[0.12] bg-[#121317] text-stone-100 placeholder-[#5e6066] focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-1 focus:ring-primary"
                 />
                 <p className="text-[10px] text-primary/80 font-medium">
                   The minimum counts as complete. No guilt.
@@ -310,7 +315,7 @@ export function TaskCreatorModal() {
 
               {/* Normal & Extra inputs */}
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-stone-300">
+                <label className="text-xs font-semibold text-on-surface">
                   Normal (intended version):
                 </label>
                 <input
@@ -318,12 +323,12 @@ export function TaskCreatorModal() {
                   placeholder="e.g. Work for 20 minutes"
                   value={normal}
                   onChange={(e) => setNormal(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-white/[0.12] bg-[#121317] text-stone-100 placeholder-[#5e6066] focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-1 focus:ring-primary"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-stone-300">
+                <label className="text-xs font-semibold text-on-surface">
                   Extra (optional if surplus energy):
                 </label>
                 <input
@@ -331,13 +336,13 @@ export function TaskCreatorModal() {
                   placeholder="e.g. Commit code and write summary"
                   value={extra}
                   onChange={(e) => setExtra(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-white/[0.12] bg-[#121317] text-stone-100 placeholder-[#5e6066] focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-outline-variant bg-surface-container-lowest text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-1 focus:ring-primary"
                 />
               </div>
 
               {/* Duration slider */}
               <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-xs font-semibold text-stone-300">
+                <div className="flex items-center justify-between text-xs font-semibold text-on-surface">
                   <span>Approximate time:</span>
                   <span className="text-primary font-bold">{durationMinutes} minutes</span>
                 </div>
@@ -348,13 +353,13 @@ export function TaskCreatorModal() {
                   step={1}
                   value={durationMinutes}
                   onChange={(e) => setDurationMinutes(Number(e.target.value))}
-                  className="w-full h-2 accent-primary bg-white/[0.12] rounded-lg cursor-pointer"
+                  className="w-full h-2 accent-primary bg-surface-container-high rounded-lg cursor-pointer"
                 />
               </div>
 
               {/* Environment / Company preference */}
               <div className="space-y-1.5">
-                <span className="text-xs font-semibold text-stone-300">
+                <span className="text-xs font-semibold text-on-surface">
                   Environment preference:
                 </span>
                 <div className="grid grid-cols-2 gap-2">
@@ -372,7 +377,7 @@ export function TaskCreatorModal() {
                       className={`p-2.5 rounded-xl text-xs font-medium border text-left min-h-[40px] transition-all cursor-pointer ${
                         company === item.id
                           ? 'bg-primary/15 border-primary text-primary font-semibold'
-                          : 'border-white/[0.08] bg-[#121317] text-stone-400 hover:text-stone-200'
+                          : 'border-outline-variant bg-surface-container-lowest text-on-surface-variant hover:text-on-surface'
                       }`}
                     >
                       {item.label}

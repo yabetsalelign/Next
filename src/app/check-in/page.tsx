@@ -71,10 +71,10 @@ export default function CheckInPage() {
 
   const paceLabel = !energyState ? 'Choose what feels right' :
     energyState === 'low'
-      ? 'Gentle restoration'
+      ? 'Low capacity'
       : energyState === 'steady'
-      ? 'Rhythmic flow'
-      : 'Driven momentum';
+      ? 'Steady capacity'
+      : 'More capacity, no obligation';
 
   return (
     <div className="min-h-screen bg-background text-on-surface font-body-md text-body-md flex flex-col selection:bg-primary-container selection:text-on-primary-container">
@@ -90,16 +90,19 @@ export default function CheckInPage() {
             </p>
           </div>
 
-          {/* SECTION 1: Energy & Pace */}
+          {/* SECTION 1: Current energy */}
           <section className="flex flex-col space-y-3">
             <div className="flex items-center justify-between px-1">
               <span className="font-label-sm text-label-sm tracking-wider uppercase text-on-surface-variant">
-                Energy &amp; Pace
+                Energy right now
               </span>
               <span className="font-label-sm text-label-sm text-primary-container font-semibold transition-all">
                 {paceLabel}
               </span>
             </div>
+            <p className="px-1 text-sm leading-relaxed text-on-surface-variant">
+              This only shapes Today&apos;s optional focus suggestion. Your energy can change later.
+            </p>
 
             {/* 3-Choice Energy Selector Grid */}
             <div className="grid grid-cols-3 gap-2.5" role="radiogroup">
@@ -129,7 +132,7 @@ export default function CheckInPage() {
                 >
                   Low
                 </span>
-                <span className="font-label-sm text-label-sm text-on-surface-variant">Gentle</span>
+                <span className="font-label-sm text-label-sm text-on-surface-variant">Small start</span>
               </button>
 
               {/* Option 2: Steady */}
@@ -158,10 +161,10 @@ export default function CheckInPage() {
                 >
                   Steady
                 </span>
-                <span className="font-label-sm text-label-sm text-on-surface-variant">Rhythmic</span>
+                <span className="font-label-sm text-label-sm text-on-surface-variant">Usual pace</span>
               </button>
 
-              {/* Option 3: Energized */}
+              {/* Option 3: High capacity */}
               <button
                 type="button"
                 onClick={() => handleSelectEnergy('energized')}
@@ -185,9 +188,9 @@ export default function CheckInPage() {
                     energyState === 'energized' ? 'text-primary font-semibold' : 'text-on-surface font-medium'
                   }`}
                 >
-                  Energized
+                  High
                 </span>
-                <span className="font-label-sm text-label-sm text-on-surface-variant">Driven</span>
+                <span className="font-label-sm text-label-sm text-on-surface-variant">More if you like</span>
               </button>
             </div>
           </section>

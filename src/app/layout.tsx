@@ -1,11 +1,20 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
+import localFont from 'next/font/local';
 import './globals.css';
 import { AppProvider } from '@/lib/store';
 import { Navbar } from '@/components/layout/Navbar';
 import { FloatingFocusBanner } from '@/components/layout/FloatingFocusBanner';
 import { ModalRoot } from '@/components/modals/ModalRoot';
 import { AndroidBackHandler } from '@/components/layout/AndroidBackHandler';
+
+const plusJakartaSans = localFont({
+  src: './fonts/plus-jakarta-sans-latin-wght-normal.woff2',
+  display: 'swap',
+  style: 'normal',
+  weight: '200 800',
+  variable: '--font-plus-jakarta',
+});
 
 export const metadata: Metadata = {
   title: 'Next - one thing at a time',
@@ -43,12 +52,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={plusJakartaSans.variable} suppressHydrationWarning>
       <head>
         {/* Theme and Accent synchronizer */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var s=localStorage.getItem('next_settings_v1');var parsed=s?JSON.parse(s):{};var t=parsed.theme||'light';var a=parsed.accentPalette||'amber';document.documentElement.setAttribute('data-accent', a);if(t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');}else{document.documentElement.classList.remove('dark');}}catch(e){document.documentElement.classList.remove('dark');document.documentElement.setAttribute('data-accent','amber');}})();`,
+            __html: `(function(){var root=document.documentElement;try{var s=localStorage.getItem('next_settings_v1');var parsed=s?JSON.parse(s):{};var t=parsed&&['light','dark','system'].indexOf(parsed.theme)>=0?parsed.theme:'system';var a=parsed&&['amber','mint'].indexOf(parsed.accentPalette)>=0?parsed.accentPalette:'amber';root.setAttribute('data-accent',a);var dark=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);root.classList.toggle('dark',dark);}catch(e){root.setAttribute('data-accent','amber');root.classList.toggle('dark',window.matchMedia('(prefers-color-scheme: dark)').matches);}})();`,
           }}
         />
       </head>

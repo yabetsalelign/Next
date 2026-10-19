@@ -256,12 +256,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (storedSettings) {
         try {
           const stored = JSON.parse(storedSettings);
-          parsedSettings = { ...DEFAULT_SETTINGS, ...stored };
+          if (stored && typeof stored === 'object' && !Array.isArray(stored)) {
+            parsedSettings = {
+              ...DEFAULT_SETTINGS,
+              ...stored,
+              // Preserve explicit legacy Light/Dark choices; missing or invalid values migrate to System.
+              theme: ['light', 'dark', 'system'].includes(stored.theme) ? stored.theme : 'system',
+            };
+          }
         } catch {
           // Corrupted storage — fall back to defaults
         }
-        setSettings(parsedSettings);
       }
+      setSettings(parsedSettings);
       setSettingsHydrated(true);
 
       const storedStuckLogs = localStorage.getItem(STORAGE_KEYS.STUCK_LOGS);

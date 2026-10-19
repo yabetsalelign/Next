@@ -2,7 +2,7 @@
 
 import { SymbolIcon } from '@/components/ui/SymbolIcon';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/store';
 
@@ -31,6 +31,14 @@ export default function FocusSessionPage() {
   const [selectedDuration, setSelectedDuration] = useState<number>(
     focusSession.durationSeconds || 120
   );
+
+  useEffect(() => {
+    if (focusSession.status !== 'idle') return;
+    const requestedMinutes = Number(new URLSearchParams(window.location.search).get('minutes'));
+    if ([2, 5, 10, 25].includes(requestedMinutes)) {
+      setSelectedDuration(requestedMinutes * 60);
+    }
+  }, []);
 
   const isIdle = focusSession.status === 'idle';
   const isRunning = focusSession.status === 'running';

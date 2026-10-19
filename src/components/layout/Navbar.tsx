@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { CalendarDays, Check, CircleHelp, House, ListTodo, Plus, Settings2 } from 'lucide-react';
 import { useApp } from '@/lib/store';
@@ -22,7 +23,7 @@ export function Navbar() {
     <>
       <aside className="hidden md:flex flex-col w-64 border-r border-outline-variant bg-surface-container-low px-5 py-7 fixed inset-y-0 left-0 z-30">
         <Link href="/" className="flex items-center gap-3 mb-9 px-2" aria-label="Next home">
-          <span className="w-10 h-10 rounded-2xl bg-primary text-on-primary flex items-center justify-center"><span className="font-semibold text-xl">N</span></span>
+          <Image src="/next-mascot.svg" alt="" width={40} height={40} priority unoptimized className="rounded-xl" />
           <span><span className="block text-lg font-semibold tracking-tight">Next</span><span className="block text-xs text-on-surface-variant">One thing at a time</span></span>
         </Link>
         <button type="button" onClick={() => openModal('create_task')} className="min-h-12 flex items-center justify-center gap-2 mb-7 rounded-xl bg-primary px-4 text-on-primary font-semibold hover:opacity-90"><Plus size={18} /> Add a task</button>

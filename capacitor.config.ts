@@ -6,7 +6,7 @@ const config: CapacitorConfig = {
   webDir: 'out',
   android: {
     // Match canvas background — prevents white flash on cold launch
-    backgroundColor: '#0F141C',
+    backgroundColor: '#121218',
   },
   server: {
     // Capacitor 5+ default is https, which fixes some storage APIs

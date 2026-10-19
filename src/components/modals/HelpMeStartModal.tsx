@@ -132,15 +132,15 @@ export function HelpMeStartModal() {
       onClick={closeModal}
     >
       <div
-        className="modal-sheet relative w-full sm:max-w-md bg-[#18191E] border-t sm:border border-[#2A2C34] sm:rounded-[28px] rounded-t-[28px] shadow-2xl p-6 sm:p-7 overflow-y-auto animate-slide-up flex flex-col space-y-5"
+        className="modal-sheet relative w-full sm:max-w-md bg-surface-container-low border-t sm:border border-outline-variant sm:rounded-[28px] rounded-t-[28px] shadow-2xl p-6 sm:p-7 overflow-y-auto animate-slide-up flex flex-col space-y-5"
         style={{ maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 1rem)' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Drag handle */}
-        <div className="w-10 h-1 bg-[#2A2C34] rounded-full mx-auto -mt-2 pb-0 cursor-grab" />
+        <div className="w-10 h-1 bg-surface-container-highest rounded-full mx-auto -mt-2 pb-0 cursor-grab" />
 
         {/* Header bar */}
-        <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
+        <div className="flex items-center justify-between pb-2 border-b border-outline-variant">
           <div className="flex items-center gap-2">
             {stage !== 'initial' && stage !== 'completed' && (
               <button
@@ -150,20 +150,20 @@ export function HelpMeStartModal() {
                   else if (stage === 'easier_choices') setStage('initial');
                   else setStage('easier_choices');
                 }}
-                className="p-1 rounded-lg text-stone-400 hover:text-white hover:bg-white/[0.05] transition-colors mr-1 cursor-pointer"
+                className="p-1 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors mr-1 cursor-pointer"
                 aria-label="Back"
               >
                 <ArrowLeft className="w-4 h-4" />
               </button>
             )}
-            <p className="text-[11px] font-bold tracking-widest uppercase text-stone-400">
+            <p className="text-[11px] font-bold tracking-widest uppercase text-on-surface-variant">
               HELP ME START
             </p>
           </div>
           <button
             onClick={closeModal}
             aria-label="Close"
-            className="w-7 h-7 rounded-full bg-[#202228] hover:bg-[#2F323B] text-stone-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+            className="w-7 h-7 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors cursor-pointer"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -173,19 +173,19 @@ export function HelpMeStartModal() {
         {stage === 'initial' && (
           <div className="space-y-5 animate-fade-in text-center">
             <div className="space-y-1">
-              <h2 id="start-modal-title" className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+              <h2 id="start-modal-title" className="text-xl sm:text-2xl font-bold tracking-tight text-on-surface">
                 Let&apos;s make this easier.
               </h2>
-              <p className="text-xs text-stone-400 font-medium">
+              <p className="text-xs text-on-surface-variant font-medium">
                 First step:
               </p>
             </div>
 
             {/* Micro-Step Recommendation Card with glowing aura */}
-            <div className="w-full bg-[#1A1D24] border border-[#2B3242] shadow-[0_0_0_1px_rgba(96,165,250,0.15),0_8px_24px_-4px_rgba(15,23,42,0.65)] rounded-2xl py-4 px-4 text-center relative group transition-all duration-200">
+            <div className="w-full bg-surface-container-low border border-outline-variant shadow-sm rounded-2xl py-4 px-4 text-center relative group transition-all duration-200">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500/10 to-primary/15 rounded-2xl blur-sm opacity-50 pointer-events-none" />
               <div className="relative z-10 flex items-center justify-center space-x-2">
-                <span className="text-sm font-semibold text-gray-100 tracking-wide">
+                <span className="text-sm font-semibold text-on-surface tracking-wide">
                   {firstStepText}
                 </span>
               </div>
@@ -204,7 +204,7 @@ export function HelpMeStartModal() {
               <button
                 type="button"
                 onClick={() => setStage('easier_choices')}
-                className="w-full py-2 text-center text-xs font-medium text-stone-400 hover:text-stone-200 transition-colors cursor-pointer"
+                className="w-full py-2 text-center text-xs font-medium text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer"
               >
                 Not quite
               </button>
@@ -216,10 +216,10 @@ export function HelpMeStartModal() {
         {stage === 'easier_choices' && (
           <div className="space-y-4 animate-fade-in text-left">
             <div>
-              <h3 className="text-xl font-bold tracking-tight text-white">
+              <h3 className="text-xl font-bold tracking-tight text-on-surface">
                 What would make this easier?
               </h3>
-              <p className="text-xs text-stone-400 mt-1">
+              <p className="text-xs text-on-surface-variant mt-1">
                 Notice the friction. We&apos;ll adapt to it.
               </p>
             </div>
@@ -228,12 +228,12 @@ export function HelpMeStartModal() {
               <button
                 type="button"
                 onClick={() => setStage('too_big')}
-                className="w-full p-4 rounded-2xl border border-[#2B3242] bg-[#1A1D24] hover:bg-[#22252e] text-left transition-all active:scale-[0.99] cursor-pointer"
+                className="w-full p-4 rounded-2xl border border-outline-variant bg-surface-container-low hover:bg-surface-container text-left transition-all active:scale-[0.99] cursor-pointer"
               >
-                <h4 className="text-sm font-semibold text-white">
+                <h4 className="text-sm font-semibold text-on-surface">
                   Too big
                 </h4>
-                <p className="text-xs text-stone-400 mt-0.5">
+                <p className="text-xs text-on-surface-variant mt-0.5">
                   Break it into smaller, manageable chunks.
                 </p>
               </button>
@@ -241,12 +241,12 @@ export function HelpMeStartModal() {
               <button
                 type="button"
                 onClick={() => setStage('dont_know')}
-                className="w-full p-4 rounded-2xl border border-[#2B3242] bg-[#1A1D24] hover:bg-[#22252e] text-left transition-all active:scale-[0.99] cursor-pointer"
+                className="w-full p-4 rounded-2xl border border-outline-variant bg-surface-container-low hover:bg-surface-container text-left transition-all active:scale-[0.99] cursor-pointer"
               >
-                <h4 className="text-sm font-semibold text-white">
+                <h4 className="text-sm font-semibold text-on-surface">
                   Don&apos;t know where to begin
                 </h4>
-                <p className="text-xs text-stone-400 mt-0.5">
+                <p className="text-xs text-on-surface-variant mt-0.5">
                   Find the single physical motion needed to open this.
                 </p>
               </button>
@@ -254,12 +254,12 @@ export function HelpMeStartModal() {
               <button
                 type="button"
                 onClick={() => setStage('low_energy')}
-                className="w-full p-4 rounded-2xl border border-[#2B3242] bg-[#1A1D24] hover:bg-[#22252e] text-left transition-all active:scale-[0.99] cursor-pointer"
+                className="w-full p-4 rounded-2xl border border-outline-variant bg-surface-container-low hover:bg-surface-container text-left transition-all active:scale-[0.99] cursor-pointer"
               >
-                <h4 className="text-sm font-semibold text-white">
+                <h4 className="text-sm font-semibold text-on-surface">
                   Low energy
                 </h4>
-                <p className="text-xs text-stone-400 mt-0.5">
+                <p className="text-xs text-on-surface-variant mt-0.5">
                   Do the absolute minimum or switch to gentle rest.
                 </p>
               </button>
@@ -267,12 +267,12 @@ export function HelpMeStartModal() {
               <button
                 type="button"
                 onClick={() => setStage('dont_want_to')}
-                className="w-full p-4 rounded-2xl border border-[#2B3242] bg-[#1A1D24] hover:bg-[#22252e] text-left transition-all active:scale-[0.99] cursor-pointer"
+                className="w-full p-4 rounded-2xl border border-outline-variant bg-surface-container-low hover:bg-surface-container text-left transition-all active:scale-[0.99] cursor-pointer"
               >
-                <h4 className="text-sm font-semibold text-white">
+                <h4 className="text-sm font-semibold text-on-surface">
                   I don&apos;t want to
                 </h4>
-                <p className="text-xs text-stone-400 mt-0.5">
+                <p className="text-xs text-on-surface-variant mt-0.5">
                   2 minutes of low expectations, then permission to stop.
                 </p>
               </button>
@@ -284,29 +284,29 @@ export function HelpMeStartModal() {
         {stage === 'too_big' && (
           <div className="space-y-4 animate-fade-in text-left">
             <div>
-              <h3 className="text-xl font-bold tracking-tight text-white">
+              <h3 className="text-xl font-bold tracking-tight text-on-surface">
                 Smaller steps.
               </h3>
-              <p className="text-xs text-stone-400 mt-1">
+              <p className="text-xs text-on-surface-variant mt-1">
                 Just look at step {currentStepIndex + 1} of {steps.length}.
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#1A1D24] border border-[#2B3242] space-y-3">
+            <div className="p-4 rounded-2xl bg-surface-container-low border border-outline-variant space-y-3">
               <span className="text-[11px] font-bold uppercase tracking-wider text-primary">
                 Step {currentStepIndex + 1}
               </span>
-              <p className="text-base font-semibold text-white leading-snug">
+              <p className="text-base font-semibold text-on-surface leading-snug">
                 {steps[currentStepIndex] || firstStepText}
               </p>
 
               {steps.length > 1 && (
-                <div className="flex items-center justify-between pt-2 border-t border-white/[0.08]">
+                <div className="flex items-center justify-between pt-2 border-t border-outline-variant">
                   <button
                     type="button"
                     onClick={() => setCurrentStepIndex(prev => Math.max(0, prev - 1))}
                     disabled={currentStepIndex === 0}
-                    className="flex items-center gap-1 text-xs font-medium text-stone-400 hover:text-white disabled:opacity-40 cursor-pointer"
+                    className="flex items-center gap-1 text-xs font-medium text-on-surface-variant hover:text-on-surface disabled:opacity-40 cursor-pointer"
                   >
                     <ChevronLeft className="w-4 h-4" />
                     <span>Previous</span>
@@ -338,17 +338,17 @@ export function HelpMeStartModal() {
         {stage === 'dont_know' && (
           <div className="space-y-4 animate-fade-in text-left">
             <div>
-              <h3 className="text-xl font-bold tracking-tight text-white">
+              <h3 className="text-xl font-bold tracking-tight text-on-surface">
                 Find the physical starting motion.
               </h3>
-              <p className="text-xs text-stone-400 mt-1">
+              <p className="text-xs text-on-surface-variant mt-1">
                 Forget the task content. What is the single physical action?
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#1A1D24] border border-[#2B3242] text-sm text-stone-300 space-y-1.5">
-              <p className="font-semibold text-white text-xs uppercase tracking-wider">Example physical beginnings:</p>
-              <ul className="list-disc list-inside space-y-1 text-xs text-stone-400">
+            <div className="p-4 rounded-2xl bg-surface-container-low border border-outline-variant text-sm text-on-surface space-y-1.5">
+              <p className="font-semibold text-on-surface text-xs uppercase tracking-wider">Example physical beginnings:</p>
+              <ul className="list-disc list-inside space-y-1 text-xs text-on-surface-variant">
                 <li>Sit in your chair and adjust the screen</li>
                 <li>Open the specific app or document and look at it</li>
                 <li>Put hands on keyboard and type one letter or word</li>
@@ -369,10 +369,10 @@ export function HelpMeStartModal() {
         {stage === 'low_energy' && (
           <div className="space-y-4 animate-fade-in text-left">
             <div>
-              <h3 className="text-xl font-bold tracking-tight text-white">
+              <h3 className="text-xl font-bold tracking-tight text-on-surface">
                 Absolute minimum mode.
               </h3>
-              <p className="text-xs text-stone-400 mt-1">
+              <p className="text-xs text-on-surface-variant mt-1">
                 When energy is low, doing the absolute minimum counts completely.
               </p>
             </div>
@@ -381,7 +381,7 @@ export function HelpMeStartModal() {
               <p className="text-[11px] font-bold uppercase tracking-wider text-primary mb-1">
                 The minimum:
               </p>
-              <p className="text-base font-semibold text-white">
+              <p className="text-base font-semibold text-on-surface">
                 {task.minimum || 'Spend 1 minute with this activity.'}
               </p>
             </div>
@@ -400,7 +400,7 @@ export function HelpMeStartModal() {
                   closeModal();
                   openModal('check_in');
                 }}
-                className="w-full py-2.5 px-4 rounded-xl text-xs font-medium text-stone-400 hover:text-stone-200 transition-colors text-center cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-xl text-xs font-medium text-on-surface-variant hover:text-on-surface transition-colors text-center cursor-pointer"
               >
                 Or check in and take care of your body first
               </button>
@@ -412,15 +412,15 @@ export function HelpMeStartModal() {
         {stage === 'dont_want_to' && (
           <div className="space-y-4 animate-fade-in text-left">
             <div>
-              <h3 className="text-xl font-bold tracking-tight text-white">
+              <h3 className="text-xl font-bold tracking-tight text-on-surface">
                 You don&apos;t have to want to.
               </h3>
-              <p className="text-xs text-stone-400 mt-1">
+              <p className="text-xs text-on-surface-variant mt-1">
                 Motivation follows action, not the other way around.
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#1A1D24] border border-[#2B3242] text-xs text-stone-300">
+            <div className="p-4 rounded-2xl bg-surface-container-low border border-outline-variant text-xs text-on-surface">
               <p className="leading-relaxed">
                 Stay with it for 2 minutes without expecting yourself to enjoy it or finish it. When the 2 minutes are up, you have full permission to stop.
               </p>
@@ -443,22 +443,22 @@ export function HelpMeStartModal() {
               <span className="text-[11px] font-bold uppercase tracking-wider text-primary">
                 Focus gently
               </span>
-              <h4 className="text-base font-bold text-white mt-1 break-words">
+              <h4 className="text-base font-bold text-on-surface mt-1 break-words">
                 {firstStepText}
               </h4>
             </div>
 
             {/* Circular display */}
-            <div className="relative w-36 h-36 mx-auto rounded-full bg-[#121317] border-2 border-primary/40 flex flex-col items-center justify-center shadow-inner">
+            <div className="relative w-36 h-36 mx-auto rounded-full bg-surface-container-lowest border-2 border-primary/40 flex flex-col items-center justify-center shadow-inner">
               <span className="text-3xl font-mono font-bold tracking-tight text-primary">
                 {formatTime(timerSecondsLeft)}
               </span>
-              <span className="text-[10px] text-stone-400 mt-1 uppercase tracking-wider">
+              <span className="text-[10px] text-on-surface-variant mt-1 uppercase tracking-wider">
                 {isTimerRunning ? 'in progress' : 'paused'}
               </span>
             </div>
 
-            <p className="text-xs text-stone-400 italic">
+            <p className="text-xs text-on-surface-variant italic">
               &ldquo;You don&apos;t have to finish. Just stay with it for this moment.&rdquo;
             </p>
 
@@ -490,7 +490,7 @@ export function HelpMeStartModal() {
                   setIsTimerRunning(false);
                   setStage('initial');
                 }}
-                className="p-3 rounded-2xl text-stone-400 hover:bg-white/[0.06] transition-colors cursor-pointer"
+                className="p-3 rounded-2xl text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer"
                 title="Reset"
                 aria-label="Reset timer"
               >
@@ -508,10 +508,10 @@ export function HelpMeStartModal() {
             </div>
 
             <div>
-              <h3 className="text-xl sm:text-2xl font-bold text-white">
+              <h3 className="text-xl sm:text-2xl font-bold text-on-surface">
                 You did the minimum.
               </h3>
-              <p className="text-sm text-stone-400 mt-1">
+              <p className="text-sm text-on-surface-variant mt-1">
                 That counts. You overcame the inertia.
               </p>
             </div>
@@ -527,7 +527,7 @@ export function HelpMeStartModal() {
               <button
                 type="button"
                 onClick={closeModal}
-                className="w-full py-3 px-5 rounded-full border border-white/10 hover:bg-white/[0.05] text-stone-300 font-medium text-sm transition-all cursor-pointer"
+                className="w-full py-3 px-5 rounded-full border border-outline-variant hover:bg-surface-container-high text-on-surface font-medium text-sm transition-all cursor-pointer"
               >
                 Keep going
               </button>

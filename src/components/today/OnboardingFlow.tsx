@@ -2,6 +2,7 @@
 
 import { SymbolIcon } from '@/components/ui/SymbolIcon';
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { useApp } from '@/lib/store';
 
 export function OnboardingFlow() {
@@ -51,7 +52,7 @@ export function OnboardingFlow() {
           <header className="w-full flex flex-col items-center pt-space-md pb-space-md">
             <div className="w-full flex items-center justify-between mb-3">
               <div className="flex items-center gap-space-xs">
-                <span className="w-2.5 h-2.5 rounded-full bg-primary-container inline-block shadow-[0_0_8px_rgba(255,185,99,0.4)]"></span>
+                <Image src="/next-mascot.svg" alt="" width={32} height={32} priority unoptimized className="rounded-lg" />
                 <span className="font-headline-sm text-headline-sm text-on-surface tracking-tight font-bold">
                   Next
                 </span>
@@ -281,7 +282,7 @@ export function OnboardingFlow() {
                       </span>
                     </div>
                     <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">
-                      Focus strictly on the next minimum. Zero pressure, low friction.
+                      Keep the current step simple, with fewer competing choices.
                     </p>
                   </div>
                   <div className="w-6 h-6 rounded-full border border-primary-container flex items-center justify-center shrink-0 ml-3">
@@ -302,9 +303,9 @@ export function OnboardingFlow() {
                   }`}
                 >
                   <div>
-                    <h3 className="font-headline-sm text-headline-sm text-on-surface font-semibold">Balanced</h3>
+                    <h3 className="font-headline-sm text-headline-sm text-on-surface font-semibold">Steady</h3>
                     <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">
-                      A comfortable sequence with flexible estimates and gentle pacing.
+                      A clear next step with a little context to help you begin.
                     </p>
                   </div>
                   <div className="w-6 h-6 rounded-full border border-primary-container flex items-center justify-center shrink-0 ml-3">
@@ -325,9 +326,9 @@ export function OnboardingFlow() {
                   }`}
                 >
                   <div>
-                    <h3 className="font-headline-sm text-headline-sm text-on-surface font-semibold">Structured</h3>
+                    <h3 className="font-headline-sm text-headline-sm text-on-surface font-semibold">Focused</h3>
                     <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">
-                      Detailed step breakdowns and explicit time horizons.
+                      Keep the current task and optional focus action in view.
                     </p>
                   </div>
                   <div className="w-6 h-6 rounded-full border border-primary-container flex items-center justify-center shrink-0 ml-3">

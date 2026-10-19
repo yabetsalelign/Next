@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import { ArrowLeft, Settings2 } from 'lucide-react';
 
@@ -64,6 +65,9 @@ export function Header({
             </button>
           ) : (
             <div className="flex items-center gap-space-sm pl-1">
+              {pathname === '/' && (
+                <Image src="/next-mascot.svg" alt="" width={28} height={28} priority unoptimized className="rounded-lg" />
+              )}
               <h1 className="text-lg text-on-surface tracking-tight font-semibold">
                 {resolvedTitle}
               </h1>

@@ -12,7 +12,7 @@ export default function SettingsPage() {
   const selectedAccent = (settings.accentPalette as 'amber' | 'mint') || 'amber';
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const currentTheme = settings.theme || 'dark';
+  const currentTheme = settings.theme || 'system';
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
@@ -45,8 +45,8 @@ export default function SettingsPage() {
     const current = settings.startingDifficulty || 'gentle';
     const next = current === 'gentle' ? 'balanced' : current === 'balanced' ? 'structured' : 'gentle';
     updateSettings({ startingDifficulty: next });
-    const label = next === 'gentle' ? 'Gentle (Low friction)' : next === 'balanced' ? 'Balanced (Standard)' : 'Structured';
-    triggerToast(`Starting difficulty: ${label}`);
+    const label = next === 'gentle' ? 'Gentle' : next === 'balanced' ? 'Steady' : 'Focused';
+    triggerToast(`Work pace: ${label}`);
   };
 
   const handleExportData = () => {
@@ -125,10 +125,10 @@ export default function SettingsPage() {
 
   const difficultyLabel =
     settings.startingDifficulty === 'structured'
-      ? 'Structured'
+      ? 'Focused'
       : settings.startingDifficulty === 'balanced'
-      ? 'Balanced'
-      : 'Gentle (Low friction)';
+      ? 'Steady'
+      : 'Gentle';
 
   return (
     <div className="min-h-screen bg-background text-on-surface font-body-md text-body-md flex flex-col selection:bg-primary-container selection:text-on-primary-container">
@@ -247,14 +247,14 @@ export default function SettingsPage() {
               Behavior &amp; Sound
             </span>
             <div className="bg-surface-container-low rounded-2xl flex flex-col border border-surface-container-high/30">
-              {/* Starting difficulty */}
+              {/* Preferred work pace */}
               <div className="p-space-md flex items-center justify-between gap-space-md">
                 <div className="flex flex-col min-w-0 pr-space-xs">
                   <span className="font-headline-sm text-headline-sm text-on-surface font-medium">
-                    Starting difficulty
+                    Preferred work pace
                   </span>
                   <span className="font-body-sm text-body-sm text-on-surface-variant">
-                    Default scope when breaking tasks down
+                    Shapes how much guidance you see on Today
                   </span>
                 </div>
                 <button

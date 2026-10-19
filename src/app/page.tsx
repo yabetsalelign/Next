@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Check, Circle, Coffee, Plus } from 'lucide-react';
 import { useApp } from '@/lib/store';
@@ -8,10 +8,27 @@ import { Header } from '@/components/layout/Header';
 import { CurrentTaskCard } from '@/components/today/CurrentTaskCard';
 import { TodayEmptyState } from '@/components/today/TodayEmptyState';
 import { OnboardingFlow } from '@/components/today/OnboardingFlow';
+import { getLocalDateString } from '@/lib/dateUtils';
 
 export default function TodayPage() {
   const router = useRouter();
   const { currentTask, upNextTasks, hydrated, notPlanningToday, pendingReturn, settings, openModal, completeTask, setCurrentTask, setNotPlanningToday, focusSession } = useApp();
+  const [todayEnergy, setTodayEnergy] = useState<'low' | 'steady' | 'energized' | null>(null);
+
+  useEffect(() => {
+    try {
+      const savedCheckIns = localStorage.getItem('next_checkins_v1');
+      const entries = savedCheckIns ? JSON.parse(savedCheckIns) : [];
+      const entry = Array.isArray(entries)
+        ? entries.find((item) => item.date === getLocalDateString())
+        : undefined;
+      if (entry?.energyState === 'low' || entry?.energyState === 'steady' || entry?.energyState === 'energized') {
+        setTodayEnergy(entry.energyState);
+      }
+    } catch {
+      setTodayEnergy(null);
+    }
+  }, []);
 
   const { dateFormatted, greeting } = useMemo(() => {
     const now = new Date();
@@ -52,7 +69,7 @@ export default function TodayPage() {
           ) : pendingReturn || !currentTask ? (
             <TodayEmptyState />
           ) : (
-            <CurrentTaskCard task={currentTask} />
+            <CurrentTaskCard task={currentTask} energy={todayEnergy} pace={settings.startingDifficulty || 'gentle'} />
           )}
 
           {!notPlanningToday && (

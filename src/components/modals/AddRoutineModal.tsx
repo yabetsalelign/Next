@@ -44,26 +44,26 @@ export function AddRoutineModal() {
       onClick={closeModal}
     >
       <section
-        className="relative z-20 w-full max-w-lg bg-[#1b1c20] border-t sm:border border-white/10 rounded-t-[28px] sm:rounded-[28px] shadow-2xl px-5 pt-3 pb-8 flex flex-col animate-slide-up"
+        className="relative z-20 w-full max-w-lg bg-surface-container-low border-t sm:border border-outline-variant rounded-t-[28px] sm:rounded-[28px] shadow-2xl px-5 pt-3 pb-8 flex flex-col animate-slide-up"
         onClick={(e) => e.stopPropagation()}
         data-purpose="new-routine-modal"
       >
         {/* Drawer Grab Handle */}
         <div className="w-full flex justify-center py-1">
-          <div aria-hidden="true" className="w-10 h-1 rounded-full bg-zinc-600/70"></div>
+          <div aria-hidden="true" className="w-10 h-1 rounded-full bg-surface-container-highest"></div>
         </div>
 
         {/* Modal Header */}
         <header className="flex justify-between items-center mt-3 mb-5">
           <div className="flex items-center space-x-2">
-            <span className="text-[#ffb963] text-lg">✨</span>
+            <span className="text-primary-container text-lg">✨</span>
             <h2 className="text-lg font-bold text-on-surface tracking-tight font-headline-sm">New Routine</h2>
           </div>
           <button
             type="button"
             aria-label="Close dialog"
             onClick={closeModal}
-            className="w-8 h-8 flex items-center justify-center rounded-full text-on-surface-variant hover:text-white transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface transition-colors"
           >
             <SymbolIcon name="close" className="text-[20px]" />
           </button>
@@ -84,7 +84,7 @@ export function AddRoutineModal() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Afternoon reset, Reading wind-down..."
-              className="w-full h-12 px-4 py-3 bg-[#24252a] text-sm text-on-surface placeholder:text-on-surface-variant rounded-xl border border-zinc-700/60 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition duration-150 font-body-md"
+              className="w-full h-12 px-4 py-3 bg-surface-container-lowest text-sm text-on-surface placeholder:text-on-surface-variant rounded-xl border border-outline-variant focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition duration-150 font-body-md"
             />
           </div>
 
@@ -99,7 +99,7 @@ export function AddRoutineModal() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Short note on what this routine is for"
-              className="w-full px-4 py-3 bg-[#24252a] text-sm text-on-surface placeholder:text-on-surface-variant rounded-xl border border-zinc-700/60 resize-none focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition duration-150 font-body-md"
+              className="w-full px-4 py-3 bg-surface-container-lowest text-sm text-on-surface placeholder:text-on-surface-variant rounded-xl border border-outline-variant resize-none focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition duration-150 font-body-md"
             />
           </div>
 
@@ -116,8 +116,8 @@ export function AddRoutineModal() {
                   onClick={() => setIcon(emoji)}
                   className={`flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center text-lg transition-all ${
                     icon === emoji
-                      ? 'bg-[#282725] border-2 border-primary-container text-primary-container shadow-sm scale-105'
-                      : 'bg-[#24252a] border border-zinc-700/50 hover:border-zinc-500'
+                      ? 'bg-surface-container-high border-2 border-primary-container text-primary-container shadow-sm scale-105'
+                      : 'bg-surface-container-lowest border border-outline-variant hover:border-outline'
                   }`}
                 >
                   {emoji}
@@ -144,8 +144,8 @@ export function AddRoutineModal() {
                   onClick={() => setTimeOfDay(t.id as any)}
                   className={`py-2.5 rounded-xl text-xs font-medium transition-all text-center ${
                     timeOfDay === t.id
-                      ? 'bg-[#362b1e] border border-primary-container text-primary-container shadow-inner font-semibold'
-                      : 'bg-[#24252a] border border-zinc-700/50 text-zinc-300 hover:border-zinc-500'
+                      ? 'bg-primary/10 border border-primary-container text-primary-container shadow-inner font-semibold'
+                      : 'bg-surface-container-lowest border border-outline-variant text-on-surface hover:border-outline'
                   }`}
                 >
                   {t.label}
