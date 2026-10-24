@@ -88,6 +88,7 @@ interface AppContextType {
   setTaskSteps: (taskId: string, steps: TaskStep[]) => void;
   logStuckEvent: (reason: StuckReason, actionTaken: string, taskId?: string) => void;
   toggleRoutineStep: (routineId: string, stepId: string) => void;
+  setRoutineStepCompleted: (routineId: string, stepId: string, completed: boolean) => void;
   resetRoutineSteps: (routineId: string) => void;
   updateRoutine: (routineId: string, updates: Partial<Routine>) => void;
   addRoutine: (routine: Omit<Routine, 'id'>) => Routine;
@@ -244,6 +245,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
       const storedRoutines = localStorage.getItem(STORAGE_KEYS.ROUTINES);
       let parsedRoutines: Routine[] = storedRoutines ? JSON.parse(storedRoutines) : [];
+      if (Array.isArray(parsedRoutines)) {
+        parsedRoutines = parsedRoutines.map((r: any) => ({
+          ...r,
+          steps: Array.isArray(r?.steps)
+            ? r.steps.map((s: any, idx: number) => ({
+                id: s?.id || `step-${Date.now()}-${idx + 1}`,
+                title: typeof s?.title === 'string' ? s.title : '',
+                durationMinutes: typeof s?.durationMinutes === 'number' ? s.durationMinutes : 5,
+                completed: Boolean(s?.completed),
+              }))
+            : [],
+        }));
+      }
 
       const storedReturns = localStorage.getItem(STORAGE_KEYS.RETURNS);
       let parsedReturns: ReturnDay[] = storedReturns ? JSON.parse(storedReturns) : INITIAL_RETURNS;
@@ -316,7 +330,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         // 3. Reset routine step checkmarks for the new day
         parsedRoutines = parsedRoutines.map((r: Routine) => ({
           ...r,
-          steps: r.steps.map(s => ({ ...s, completed: false })),
+          steps: (r.steps || []).map(s => ({ ...s, completed: false })),
         }));
 
         // 4. Return recording: if gap >= 2 days, mark today as a gentle return
@@ -566,10 +580,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (taskId) setActiveTaskId(taskId);
     else if (!taskId && currentTask) setActiveTaskId(currentTask.id);
     if (routineId) setActiveRoutineId(routineId);
+    else setActiveRoutineId(null);
   };
 
   const closeModal = () => {
     setActiveModal(null);
+    setActiveRoutineId(null);
   };
 
   const setCurrentTask = (taskId: string) => {
@@ -778,7 +794,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         if (r.id !== routineId) return r;
         return {
           ...r,
-          steps: r.steps.map(s => (s.id === stepId ? { ...s, completed: !s.completed } : s)),
+          steps: (r.steps || []).map(s => (s.id === stepId ? { ...s, completed: !s.completed } : s)),
+        };
+      })
+    );
+  };
+
+  const setRoutineStepCompleted = (routineId: string, stepId: string, completed: boolean) => {
+    setRoutines(prev =>
+      prev.map(r => {
+        if (r.id !== routineId) return r;
+        return {
+          ...r,
+          steps: (r.steps || []).map(s => (s.id === stepId ? { ...s, completed } : s)),
         };
       })
     );
@@ -790,7 +818,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         if (r.id !== routineId) return r;
         return {
           ...r,
-          steps: r.steps.map(s => ({ ...s, completed: false })),
+          steps: (r.steps || []).map(s => ({ ...s, completed: false })),
         };
       })
     );
@@ -1134,6 +1162,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setTaskSteps,
         logStuckEvent,
         toggleRoutineStep,
+        setRoutineStepCompleted,
         resetRoutineSteps,
         updateRoutine,
         addRoutine,

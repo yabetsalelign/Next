@@ -14,7 +14,7 @@ export default function RoutinesPage() {
   const activeRoutines = routines.filter((r) => r.enabled !== false);
 
   const totalStepsCompleted = routines.reduce(
-    (acc, r) => acc + r.steps.filter((s) => s.completed).length,
+    (acc, r) => acc + (r.steps || []).filter((s) => s.completed).length,
     0
   );
 
@@ -85,7 +85,8 @@ export default function RoutinesPage() {
           /* Routines List */
           <div className="flex flex-col gap-space-md">
             {activeRoutines.map((routine) => {
-              const totalMins = routine.steps.reduce(
+              const routineSteps = routine.steps || [];
+              const totalMins = routineSteps.reduce(
                 (sum, s) => sum + (s.durationMinutes || 5),
                 0
               );
@@ -107,7 +108,7 @@ export default function RoutinesPage() {
                           {routine.title}
                         </h2>
                         <p className="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1.5 flex-wrap">
-                          <span>{routine.steps.length} steps</span>
+                          <span>{routineSteps.length} steps</span>
                           <span className="w-1 h-1 rounded-full bg-outline-variant"></span>
                           <span>~{totalMins} min</span>
                           <span className="w-1 h-1 rounded-full bg-outline-variant"></span>
@@ -116,14 +117,27 @@ export default function RoutinesPage() {
                       </div>
                     </div>
 
-                    <button
-                      type="button"
-                      aria-label="Routine options"
-                      onClick={() => openModal('routine_runner', undefined, routine.id)}
-                      className="w-11 h-11 rounded-xl flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors"
-                    >
-                      <SymbolIcon name="play_arrow" className="text-[20px]" />
-                    </button>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        type="button"
+                        aria-label={`Edit ${routine.title}`}
+                        onClick={() => openModal('add_routine', undefined, routine.id)}
+                        className="w-10 h-10 rounded-xl flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors"
+                        title="Edit routine and steps"
+                      >
+                        <SymbolIcon name="edit" className="text-[18px]" />
+                      </button>
+
+                      <button
+                        type="button"
+                        aria-label={`Start ${routine.title}`}
+                        onClick={() => openModal('routine_runner', undefined, routine.id)}
+                        className="w-10 h-10 rounded-xl flex items-center justify-center text-primary hover:text-primary hover:bg-primary/10 transition-colors"
+                        title="Start flow"
+                      >
+                        <SymbolIcon name="play_arrow" className="text-[20px]" />
+                      </button>
+                    </div>
                   </div>
 
                   {/* Flow Mode Badge */}
@@ -143,7 +157,12 @@ export default function RoutinesPage() {
 
                   {/* Flow preview steps */}
                   <div className="flex flex-col gap-1.5 transition-all duration-300">
-                    {routine.steps.slice(0, isExpanded ? routine.steps.length : 3).map((step, idx) => (
+                    {routineSteps.length === 0 ? (
+                      <div className="p-3 text-xs text-on-surface-variant bg-surface-container/40 rounded-xl border border-dashed border-outline-variant text-center">
+                        No steps yet. Tap the edit icon above to add actions.
+                      </div>
+                    ) : (
+                      routineSteps.slice(0, isExpanded ? routineSteps.length : 3).map((step, idx) => (
                       <div
                         key={step.id}
                         className="bg-surface-container/70 rounded-xl p-3 flex items-center justify-between gap-space-sm border border-outline-variant"
@@ -173,7 +192,7 @@ export default function RoutinesPage() {
                           ~{step.durationMinutes || 5}m
                         </span>
                       </div>
-                    ))}
+                    )))}
                   </div>
 
                   {/* Start Flow Button */}

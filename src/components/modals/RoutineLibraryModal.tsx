@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useApp } from '@/lib/store';
 import { Routine } from '@/types';
 import { sounds } from '@/lib/sounds';
-import { X, PlusCircle, Check, Play, ChevronDown, ChevronUp, RotateCcw, MinusCircle, Plus } from 'lucide-react';
+import { X, PlusCircle, Check, Play, ChevronDown, ChevronUp, RotateCcw, MinusCircle, Plus, Pencil } from 'lucide-react';
 
 function LibraryRoutineCard({
   routine,
@@ -16,8 +16,9 @@ function LibraryRoutineCard({
   const [newStepText, setNewStepText] = useState('');
 
   const isEnabled = routine.enabled !== false;
-  const completedStepsCount = routine.steps.filter(s => s.completed).length;
-  const totalStepsCount = routine.steps.length;
+  const routineSteps = routine.steps || [];
+  const completedStepsCount = routineSteps.filter(s => s.completed).length;
+  const totalStepsCount = routineSteps.length;
   const isAllDone = totalStepsCount > 0 && completedStepsCount === totalStepsCount;
 
   const handleToggleActive = (e: React.MouseEvent) => {
@@ -33,9 +34,9 @@ function LibraryRoutineCard({
   const handleAddStep = () => {
     if (!newStepText.trim()) return;
     const updatedSteps = [
-      ...routine.steps,
+      ...routineSteps,
       {
-        id: `step-${Date.now()}-${routine.steps.length + 1}`,
+        id: `step-${Date.now()}-${routineSteps.length + 1}`,
         title: newStepText.trim(),
         durationMinutes: 5,
         completed: false,
@@ -45,7 +46,7 @@ function LibraryRoutineCard({
     setNewStepText('');
   };
 
-  const previewText = routine.steps.slice(0, 3).map(s => s.title).join(' · ');
+  const previewText = routineSteps.slice(0, 3).map(s => s.title).join(' · ');
 
   return (
     <article className="rounded-2xl bg-surface dark:bg-surface-dark border border-stone-200/90 dark:border-white/[0.08] shadow-sm transition-all overflow-hidden">
@@ -106,7 +107,7 @@ function LibraryRoutineCard({
         <div className="px-4 pb-4 pt-1 border-t border-stone-100 dark:border-white/[0.06] space-y-3.5 animate-fade-in">
           {/* Steps list */}
           <div className="space-y-2 pt-1">
-            {routine.steps.map((step, idx) => (
+            {routineSteps.map((step, idx) => (
               <div
                 key={step.id}
                 className="flex items-start justify-between gap-2.5 py-1 text-sm"
@@ -154,6 +155,16 @@ function LibraryRoutineCard({
             >
               <Play className="w-3.5 h-3.5" />
               <span>Start routine</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => openModal('add_routine', undefined, routine.id)}
+              title="Edit routine and steps"
+              aria-label="Edit routine and steps"
+              className="p-2.5 rounded-xl border border-stone-200 dark:border-white/[0.08] text-ink-muted hover:text-ink-primary hover:bg-stone-50 dark:hover:bg-white/[0.04] transition-colors"
+            >
+              <Pencil className="w-4 h-4" />
             </button>
 
             <button

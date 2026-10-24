@@ -98,19 +98,18 @@
   "step5_viewports": {
     "mobile": {
       "viewport": "390x844",
-      "screenshotBytes": 137534
+      "screenshotBytes": 138614
     },
     "desktop": {
       "viewport": "1440x900",
-      "screenshotBytes": 86998
+      "screenshotBytes": 87716
     }
   },
   "step6_console_errors": [],
   "step7_interaction": {
     "before": {
       "currentAccent": "amber",
-      "hasAmberBtn": false,
-      "hasMintBtn": false
+      "isDark": true
     },
     "action": {
       "clickedText": "Dark",
@@ -119,6 +118,21 @@
     "after": {
       "accent": "amber",
       "isDark": true
+    }
+  },
+  "step8_routine_creation_ui": {
+    "modal": {
+      "hasTitleInput": true,
+      "hasStepInput": true,
+      "hasEmptyState": true,
+      "hasAddStepBtn": true
+    },
+    "steps": {
+      "stepCount": 2,
+      "stepTitles": [
+        "Drink 1 full glass of water",
+        "Gentle morning stretch"
+      ]
     }
   }
 }

@@ -1,15 +1,23 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '@/lib/store';
 import { sounds } from '@/lib/sounds';
-import { X, Check, ChevronRight, Sparkles, RotateCcw } from 'lucide-react';
+import { X, Check, RotateCcw, Plus, Sparkles } from 'lucide-react';
 
 export function RoutineRunnerModal() {
-  const { activeRoutineId, routines, closeModal, toggleRoutineStep } = useApp();
-  const routine = routines.find(r => r.id === activeRoutineId) || null;
+  const { activeRoutineId, routines, closeModal, setRoutineStepCompleted, resetRoutineSteps, openModal } = useApp();
+  const routine = routines.find((r) => r.id === activeRoutineId) || null;
 
-  const [stepIndex, setStepIndex] = useState(0);
+  const steps = routine?.steps || [];
+
+  const [stepIndex, setStepIndex] = useState(() => {
+    if (!routine || steps.length === 0) return 0;
+    const firstIncomplete = steps.findIndex((s) => !s.completed);
+    return firstIncomplete >= 0 ? firstIncomplete : steps.length;
+  });
+
+  const completingRef = useRef(false);
 
   useEffect(() => {
     if (!routine) {
@@ -19,23 +27,40 @@ export function RoutineRunnerModal() {
 
   if (!routine) return null;
 
-  const currentStep = routine.steps[stepIndex];
-  const isFinished = stepIndex >= routine.steps.length;
+  const hasNoSteps = steps.length === 0;
+  const isFinished = !hasNoSteps && stepIndex >= steps.length;
+  const currentStep = !hasNoSteps && !isFinished ? steps[stepIndex] : null;
 
   const handleCompleteStep = () => {
+    if (completingRef.current || !currentStep) return;
+    completingRef.current = true;
+
     sounds.playMinimumComplete();
-    if (currentStep) {
-      toggleRoutineStep(routine.id, currentStep.id);
+    setRoutineStepCompleted(routine.id, currentStep.id, true);
+
+    const nextIndex = stepIndex + 1;
+    setStepIndex(nextIndex);
+
+    if (nextIndex >= steps.length) {
+      sounds.playMinimumComplete();
     }
-    setStepIndex(prev => prev + 1);
+
+    setTimeout(() => {
+      completingRef.current = false;
+    }, 200);
   };
 
   const handleSkipStep = () => {
-    setStepIndex(prev => prev + 1);
+    setStepIndex((prev) => Math.min(steps.length, prev + 1));
+  };
+
+  const handleResetAndRestart = () => {
+    resetRoutineSteps(routine.id);
+    setStepIndex(0);
   };
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-end justify-center pb-[env(safe-area-inset-bottom,0px)] sm:items-center sm:p-4 bg-stone-900/40 dark:bg-black/60 backdrop-blur-[1px] animate-fade-in"
       role="dialog"
       aria-modal="true"
@@ -51,17 +76,21 @@ export function RoutineRunnerModal() {
         <div className="sm:hidden flex justify-center pt-3 pb-1">
           <div className="w-10 h-1 rounded-full bg-stone-300 dark:bg-white/20" />
         </div>
-        
+
         {/* Header */}
         <div className="flex items-center justify-between px-5 sm:px-6 pt-4 pb-3 border-b border-stone-100 dark:border-white/[0.06]">
           <div className="flex items-center gap-2.5 min-w-0 flex-1">
-            <span className="text-xl select-none shrink-0">{routine.icon}</span>
+            <span className="text-xl select-none shrink-0" role="img" aria-hidden="true">{routine.icon}</span>
             <div className="min-w-0 flex-1">
               <h4 id="routine-runner-title" className="text-xs font-bold uppercase tracking-wider text-ink-primary dark:text-linen break-words leading-snug">
                 {routine.title}
               </h4>
               <p className="text-[10px] text-ink-muted dark:text-linen-subtle">
-                Step {!isFinished ? stepIndex + 1 : routine.steps.length} of {routine.steps.length}
+                {hasNoSteps
+                  ? 'No steps configured'
+                  : isFinished
+                  ? `${steps.length} of ${steps.length} steps complete`
+                  : `Step ${stepIndex + 1} of ${steps.length}`}
               </p>
             </div>
           </div>
@@ -75,9 +104,40 @@ export function RoutineRunnerModal() {
         </div>
 
         {/* Content */}
-        <div className="p-6 sm:p-8">
-          {isFinished ? (
-            <div className="text-center py-6 space-y-4 animate-fade-in">
+        <div className="p-6 sm:p-8 space-y-6">
+          {hasNoSteps ? (
+            /* Graceful empty state when routine has 0 steps */
+            <div className="text-center py-6 space-y-4 animate-fade-in" data-purpose="runner-no-steps">
+              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 mx-auto flex items-center justify-center text-2xl">
+                ✨
+              </div>
+              <h3 className="text-lg font-bold text-ink-primary dark:text-slate-100">
+                This routine has no steps yet
+              </h3>
+              <p className="text-xs text-ink-muted dark:text-slate-400 max-w-xs mx-auto">
+                Add ordered steps to build out this rhythm and run through it whenever you are ready.
+              </p>
+              <div className="pt-2 flex flex-col gap-2">
+                <button
+                  type="button"
+                  onClick={() => openModal('add_routine', undefined, routine.id)}
+                  className="w-full py-3 px-4 rounded-xl bg-primary text-on-primary font-semibold text-xs flex items-center justify-center gap-1.5 hover:opacity-90 transition-all shadow-sm"
+                >
+                  <Plus size={16} />
+                  <span>Add steps to routine</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="w-full py-2.5 px-4 rounded-xl text-xs font-medium text-ink-muted hover:text-ink-primary dark:hover:text-slate-200 transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          ) : isFinished ? (
+            /* Complete State */
+            <div className="text-center py-6 space-y-4 animate-fade-in" data-purpose="runner-finished">
               <div className="w-16 h-16 rounded-full bg-gentle-greenBg text-gentle-green mx-auto flex items-center justify-center">
                 <Check className="w-8 h-8" />
               </div>
@@ -87,27 +147,37 @@ export function RoutineRunnerModal() {
               <p className="text-sm text-ink-muted dark:text-slate-400 max-w-xs mx-auto">
                 You completed this flow with zero rush. Return to your day whenever you are ready.
               </p>
-              <div className="pt-2">
+              <div className="pt-2 flex flex-col gap-2">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="w-full py-3.5 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-medium text-sm transition-all"
+                  className="w-full py-3.5 px-4 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-medium text-sm transition-all"
                 >
                   Done
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResetAndRestart}
+                  className="w-full py-2.5 px-3 rounded-xl text-xs font-medium text-ink-muted hover:text-ink-primary dark:hover:text-slate-200 transition-colors inline-flex items-center justify-center gap-1.5"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Run again</span>
                 </button>
               </div>
             </div>
           ) : (
-            <div className="space-y-6">
+            /* Active Step Runner */
+            <div className="space-y-6" data-purpose="runner-active-step">
+              {/* Focused Current Step Card */}
               <div className="rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 p-6 text-center space-y-2">
-                <span className="text-xs font-semibold uppercase tracking-wider text-brand-600 dark:text-brand-400">
-                  Focus on just this step:
+                <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+                  Step {stepIndex + 1} of {steps.length}
                 </span>
                 <h3 className="text-xl sm:text-2xl font-bold text-ink-primary dark:text-slate-100 leading-snug break-words">
-                  {currentStep.title}
+                  {currentStep?.title}
                 </h3>
                 <p className="text-xs text-ink-muted dark:text-slate-400">
-                  Approx. {currentStep.durationMinutes} min • Take whatever time you need
+                  Approx. {currentStep?.durationMinutes || 5} min • Take whatever time you need
                 </p>
               </div>
 
@@ -140,10 +210,54 @@ export function RoutineRunnerModal() {
                   </button>
                 </div>
               </div>
+
+              {/* Steps Sequence Overview (See which step comes next) */}
+              <div className="pt-2 border-t border-stone-200/80 dark:border-white/[0.06] space-y-2" data-purpose="runner-step-overview">
+                <span className="block text-[11px] font-semibold text-ink-muted dark:text-linen-subtle uppercase tracking-wider">
+                  Flow sequence
+                </span>
+                <div className="space-y-1.5 max-h-40 overflow-y-auto pr-0.5">
+                  {steps.map((step, idx) => {
+                    const isPast = idx < stepIndex;
+                    const isCurrent = idx === stepIndex;
+                    const isUpcoming = idx > stepIndex;
+
+                    return (
+                      <div
+                        key={step.id}
+                        className={`flex items-center justify-between text-xs p-2 rounded-xl border transition-colors ${
+                          isCurrent
+                            ? 'bg-primary/10 border-primary text-on-surface font-semibold'
+                            : isPast
+                            ? 'bg-surface-container-low/50 border-transparent text-on-surface-variant line-through'
+                            : 'bg-surface-container-lowest border-outline-variant/50 text-on-surface-variant'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          <span
+                            className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
+                              isPast
+                                ? 'bg-sage-600 text-white'
+                                : isCurrent
+                                ? 'bg-primary text-on-primary'
+                                : 'bg-surface-container-high text-on-surface-variant'
+                            }`}
+                          >
+                            {isPast ? '✓' : idx + 1}
+                          </span>
+                          <span className="truncate">{step.title}</span>
+                        </div>
+                        <span className="text-[10px] shrink-0 opacity-70">
+                          {isCurrent ? 'Current' : `~${step.durationMinutes || 5}m`}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           )}
         </div>
-
       </div>
     </div>
   );

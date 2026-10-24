@@ -151,12 +151,29 @@ async function runVisualInspection() {
     return buffer.length;
   }
 
+  async function waitForReady(timeoutMs = 8000) {
+    const start = Date.now();
+    while (Date.now() - start < timeoutMs) {
+      try {
+        const res = await cdp.send('Runtime.evaluate', {
+          expression: `
+            Boolean(document.readyState === 'complete' && document.body && document.body.innerText.trim().length > 10)
+          `,
+          returnByValue: true
+        });
+        if (res?.result?.value) return true;
+      } catch {}
+      await sleep(250);
+    }
+  }
+
   // Navigate and wait helper
   async function navigateTo(urlPath) {
     const fullUrl = `${BASE_URL}${urlPath}`;
     console.log(`\nNavigating to: ${fullUrl}...`);
     await cdp.send('Page.navigate', { url: fullUrl });
-    await sleep(1500);
+    await waitForReady();
+    await sleep(500);
   }
 
   const results = {
@@ -167,6 +184,7 @@ async function runVisualInspection() {
     step5_viewports: {},
     step6_console_errors: [],
     step7_interaction: null,
+    step8_routine_creation_ui: null,
   };
 
   try {
@@ -183,7 +201,8 @@ async function runVisualInspection() {
         } catch(e) {}
       `
     });
-    await sleep(1500);
+    await waitForReady();
+    await sleep(500);
 
     // 1. Open http://localhost:3000
     const pageTitleResult = await cdp.send('Runtime.evaluate', { expression: 'document.title', returnByValue: true });
@@ -234,8 +253,118 @@ async function runVisualInspection() {
       console.log(`  ${route.path} -> H1: "${h1Text.result.value}"`);
     }
 
-    // 5. Viewport inspection: Mobile & Desktop
-    console.log('\nStep 5: Testing Mobile and Desktop Viewports...');
+    // 5. Test Routine Creation and Steps UI in browser
+    console.log('\nTesting Routine Creation & Steps UI in browser...');
+    await navigateTo('/routines');
+    await cdp.send('Runtime.evaluate', {
+      expression: `
+        (() => {
+          const allBtns = Array.from(document.querySelectorAll('button'));
+          const newRoutineBtn = allBtns.find(b => b.innerText.includes('New routine') || b.innerText.includes('Create a routine'));
+          if (newRoutineBtn) newRoutineBtn.click();
+        })()
+      `
+    });
+    await sleep(800);
+    await takeScreenshot('12_new_routine_modal.png');
+
+    const routineModalCheck = await cdp.send('Runtime.evaluate', {
+      expression: `
+        (() => {
+          const titleInput = document.querySelector('#routine-title');
+          const stepInput = document.querySelector('input[placeholder*="Add step name"]');
+          const emptyState = document.querySelector('[data-purpose="steps-empty-state"]');
+          const addStepBtn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('Add step'));
+          return {
+            hasTitleInput: !!titleInput,
+            hasStepInput: !!stepInput,
+            hasEmptyState: !!emptyState,
+            hasAddStepBtn: !!addStepBtn,
+          };
+        })()
+      `,
+      returnByValue: true
+    });
+    console.log('Routine Modal UI Verification:', routineModalCheck.result.value);
+
+    // Test adding step 1 and step 2
+    await cdp.send('Runtime.evaluate', {
+      expression: `
+        (() => {
+          const setReactValue = (el, val) => {
+            const proto = window.HTMLInputElement.prototype;
+            const set = Object.getOwnPropertyDescriptor(proto, 'value').set;
+            set.call(el, val);
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+          };
+
+          const titleInput = document.querySelector('#routine-title');
+          if (titleInput) setReactValue(titleInput, 'Morning Flow');
+
+          const stepInput = document.querySelector('input[placeholder*="Add step name"]');
+          if (stepInput) {
+            setReactValue(stepInput, 'Drink 1 full glass of water');
+            const addStepBtn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('Add step'));
+            if (addStepBtn) addStepBtn.click();
+          }
+        })()
+      `
+    });
+    await sleep(700);
+
+    await cdp.send('Runtime.evaluate', {
+      expression: `
+        (() => {
+          const setReactValue = (el, val) => {
+            const proto = window.HTMLInputElement.prototype;
+            const set = Object.getOwnPropertyDescriptor(proto, 'value').set;
+            set.call(el, val);
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+          };
+
+          const stepInput = document.querySelector('input[placeholder*="Add step name"]');
+          if (stepInput) {
+            setReactValue(stepInput, 'Gentle morning stretch');
+            const addStepBtn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('Add step'));
+            if (addStepBtn) addStepBtn.click();
+          }
+        })()
+      `
+    });
+    await sleep(700);
+    await takeScreenshot('13_routine_with_steps_added.png');
+
+    const stepAddedCheck = await cdp.send('Runtime.evaluate', {
+      expression: `
+        (() => {
+          const stepInputs = Array.from(document.querySelectorAll('input[aria-label*="title"]'));
+          return {
+            stepCount: stepInputs.length,
+            stepTitles: stepInputs.map(i => i.value),
+          };
+        })()
+      `,
+      returnByValue: true
+    });
+    console.log('Steps Added Verification:', stepAddedCheck.result.value);
+    results.step8_routine_creation_ui = {
+      modal: routineModalCheck.result.value,
+      steps: stepAddedCheck.result.value
+    };
+
+    // Close the modal
+    await cdp.send('Runtime.evaluate', {
+      expression: `
+        (() => {
+          const closeBtn = document.querySelector('button[aria-label="Close dialog"]');
+          if (closeBtn) closeBtn.click();
+        })()
+      `
+    });
+    await sleep(500);
+
+    // 6. Viewport inspection: Mobile & Desktop
+    console.log('\nTesting Mobile and Desktop Viewports...');
     await navigateTo('/');
 
     // Mobile Viewport (iPhone 14 / mobile: 390x844)
@@ -260,42 +389,34 @@ async function runVisualInspection() {
     const desktopSize = await takeScreenshot('09_today_desktop.png');
     results.step5_viewports.desktop = { viewport: '1440x900', screenshotBytes: desktopSize };
 
-    // 6. Console errors summary
+    // 7. Console errors summary
     results.step6_console_errors = consoleErrors;
-    console.log(`\nStep 6: Console Errors Collected: ${consoleErrors.length}`);
+    console.log(`\nConsole Errors Collected: ${consoleErrors.length}`);
     if (consoleErrors.length > 0) {
       console.log('Errors:', consoleErrors);
     }
 
-    // 7. Interact with a safe, reversible UI control
-    console.log('\nStep 7: Testing safe, reversible interaction on Settings page...');
+    // 8. Interact with a safe, reversible UI control
+    console.log('\nTesting safe, reversible interaction on Settings page...');
     await navigateTo('/settings');
     await takeScreenshot('10_interaction_before.png');
 
-    // Read current theme and test toggling between amber/mint accent palette or theme button
     const beforeState = await cdp.send('Runtime.evaluate', {
       expression: `
         (() => {
-          const amberBtn = document.querySelector('button[aria-label="Warm amber"], button[title*="Amber"], button:has(div.bg-amber-500)');
-          const mintBtn = document.querySelector('button[aria-label="Fresh mint"], button[title*="Mint"], button:has(div.bg-emerald-500)');
           const accent = document.documentElement.getAttribute('data-accent') || 'amber';
-          return { currentAccent: accent, hasAmberBtn: !!amberBtn, hasMintBtn: !!mintBtn };
+          const isDark = document.documentElement.classList.contains('dark');
+          return { currentAccent: accent, isDark };
         })()
       `,
       returnByValue: true
     });
 
-    console.log('Before interaction state:', beforeState.result.value);
-
-    // Click the mint button or trigger the accent change
     const clickResult = await cdp.send('Runtime.evaluate', {
       expression: `
         (() => {
-          // Find buttons in the accent palette section
           const buttons = Array.from(document.querySelectorAll('button'));
-          const target = buttons.find(b => b.innerText.includes('Fresh mint') || b.getAttribute('aria-label') === 'Fresh mint')
-                      || buttons.find(b => b.innerText.includes('Mint'))
-                      || buttons.find(b => b.innerText.includes('Dark') || b.innerText.includes('Light'));
+          const target = buttons.find(b => b.innerText.includes('Dark') || b.innerText.includes('Light') || b.innerText.includes('System'));
           if (target) {
             target.click();
             return { clickedText: target.innerText.trim(), success: true };
